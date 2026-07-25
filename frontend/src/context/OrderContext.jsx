@@ -11,6 +11,9 @@ import {
   setStoredWaiterTables,
   getStoredBillRequests,
   setStoredBillRequests,
+  getStoredIssueReport,
+  setStoredIssueReport,
+  clearStoredIssueReport,
 } from '../utils/storage';
 import {
   INITIAL_KITCHEN_ORDERS,
@@ -63,6 +66,13 @@ export const OrderProvider = ({ children }) => {
 
   const [receipts, setReceipts] = useState(() => getStoredReceipts());
   const [registerSession, setRegisterSession] = useState(() => getStoredRegisterSession());
+  const [issueReport, setIssueReport] = useState(() => getStoredIssueReport());
+
+  useEffect(() => {
+    if (issueReport) {
+      setStoredIssueReport(issueReport);
+    }
+  }, [issueReport]);
 
   useEffect(() => {
     setStoredReceipts(receipts);
@@ -423,6 +433,40 @@ export const OrderProvider = ({ children }) => {
     clearStoredOrder();
   };
 
+  // Customer submitting an issue report (post-service reporting flow)
+  const submitIssueReport = (reportData) => {
+    const newReport = {
+      id: `ISS-${Math.floor(1000 + Math.random() * 9000)}`,
+      category: reportData.category,
+      categoryLabel: reportData.categoryLabel,
+      details: reportData.details || '',
+      orderId: reportData.orderId,
+      tableNumber: reportData.tableNumber,
+      priority: 'High Priority',
+      stageIndex: 0,
+      status: 'submitted',
+      createdAt: new Date().toISOString(),
+    };
+    setIssueReport(newReport);
+    setStoredIssueReport(newReport);
+    playKitchenChime();
+    return newReport;
+  };
+
+  const advanceIssueReportStage = () => {
+    setIssueReport((prev) => {
+      if (!prev) return prev;
+      const nextIdx = Math.min(4, prev.stageIndex + 1);
+      const stageIds = ['submitted', 'staff_notified', 'staff_assigned', 'resolving', 'resolved'];
+      return { ...prev, stageIndex: nextIdx, status: stageIds[nextIdx] };
+    });
+  };
+
+  const clearIssueReport = () => {
+    setIssueReport(null);
+    clearStoredIssueReport();
+  };
+
   return (
     <OrderContext.Provider
       value={{
@@ -449,6 +493,10 @@ export const OrderProvider = ({ children }) => {
         processCounterPayment,
         toggleRegisterDrawer,
         voidOrRefundReceipt,
+        issueReport,
+        submitIssueReport,
+        advanceIssueReportStage,
+        clearIssueReport,
       }}
     >
       {children}

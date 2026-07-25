@@ -1,11 +1,14 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { RESTAURANT_INFO } from '../../utils/mockData';
 import {
-  ChefHat,
   LayoutDashboard,
   History,
+  ChefHat,
   BellRing,
-  Settings
+  Settings,
+  ArrowLeft,
+  RotateCcw
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -16,64 +19,66 @@ const NAV_ITEMS = [
   { to: '/kitchen/settings', end: false, label: 'Settings', icon: Settings },
 ];
 
-const KitchenSidebar = ({ pendingCallsCount = 0 }) => {
+const KitchenSidebar = ({ pendingCallsCount = 0, onResetData }) => {
+  const navigate = useNavigate();
+
   return (
-    <aside className="hidden md:flex flex-col h-full w-72 shrink-0 bg-[#fbf8f8] border-r border-outline-variant">
-      <div className="flex flex-col h-full p-4 gap-6">
-        {/* Brand Identity */}
-        <div className="flex gap-3 items-center">
-          <div className="size-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shrink-0">
-            <ChefHat className="w-6 h-6" />
-          </div>
-          <div className="flex flex-col">
-            <h1 className="text-on-surface text-base font-bold leading-normal">Dakshin Heritage</h1>
-            <p className="text-outline text-sm font-normal leading-normal">Kitchen Dashboard</p>
-          </div>
-        </div>
+    <aside className="hidden md:flex flex-col h-screen w-64 shrink-0 p-4 gap-2 border-r border-outline-variant/30 bg-surface-container-lowest">
+      <button
+        onClick={() => navigate('/portal')}
+        className="flex items-center gap-1.5 px-2 py-1.5 -ml-1 mb-4 w-fit rounded-lg text-xs font-semibold text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors"
+        title="Return to System Launchpad"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        <span>Back to Portal</span>
+      </button>
 
-        {/* Primary Navigation */}
-        <nav className="flex flex-col gap-2">
-          {NAV_ITEMS.map((item) => {
-            const ItemIcon = item.icon;
-            const badgeCount = item.badgeKey === 'assistance' ? pendingCallsCount : 0;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-[#f2e8e8] text-primary'
-                      : 'text-on-surface hover:bg-surface-container'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <ItemIcon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary' : 'text-on-surface'}`} />
-                    <p className={`text-sm flex-1 ${isActive ? 'font-bold' : 'font-medium'}`}>{item.label}</p>
-                    {badgeCount > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full bg-error text-on-error text-[10px] font-bold leading-none">
-                        {badgeCount}
-                      </span>
-                    )}
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        {/* Kitchen Status */}
-        <div className="mt-auto p-4 bg-primary-container/10 rounded-xl">
-          <p className="text-xs font-bold text-primary tracking-wider uppercase mb-1">Kitchen Status</p>
-          <div className="flex items-center gap-2">
-            <div className="size-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-sm font-medium text-on-surface">Kitchen Online</span>
-          </div>
-        </div>
+      <div className="mb-8 px-2">
+        <h1 className="text-xl font-bold text-primary tracking-tight">{RESTAURANT_INFO.name}</h1>
+        <p className="text-xs text-on-surface-variant opacity-70">Kitchen Display System</p>
       </div>
+
+      <nav className="flex-1 space-y-1">
+        {NAV_ITEMS.map(({ to, end, label, icon: Icon, badgeKey }) => {
+          const badgeCount = badgeKey === 'assistance' ? pendingCallsCount : 0;
+          return (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ${
+                  isActive
+                    ? 'bg-secondary-container text-on-secondary-container font-semibold'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:translate-x-1'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
+                  <span>{label}</span>
+                  {badgeCount > 0 && (
+                    <span className="ml-auto text-[10px] font-bold bg-primary text-on-primary px-1.5 py-0.5 rounded-full">
+                      {badgeCount}
+                    </span>
+                  )}
+                </>
+              )}
+            </NavLink>
+          );
+        })}
+      </nav>
+
+      {onResetData && (
+        <button
+          onClick={onResetData}
+          className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 rounded-xl font-bold text-sm shadow-lg hover:brightness-110 active:scale-95 transition-all"
+        >
+          <RotateCcw className="w-4 h-4" />
+          <span>Reset Demo Data</span>
+        </button>
+      )}
     </aside>
   );
 };

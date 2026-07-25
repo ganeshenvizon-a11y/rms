@@ -7,11 +7,12 @@ const AssistanceStreamView = ({ requests = [], onResolveRequest }) => {
   const resolvedRequests = requests.filter((r) => r.status === 'resolved');
 
   return (
-    <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 shadow-sm space-y-6">
+    <div className="p-8 max-w-4xl mx-auto">
+    <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm space-y-6">
       {/* Title & Badge */}
-      <div className="flex items-center justify-between border-b border-outline-variant/60 pb-4">
+      <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-error-container/60 text-error flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-error-container/50 text-error flex items-center justify-center">
             <BellRing className="w-5 h-5 animate-pulse" />
           </div>
           <div>
@@ -24,7 +25,7 @@ const AssistanceStreamView = ({ requests = [], onResolveRequest }) => {
           </div>
         </div>
 
-        <span className="px-3 py-1 bg-error-container/60 text-on-error-container border border-error/20 rounded-lg text-xs font-bold">
+        <span className="px-3 py-1 bg-error-container/50 text-on-error-container border border-error/20 rounded-lg text-xs font-bold">
           {pendingRequests.length} Pending Calls
         </span>
       </div>
@@ -78,8 +79,8 @@ const AssistanceStreamView = ({ requests = [], onResolveRequest }) => {
               );
             })
           ) : (
-            <div className="py-8 text-center border-2 border-dashed border-outline-variant/60 rounded-xl bg-surface-container-low">
-              <CheckCircle className="w-8 h-8 mx-auto text-emerald-600 mb-1" />
+            <div className="py-8 text-center border-2 border-dashed border-outline-variant/30 rounded-xl bg-surface-container-low">
+              <CheckCircle className="w-8 h-8 mx-auto text-tertiary mb-1" />
               <p className="text-xs text-on-surface-variant font-medium">
                 No active table assistance calls
               </p>
@@ -90,7 +91,7 @@ const AssistanceStreamView = ({ requests = [], onResolveRequest }) => {
 
       {/* Resolved History */}
       {resolvedRequests.length > 0 && (
-        <div className="pt-4 border-t border-outline-variant/50 space-y-2">
+        <div className="pt-4 border-t border-outline-variant/20 space-y-2">
           <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">
             Recently Resolved Calls ({resolvedRequests.length})
           </h3>
@@ -99,10 +100,10 @@ const AssistanceStreamView = ({ requests = [], onResolveRequest }) => {
             {resolvedRequests.map((req) => (
               <div
                 key={req.id}
-                className="p-3 rounded-lg bg-surface-container-low border border-outline-variant/50 flex items-center justify-between text-xs text-on-surface-variant opacity-70"
+                className="p-3 rounded-lg bg-surface-container-low border border-outline-variant/20 flex items-center justify-between text-xs text-on-surface-variant opacity-70"
               >
                 <span>Table #{req.tableNumber} — {req.requestType}</span>
-                <span className="text-emerald-700 text-[10px] flex items-center gap-1 font-bold">
+                <span className="text-tertiary text-[10px] flex items-center gap-1 font-bold">
                   <CheckCircle className="w-3 h-3" /> Resolved
                 </span>
               </div>
@@ -110,6 +111,7 @@ const AssistanceStreamView = ({ requests = [], onResolveRequest }) => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

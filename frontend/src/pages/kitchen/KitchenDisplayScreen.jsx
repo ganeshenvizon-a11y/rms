@@ -61,6 +61,7 @@ const KitchenDisplayScreen = () => {
         staffAuth={staffAuth}
         onLogoutStaff={handleLogoutStaff}
         pendingCallsCount={pendingAssistanceCount}
+        onResetData={resetKitchenDemoData}
       >
         <Routes>
           <Route

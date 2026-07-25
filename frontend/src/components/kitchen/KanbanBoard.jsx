@@ -17,7 +17,7 @@ const COLUMNS = [
     id: 'received',
     title: 'New Orders',
     icon: Inbox,
-    badgeClass: 'bg-surface-container-highest text-on-surface',
+    badgeClass: 'bg-secondary-container/30 text-on-secondary-container',
   },
   {
     id: 'preparing',
@@ -29,13 +29,13 @@ const COLUMNS = [
     id: 'ready',
     title: 'Ready',
     icon: CheckCircle2,
-    badgeClass: 'bg-emerald-500 text-white',
+    badgeClass: 'bg-tertiary-container/30 text-on-tertiary-container',
   },
   {
     id: 'served',
     title: 'Completed',
     icon: Archive,
-    badgeClass: 'bg-on-surface-variant text-white',
+    badgeClass: 'bg-surface-container-highest text-on-surface-variant',
   },
 ];
 
@@ -46,7 +46,7 @@ const KanbanColumn = ({ col, children }) => {
     <div
       ref={setNodeRef}
       className={`space-y-3 min-h-[200px] max-h-[calc(100vh-320px)] overflow-y-auto no-scrollbar pr-0.5 rounded-2xl transition-colors ${
-        isOver ? 'bg-primary/5 ring-2 ring-primary/40 ring-inset' : ''
+        isOver ? 'bg-primary-container/10 ring-2 ring-primary/40 ring-inset' : ''
       }`}
     >
       {children}
@@ -112,11 +112,11 @@ const KanbanBoard = ({
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2">
                   <ColumnIcon className="w-4 h-4 text-on-surface-variant" />
-                  <h4 className="font-headline-md text-headline-md text-on-surface text-lg">
+                  <h4 className="text-base font-bold text-on-surface">
                     {col.title}
                   </h4>
                 </div>
-                <span className={`px-2.5 py-0.5 rounded text-xs font-bold ${col.badgeClass}`}>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${col.badgeClass}`}>
                   {colOrders.length}
                 </span>
               </div>
@@ -135,8 +135,8 @@ const KanbanBoard = ({
                       />
                     ))
                   ) : (
-                    <div className="py-10 px-4 text-center border-2 border-dashed border-outline-variant/60 rounded-xl bg-surface-container-lowest/50">
-                      <ColumnIcon className="w-7 h-7 mx-auto text-on-surface-variant/50 mb-2" />
+                    <div className="py-10 px-4 text-center border-2 border-dashed border-outline-variant/30 rounded-xl bg-surface-container-lowest/50">
+                      <ColumnIcon className="w-7 h-7 mx-auto text-on-surface-variant/40 mb-2" />
                       <p className="text-xs text-on-surface-variant font-medium">
                         No tickets in {col.title}
                       </p>

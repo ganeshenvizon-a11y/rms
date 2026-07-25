@@ -13,7 +13,7 @@ import Icon from '../../components/common/Icon';
 
 const OrderTrackingScreen = () => {
   const navigate = useNavigate();
-  const { activeOrder, updateOrderStatus } = useOrder();
+  const { activeOrder, updateOrderStatus, issueReport } = useOrder();
   const { tableNumber } = useTable();
   const { showToast } = useToast();
 
@@ -142,6 +142,39 @@ const OrderTrackingScreen = () => {
             Did you know? Our filter coffee is brewed with beans sourced directly from Kumbakonam estates.
           </p>
         </div>
+
+        {/* Post-service: report an issue with the order */}
+        {currentStageIndex === 3 && (
+          <section className="mt-6">
+            {issueReport ? (
+              <button
+                onClick={() => navigate('/report-status')}
+                className="w-full p-5 bg-surface-container-lowest rounded-xl border border-outline-variant flex items-center justify-between shadow-sm hover:bg-surface-container/40 transition-colors active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                    <Icon name="pending_actions" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-on-surface">Tracking Your Report</p>
+                    <p className="text-xs text-on-surface-variant">
+                      Ticket #{issueReport.id} &bull; {issueReport.categoryLabel}
+                    </p>
+                  </div>
+                </div>
+                <Icon name="chevron_right" className="text-on-surface-variant" />
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/report-issue')}
+                className="w-full h-14 rounded-xl border border-dashed border-outline-variant text-on-surface-variant font-semibold flex items-center justify-center gap-2 hover:bg-surface-container/40 hover:text-primary hover:border-primary/40 transition-colors active:scale-[0.98]"
+              >
+                <Icon name="report_problem" />
+                Report an Issue
+              </button>
+            )}
+          </section>
+        )}
       </main>
 
       <BottomNavBar />

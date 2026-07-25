@@ -48,11 +48,11 @@ const KitchenOrderCard = ({
   const seconds = elapsedSeconds % 60;
   const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-  let timerBadgeStyle = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+  let timerBadgeStyle = 'bg-tertiary-container/20 text-on-tertiary-container border-transparent';
   if (minutes >= 15 || order.isRush) {
     timerBadgeStyle = 'bg-error text-on-error border-error animate-pulse';
   } else if (minutes >= 10) {
-    timerBadgeStyle = 'bg-secondary-container text-on-secondary-fixed border-secondary-container';
+    timerBadgeStyle = 'bg-secondary-container/40 text-on-secondary-container border-transparent';
   }
 
   const displayedItems = filterStation === 'All'
@@ -76,20 +76,20 @@ const KitchenOrderCard = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      className={`rounded-xl border bg-surface-container-lowest flex flex-col overflow-hidden shadow-sm transition-all ${
+      className={`rounded-2xl border bg-surface-container-lowest flex flex-col overflow-hidden shadow-sm transition-all ${
         isDragging
           ? 'opacity-40 shadow-none'
           : order.isRush
           ? 'border-error ring-2 ring-error/20'
           : order.status === 'ready'
-          ? 'border-t-4 border-t-emerald-500 border-x border-b border-outline-variant/60'
+          ? 'border-t-4 border-t-tertiary border-x border-b border-outline-variant/20'
           : order.status === 'served'
-          ? 'border-outline-variant/60 opacity-80'
-          : 'border-outline-variant/60 hover:border-outline-variant'
+          ? 'border-outline-variant/20 opacity-80'
+          : 'border-outline-variant/20 hover:border-outline-variant/50'
       } ${!isDragging ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
       {/* Card Header */}
-      <div className="p-3.5 border-b border-outline-variant/60 flex items-center justify-between gap-2">
+      <div className="p-3.5 border-b border-outline-variant/20 flex items-center justify-between gap-2">
         <div className="flex items-start gap-1.5">
           <GripVertical className="w-4 h-4 text-outline shrink-0 mt-0.5" />
           <div>
@@ -110,7 +110,7 @@ const KitchenOrderCard = ({
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => navigate(`/kitchen/orders/${order.orderId}`)}
-            className="p-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors"
+            className="p-1.5 rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high transition-colors"
             title="View Order Details"
           >
             <Eye className="w-3.5 h-3.5" />
@@ -120,7 +120,7 @@ const KitchenOrderCard = ({
             className={`p-1.5 rounded-lg border text-xs font-bold transition-all ${
               order.isRush
                 ? 'bg-error text-on-error border-error'
-                : 'bg-surface-container text-on-surface-variant border-outline-variant hover:text-error'
+                : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant/30 hover:text-error'
             }`}
             title="Toggle Rush Priority"
           >
@@ -155,7 +155,7 @@ const KitchenOrderCard = ({
           >
             <div className="mt-0.5 shrink-0">
               {item.isDone ? (
-                <CheckSquare className="w-4 h-4 text-emerald-600" />
+                <CheckSquare className="w-4 h-4 text-tertiary" />
               ) : (
                 <Square className="w-4 h-4 text-outline group-hover:text-on-surface" />
               )}
@@ -174,7 +174,7 @@ const KitchenOrderCard = ({
                   {item.selectedOptions.map((opt, idx) => (
                     <span
                       key={idx}
-                      className="px-1.5 py-0.5 bg-surface-container text-on-surface-variant border border-outline-variant/60 rounded-md text-[10px] font-medium"
+                      className="px-1.5 py-0.5 bg-surface-container text-on-surface-variant border border-outline-variant/20 rounded-md text-[10px] font-medium"
                     >
                       + {opt}
                     </span>
@@ -225,7 +225,7 @@ const KitchenOrderCard = ({
         {order.status === 'served' && (
           <button
             onClick={() => onUpdateStatus(order.orderId, 'preparing')}
-            className="w-full py-3 bg-surface-container hover:bg-surface-container-high text-on-surface-variant border border-outline-variant rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-all"
+            className="w-full py-3 bg-surface-container hover:bg-surface-container-high text-on-surface-variant border border-outline-variant/30 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-all"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Recall Ticket</span>

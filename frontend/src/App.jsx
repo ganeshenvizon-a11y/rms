@@ -12,6 +12,9 @@ import FoodDetailsScreen from './pages/customer/FoodDetailsScreen';
 import CartScreen from './pages/customer/CartScreen';
 import OrderConfirmationScreen from './pages/customer/OrderConfirmationScreen';
 import OrderTrackingScreen from './pages/customer/OrderTrackingScreen';
+import ReportIssueScreen from './pages/customer/ReportIssueScreen';
+import ReportSubmittedScreen from './pages/customer/ReportSubmittedScreen';
+import ReportStatusScreen from './pages/customer/ReportStatusScreen';
 import BillScreen from './pages/customer/BillScreen';
 import PaymentScreen from './pages/customer/PaymentScreen';
 import ThankYouScreen from './pages/customer/ThankYouScreen';
@@ -73,6 +76,9 @@ function App() {
                         <Route path="/cart" element={<CartScreen />} />
                         <Route path="/order-confirmation" element={<OrderConfirmationScreen />} />
                         <Route path="/order-tracking" element={<OrderTrackingScreen />} />
+                        <Route path="/report-issue" element={<ReportIssueScreen />} />
+                        <Route path="/report-submitted" element={<ReportSubmittedScreen />} />
+                        <Route path="/report-status" element={<ReportStatusScreen />} />
                         <Route path="/bill" element={<BillScreen />} />
                         <Route path="/payment" element={<PaymentScreen />} />
                         <Route path="/success" element={<ThankYouScreen />} />

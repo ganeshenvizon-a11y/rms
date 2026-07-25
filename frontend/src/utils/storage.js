@@ -7,6 +7,7 @@ const KITCHEN_AUTH_KEY = 'tbv_restaurant_kitchen_auth';
 const WAITER_TABLES_KEY = 'tbv_restaurant_waiter_tables';
 const BILL_REQUESTS_KEY = 'tbv_restaurant_bill_requests';
 const KITCHEN_PREFS_KEY = 'tbv_restaurant_kitchen_prefs';
+const ISSUE_REPORT_KEY = 'tbv_restaurant_issue_report';
 
 export const getStoredCart = () => {
   try {
@@ -182,6 +183,31 @@ export const setStoredKitchenPrefs = (prefs) => {
     localStorage.setItem(KITCHEN_PREFS_KEY, JSON.stringify(prefs));
   } catch (e) {
     console.error("Error saving kitchen prefs to localStorage", e);
+  }
+};
+
+export const getStoredIssueReport = () => {
+  try {
+    const item = localStorage.getItem(ISSUE_REPORT_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredIssueReport = (report) => {
+  try {
+    localStorage.setItem(ISSUE_REPORT_KEY, JSON.stringify(report));
+  } catch (e) {
+    console.error("Error saving issue report to localStorage", e);
+  }
+};
+
+export const clearStoredIssueReport = () => {
+  try {
+    localStorage.removeItem(ISSUE_REPORT_KEY);
+  } catch (e) {
+    console.error("Error clearing issue report from localStorage", e);
   }
 };
 

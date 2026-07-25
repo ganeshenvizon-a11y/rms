@@ -45,11 +45,12 @@ const ItemSummaryView = ({ orders = [], selectedStation = 'All' }) => {
   );
 
   return (
-    <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-2xl p-5 shadow-sm space-y-6">
+    <div className="p-8 max-w-6xl mx-auto">
+    <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm space-y-6">
       {/* View Title */}
-      <div className="flex items-center justify-between border-b border-outline-variant/60 pb-4">
+      <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary-container/10 text-primary flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center">
             <ChefHat className="w-5 h-5" />
           </div>
           <div>
@@ -62,7 +63,7 @@ const ItemSummaryView = ({ orders = [], selectedStation = 'All' }) => {
           </div>
         </div>
 
-        <span className="px-3 py-1 bg-surface-container border border-outline-variant rounded-lg text-xs font-bold text-on-surface">
+        <span className="px-3 py-1 bg-surface-container-low border border-outline-variant/30 rounded-lg text-xs font-bold text-on-surface">
           {summaryItems.length} Unique Dishes
         </span>
       </div>
@@ -75,8 +76,8 @@ const ItemSummaryView = ({ orders = [], selectedStation = 'All' }) => {
               key={idx}
               className={`p-4 rounded-xl border flex flex-col justify-between transition-all ${
                 summary.pendingQuantity > 0
-                  ? 'bg-surface-container-lowest border-outline-variant shadow-sm hover:border-primary'
-                  : 'bg-surface-container-low border-outline-variant/40 opacity-60'
+                  ? 'bg-surface-container-lowest border-outline-variant/20 shadow-sm hover:border-primary/50'
+                  : 'bg-surface-container-low border-outline-variant/10 opacity-60'
               }`}
             >
               <div>
@@ -84,7 +85,7 @@ const ItemSummaryView = ({ orders = [], selectedStation = 'All' }) => {
                   <span className="px-2.5 py-1 bg-primary text-on-primary font-extrabold text-sm rounded-lg shadow-sm">
                     {summary.pendingQuantity}x PENDING
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant border border-outline-variant">
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant border border-outline-variant/20">
                     {summary.station}
                   </span>
                 </div>
@@ -99,7 +100,7 @@ const ItemSummaryView = ({ orders = [], selectedStation = 'All' }) => {
                     {summary.optionsList.map((opt, oIdx) => (
                       <span
                         key={oIdx}
-                        className="px-1.5 py-0.5 rounded-md bg-surface-container text-on-surface-variant border border-outline-variant text-[10px]"
+                        className="px-1.5 py-0.5 rounded-md bg-surface-container text-on-surface-variant border border-outline-variant/20 text-[10px]"
                       >
                         + {opt}
                       </span>
@@ -109,7 +110,7 @@ const ItemSummaryView = ({ orders = [], selectedStation = 'All' }) => {
               </div>
 
               {/* Table Numbers List */}
-              <div className="mt-4 pt-3 border-t border-outline-variant/50 flex items-center justify-between text-xs">
+              <div className="mt-4 pt-3 border-t border-outline-variant/10 flex items-center justify-between text-xs">
                 <span className="text-on-surface-variant font-medium flex items-center gap-1">
                   <Layers className="w-3.5 h-3.5" />
                   Tables:
@@ -129,13 +130,14 @@ const ItemSummaryView = ({ orders = [], selectedStation = 'All' }) => {
           ))}
         </div>
       ) : (
-        <div className="py-16 text-center border-2 border-dashed border-outline-variant/60 rounded-xl">
-          <CheckCircle className="w-10 h-10 mx-auto text-emerald-600 mb-2" />
+        <div className="py-16 text-center border-2 border-dashed border-outline-variant/30 rounded-xl">
+          <CheckCircle className="w-10 h-10 mx-auto text-tertiary mb-2" />
           <p className="text-sm text-on-surface-variant font-medium">
             All kitchen prep is currently caught up!
           </p>
         </div>
       )}
+    </div>
     </div>
   );
 };

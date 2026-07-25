@@ -24,46 +24,52 @@ const KitchenStatsBanner = ({ orders = [] }) => {
       label: 'New Orders',
       value: receivedCount,
       icon: Sparkles,
-      border: 'border-secondary-container',
-      iconColor: 'text-secondary-container',
+      iconBg: 'bg-secondary-container/20',
+      iconColor: 'text-secondary',
+      valueColor: 'text-on-surface',
     },
     {
       label: 'Preparing',
       value: preparingCount,
       icon: CookingPot,
-      border: 'border-primary',
+      iconBg: 'bg-primary-container/20',
       iconColor: 'text-primary',
+      valueColor: 'text-primary',
     },
     {
       label: 'Ready',
       value: readyCount,
       icon: CheckCircle2,
-      border: 'border-emerald-500',
-      iconColor: 'text-emerald-500',
+      iconBg: 'bg-tertiary-container/20',
+      iconColor: 'text-tertiary',
+      valueColor: 'text-on-surface',
     },
     {
       label: 'Completed Today',
       value: completedTodayCount,
       icon: ListChecks,
-      border: 'border-on-surface-variant',
+      iconBg: 'bg-surface-container-high',
       iconColor: 'text-on-surface-variant',
+      valueColor: 'text-on-surface',
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card) => {
         const CardIcon = card.icon;
         return (
           <div
             key={card.label}
-            className={`bg-surface-container-lowest p-4 sm:p-5 rounded-xl shadow-sm border-l-4 ${card.border} flex justify-between items-center`}
+            className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/20 flex items-center justify-between"
           >
             <div>
-              <p className="text-on-surface-variant font-label-md text-label-md">{card.label}</p>
-              <h3 className="font-headline-lg text-headline-lg text-on-surface">{card.value}</h3>
+              <p className="text-sm font-medium text-on-surface-variant">{card.label}</p>
+              <h3 className={`text-3xl font-bold mt-1 ${card.valueColor}`}>{card.value}</h3>
             </div>
-            <CardIcon className={`w-9 h-9 ${card.iconColor}`} strokeWidth={1.75} />
+            <div className={`w-12 h-12 rounded-xl ${card.iconBg} flex items-center justify-center`}>
+              <CardIcon className={`w-6 h-6 ${card.iconColor}`} />
+            </div>
           </div>
         );
       })}
