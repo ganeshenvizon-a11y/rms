@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Material color tokens (Dakshin Premium palette) */
+  --color-primary: #93000b;
+  --color-primary-container: #b91c1c;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #ffcdc7;
+
+  --color-secondary: #735c00;
+  --color-secondary-container: #fed01b;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #6f5900;
+
+  --color-tertiary: #474646;
+  --color-tertiary-container: #5f5e5e;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #dbd8d7;
+
+  --color-background: #f9f9f8;
+  --color-surface: #f9f9f8;
+  --color-surface-dim: #dadad9;
+  --color-surface-bright: #f9f9f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f3;
+  --color-surface-container: #eeeeed;
+  --color-surface-container-high: #e8e8e7;
+  --color-surface-container-highest: #e2e2e2;
+
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #5b403d;
+  --color-on-background: #1a1c1c;
+
+  --color-outline: #8f6f6c;
+  --color-outline-variant: #e4beb9;
+  --color-surface-variant: #e2e2e2;
+  --color-surface-tint: #b91c1c;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-inverse-surface: #2f3130;
+  --color-inverse-on-surface: #f1f1f0;
+  --color-inverse-primary: #ffb4ab;
+
+  --color-primary-fixed: #ffdad6;
+  --color-primary-fixed-dim: #ffb4ab;
+  --color-on-primary-fixed: #410002;
+  --color-on-primary-fixed-variant: #93000b;
+
+  --color-secondary-fixed: #ffe083;
+  --color-secondary-fixed-dim: #eec200;
+  --color-on-secondary-fixed: #231b00;
+  --color-on-secondary-fixed-variant: #574500;
+
+  --color-tertiary-fixed: #e5e2e1;
+  --color-tertiary-fixed-dim: #c8c6c5;
+  --color-on-tertiary-fixed: #1c1b1b;
+  --color-on-tertiary-fixed-variant: #474646;
+
+  /* Typography scale */
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+
+  --text-display-lg-mobile: 32px;
+  --text-display-lg-mobile--line-height: 40px;
+  --text-display-lg-mobile--letter-spacing: -0.02em;
+  --text-display-lg-mobile--font-weight: 700;
+
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.01em;
+  --text-headline-lg--font-weight: 700;
+
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-lg-mobile--font-weight: 700;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.01em;
+  --text-label-md--font-weight: 600;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--letter-spacing: 0.02em;
+  --text-label-sm--font-weight: 500;
+
+  /* Radius */
+  --radius-card: 18px;
+}
+
+/* Force Inter font globally across all HTML elements, utility classes, and components */
+html, body, button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, span, div, a, label, .font-serif, .font-sans {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.icon-fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+@layer base {
+  body {
+    background-color: #f9f9f8;
+    color: #1a1c1c;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glassmorphism utilities */
+.glass-header {
+  background: rgba(249, 249, 248, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Soft Custom Shadows */
+.shadow-soft {
+  box-shadow: 0 4px 20px -2px rgba(26, 28, 28, 0.05);
+}
+
+.shadow-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-floating {
+  box-shadow: 0 10px 30px -4px rgba(147, 0, 11, 0.25);
+}
+
+/* Pulse ring animation */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.5s infinite ease-in-out;
+}
