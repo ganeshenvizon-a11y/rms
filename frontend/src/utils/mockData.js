@@ -187,7 +187,7 @@ export const DISHES = [
     isChefSpecial: true,
     rating: 4.9,
     calories: '320 kcal',
-    image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
+    image: '/images/elaneer_payasam.png',
     description: 'Chilled signature sweet dessert crafted with soft tender coconut pulp, coconut water, cardamom-infused milk, topped with ghee-roasted cashews and almonds.',
     ingredients: ['Tender Coconut Meat', 'Coconut Water', 'Whole Milk', 'Green Cardamom', 'Ghee-roasted Cashews', 'Saffron'],
     customizations: []
