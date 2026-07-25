@@ -570,7 +570,7 @@ const ManagerMenuView = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-on-surface mb-1">Price ($) *</label>
+                  <label className="block font-semibold text-on-surface mb-1">Price (₹) *</label>
                   <input
                     type="number"
                     step="0.01"

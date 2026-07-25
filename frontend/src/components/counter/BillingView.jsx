@@ -182,7 +182,7 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
                   <div className="text-[11px] text-stone-500 font-mono flex items-center justify-between">
                     <span>{tbl.serverName || 'Elena'}</span>
                     <span className="font-bold text-amber-700">
-                      ${(tbl.totalBill || 47.46).toFixed(2)}
+                      ₹{(tbl.totalBill || 47.46).toFixed(2)}
                     </span>
                   </div>
                 </button>
@@ -272,11 +272,9 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
                     <td className="py-2.5 px-3 text-center font-bold text-amber-700">
                       {item.quantity}
                     </td>
-                    <td className="py-2.5 px-3 text-right text-stone-500">
-                      ${item.price.toFixed(2)}
-                    </td>
+                    <td className="py-2.5 px-3 text-right text-stone-500">₹{item.price.toFixed(2)}</td>
                     <td className="py-2.5 px-3 text-right font-bold text-stone-900">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -322,7 +320,7 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
 
             {discountType === 'custom' && (
               <div className="flex items-center gap-2 pt-1">
-                <span className="text-xs font-mono text-stone-600">Discount Amount ($):</span>
+                <span className="text-xs font-mono text-stone-600">Discount Amount (₹):</span>
                 <input
                   type="number"
                   placeholder="0.00"
@@ -354,29 +352,29 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
           <div className="border-t border-stone-200 pt-3 space-y-1.5 font-mono text-xs">
             <div className="flex justify-between text-stone-600">
               <span>Subtotal:</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
 
             {discountAmount > 0 && (
               <div className="flex justify-between text-emerald-700 font-semibold">
                 <span>Discount Applied:</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span>-₹{discountAmount.toFixed(2)}</span>
               </div>
             )}
 
             <div className="flex justify-between text-stone-600">
               <span>Service Tax (5%):</span>
-              <span>${tax.toFixed(2)}</span>
+              <span>₹{tax.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-stone-600">
               <span>VAT (8%):</span>
-              <span>${vat.toFixed(2)}</span>
+              <span>₹{vat.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-base font-bold text-stone-900 pt-2 border-t border-stone-200">
               <span>Grand Total:</span>
-              <span className="text-amber-700 font-mono">${grandTotal.toFixed(2)}</span>
+              <span className="text-amber-700 font-mono">₹{grandTotal.toFixed(2)}</span>
             </div>
           </div>
 
@@ -411,7 +409,7 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
             <div className="space-y-3 font-mono">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-stone-600">Total Check Amount:</span>
-                <span className="text-amber-700 font-bold text-sm">${grandTotal.toFixed(2)}</span>
+                <span className="text-amber-700 font-bold text-sm">₹{grandTotal.toFixed(2)}</span>
               </div>
 
               <div>
@@ -435,11 +433,9 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
 
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center space-y-1">
                 <span className="text-xs text-amber-900 font-sans">Each Guest Pays:</span>
-                <div className="text-2xl font-bold font-mono text-amber-700">
-                  ${perPersonSplit}
-                </div>
+                <div className="text-2xl font-bold font-mono text-amber-700">₹{perPersonSplit}</div>
                 <span className="text-[10px] text-stone-500 block">
-                  ({splitCount} equal payments of ${perPersonSplit})
+                  ({splitCount} equal payments of ₹{perPersonSplit})
                 </span>
               </div>
             </div>
@@ -477,7 +473,7 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
               {currentOrder.items.map((it, idx) => (
                 <div key={idx} className="flex justify-between">
                   <span>{it.quantity}x {it.name}</span>
-                  <span>${(it.price * it.quantity).toFixed(2)}</span>
+                  <span>₹{(it.price * it.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -485,15 +481,15 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
             <div className="border-t border-dashed border-stone-400 pt-2 space-y-1 text-right">
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax & VAT:</span>
-                <span>${(tax + vat).toFixed(2)}</span>
+                <span>₹{(tax + vat).toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-bold text-sm pt-1 border-t border-stone-300">
                 <span>Total Due:</span>
-                <span>${grandTotal.toFixed(2)}</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
               </div>
             </div>
 

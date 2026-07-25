@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Shield,
   Loader2,
-  DollarSign
+  IndianRupee
 } from 'lucide-react';
 
 const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) => {
@@ -72,7 +72,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
 
   const handleExecutePayment = () => {
     if (paymentMethod === 'cash' && numericTendered < totalPaymentDue) {
-      alert(`Tendered amount ($${numericTendered.toFixed(2)}) is less than total due ($${totalPaymentDue.toFixed(2)})`);
+      alert(`Tendered amount (₹{numericTendered.toFixed(2)}) is less than total due ($₹{totalPaymentDue.toFixed(2)})`);
       return;
     }
 
@@ -154,29 +154,29 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
           <div className="space-y-2 font-mono text-xs text-stone-700 bg-stone-50 border border-stone-200 p-3 rounded-xl">
             <div className="flex justify-between">
               <span>Bill Subtotal:</span>
-              <span>${(activeBill.subtotal || 0).toFixed(2)}</span>
+              <span>₹{(activeBill.subtotal || 0).toFixed(2)}</span>
             </div>
 
             {activeBill.discountAmount > 0 && (
               <div className="flex justify-between text-emerald-700 font-semibold">
                 <span>Discount Applied:</span>
-                <span>-${activeBill.discountAmount.toFixed(2)}</span>
+                <span>-₹{activeBill.discountAmount.toFixed(2)}</span>
               </div>
             )}
 
             <div className="flex justify-between text-stone-500">
               <span>Service Tax & VAT:</span>
-              <span>${((activeBill.tax || 0) + (activeBill.vat || 0)).toFixed(2)}</span>
+              <span>₹{((activeBill.tax || 0) + (activeBill.vat || 0)).toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-stone-500">
               <span>Gratuity / Service:</span>
-              <span>${(activeBill.serviceCharge || 0).toFixed(2)}</span>
+              <span>₹{(activeBill.serviceCharge || 0).toFixed(2)}</span>
             </div>
 
             <div className="border-t border-stone-200 pt-2 flex justify-between font-bold text-sm text-stone-900">
               <span>Bill Base Total:</span>
-              <span>${baseAmount.toFixed(2)}</span>
+              <span>₹{baseAmount.toFixed(2)}</span>
             </div>
           </div>
 
@@ -184,7 +184,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
           <div className="bg-stone-50 border border-stone-200 p-3.5 rounded-xl space-y-2.5">
             <div className="flex justify-between items-center text-xs font-mono">
               <span className="text-stone-800 font-semibold">Add Tip / Staff Gratuity</span>
-              <span className="text-amber-700 font-bold">${tipAmount.toFixed(2)}</span>
+              <span className="text-amber-700 font-bold">₹{tipAmount.toFixed(2)}</span>
             </div>
 
             <div className="grid grid-cols-5 gap-1.5 font-mono text-xs">
@@ -206,7 +206,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
             {tipPercent === 'custom' && (
               <input
                 type="number"
-                placeholder="Enter custom tip ($)..."
+                placeholder="Enter custom tip (₹)..."
                 value={customTip}
                 onChange={(e) => setCustomTip(e.target.value)}
                 className="w-full bg-white border border-stone-300 rounded-lg px-3 py-1.5 text-xs text-stone-900 font-mono focus:outline-none focus:border-amber-500 mt-2"
@@ -218,9 +218,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
           <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-center justify-between">
             <div>
               <span className="text-xs text-amber-900 font-sans block">Total Amount to Charge:</span>
-              <span className="text-2xl font-bold font-mono text-amber-700">
-                ${totalPaymentDue.toFixed(2)}
-              </span>
+              <span className="text-2xl font-bold font-mono text-amber-700">₹{totalPaymentDue.toFixed(2)}</span>
             </div>
 
             <div className="text-right text-[10px] text-stone-500 font-mono">
@@ -302,7 +300,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
 
               {/* Manual Cash Input */}
               <div className="space-y-1">
-                <label className="text-[11px] font-mono text-stone-500">Cash Received ($):</label>
+                <label className="text-[11px] font-mono text-stone-500">Cash Received (₹):</label>
                 <input
                   type="number"
                   placeholder="0.00"
@@ -368,7 +366,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
               </div>
 
               <p className="text-xs text-stone-700 font-mono">
-                Amount: <span className="text-amber-700 font-bold">${totalPaymentDue.toFixed(2)}</span>
+                Amount: <span className="text-amber-700 font-bold">₹{totalPaymentDue.toFixed(2)}</span>
               </p>
             </div>
           )}
@@ -416,7 +414,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
             ) : (
               <>
                 <CheckCircle className="w-4 h-4" />
-                <span>Process Payment (${totalPaymentDue.toFixed(2)})</span>
+                <span>Process Payment (₹{totalPaymentDue.toFixed(2)})</span>
               </>
             )}
           </button>
@@ -446,12 +444,12 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
               </div>
               <div className="flex justify-between">
                 <span>Amount Paid:</span>
-                <span className="text-emerald-700 font-bold">${completedReceipt.grandTotal.toFixed(2)}</span>
+                <span className="text-emerald-700 font-bold">₹{completedReceipt.grandTotal.toFixed(2)}</span>
               </div>
               {completedReceipt.changeGiven > 0 && (
                 <div className="flex justify-between text-amber-800">
                   <span>Change Returned:</span>
-                  <span>${completedReceipt.changeGiven.toFixed(2)}</span>
+                  <span>₹{completedReceipt.changeGiven.toFixed(2)}</span>
                 </div>
               )}
             </div>

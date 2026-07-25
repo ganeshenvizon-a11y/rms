@@ -94,7 +94,7 @@ export const INITIAL_SETTINGS = {
   address: "100 Feet Road, Indiranagar Suite & Garden, Bengaluru 560038",
   phone: "+91 (80) 4123-8888",
   email: "contact@dakshinheritage.in",
-  currency: "$",
+  currency: "₹",
   taxRate: 5.0, // 5% GST
   vatRate: 8.0, // 8% VAT
   serviceCharge: 10.0, // 10% Service Charge
@@ -161,7 +161,7 @@ export const INITIAL_AUDIT_LOGS = [
     action: 'Price Update',
     user: 'Sundaram Pillai',
     timestamp: '2026-07-24 11:45 AM',
-    details: 'Updated price of Ghee Roast Masala Dosa to $12.50',
+    details: 'Updated price of Ghee Roast Masala Dosa to ₹12.50',
     type: 'menu'
   },
   {

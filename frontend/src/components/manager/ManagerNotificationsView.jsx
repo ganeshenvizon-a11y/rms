@@ -53,7 +53,7 @@ const ManagerNotificationsView = () => {
       items.push({
         id: `bill-${b.id}`,
         title: 'Payment Pending',
-        message: `Table ${b.tableNumber} requested the bill — $${b.grandTotal?.toFixed(2)} awaiting settlement.`,
+        message: `Table ${b.tableNumber} requested the bill — ₹${b.grandTotal?.toFixed(2)} awaiting settlement.`,
         time: b.requestedAt,
         icon: CheckCircle2,
         tone: 'secondary',

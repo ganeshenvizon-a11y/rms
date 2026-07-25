@@ -294,7 +294,7 @@ const ManagerEmployeeView = () => {
                   </td>
                   <td className="px-5 py-3.5">
                     <p className="text-xs text-on-surface">{emp.shift}</p>
-                    <p className="text-xs text-primary font-bold mt-0.5">${emp.hourlyRate?.toFixed(2)} / hr</p>
+                    <p className="text-xs text-primary font-bold mt-0.5">₹{emp.hourlyRate?.toFixed(2)} / hr</p>
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1">
@@ -399,7 +399,7 @@ const ManagerEmployeeView = () => {
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-on-surface mb-1">Hourly Wage ($)</label>
+                  <label className="block font-semibold text-on-surface mb-1">Hourly Wage (₹)</label>
                   <input
                     type="number"
                     step="0.50"

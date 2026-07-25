@@ -131,22 +131,22 @@ const PaymentProcessingScreen = () => {
                       {item.quantity}x {item.name}
                     </span>
                   </div>
-                  <span className="text-base text-on-surface">${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="text-base text-on-surface">₹{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
             <div className="pt-6 border-t border-outline-variant/40 flex flex-col gap-2">
               <div className="flex justify-between text-sm font-semibold text-on-surface-variant">
                 <span>Subtotal</span>
-                <span>${bill.subtotal.toFixed(2)}</span>
+                <span>₹{bill.subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm font-semibold text-on-surface-variant">
                 <span>Taxes</span>
-                <span>${(bill.tax + bill.vat).toFixed(2)}</span>
+                <span>₹{(bill.tax + bill.vat).toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-end mt-2 pt-2 border-t border-outline-variant/30">
                 <span className="text-xl font-bold text-on-surface">Grand Total</span>
-                <span className="text-4xl font-bold text-primary">${bill.grandTotal.toFixed(2)}</span>
+                <span className="text-4xl font-bold text-primary">₹{bill.grandTotal.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -197,7 +197,7 @@ const PaymentProcessingScreen = () => {
                     Amount to Pay
                   </label>
                   <div className="bg-surface-container-low p-6 rounded-xl flex justify-between items-center border-2 border-transparent focus-within:border-primary transition-all">
-                    <span className="text-4xl text-on-surface">$</span>
+                    <span className="text-4xl text-on-surface">₹</span>
                     <span className="text-4xl text-on-surface">{amount}</span>
                   </div>
                 </div>

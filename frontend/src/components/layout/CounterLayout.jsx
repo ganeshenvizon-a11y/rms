@@ -7,7 +7,7 @@ import {
   Unlock,
   Lock,
   ArrowLeft,
-  DollarSign,
+  IndianRupee,
   ShieldCheck,
   RefreshCw
 } from 'lucide-react';
@@ -75,7 +75,7 @@ const CounterLayout = ({ children, activeTab, setActiveTab }) => {
 
             <div className="flex items-center gap-2 text-xs">
               <span className="text-stone-500 font-mono">Shift Sales:</span>
-              <span className="text-emerald-700 font-bold font-mono">${totalCollectedToday}</span>
+              <span className="text-emerald-700 font-bold font-mono">₹{totalCollectedToday}</span>
             </div>
 
             <div className="h-4 w-px bg-stone-200" />

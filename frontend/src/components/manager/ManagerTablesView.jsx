@@ -231,7 +231,7 @@ const ManagerTablesView = () => {
                       {tbl.totalBill > 0 && (
                         <div className="flex items-center justify-between">
                           <span>Current Bill:</span>
-                          <span className="font-bold text-primary">${tbl.totalBill.toFixed(2)}</span>
+                          <span className="font-bold text-primary">₹{tbl.totalBill.toFixed(2)}</span>
                         </div>
                       )}
                     </div>

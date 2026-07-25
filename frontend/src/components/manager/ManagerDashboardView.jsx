@@ -126,7 +126,7 @@ const ManagerDashboardView = ({ onNavigateTab }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
           <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Today's Revenue</p>
-          <h3 className="text-2xl font-bold text-on-surface mt-2">${dynamicSales.toFixed(2)}</h3>
+          <h3 className="text-2xl font-bold text-on-surface mt-2">₹{dynamicSales.toFixed(2)}</h3>
           <div className="flex items-center gap-1 mt-2 text-green-600 font-bold text-xs">
             <TrendingUp className="w-3.5 h-3.5" />
             +12.4% <span className="text-on-surface-variant/60 font-normal ml-1">vs yesterday</span>
@@ -198,7 +198,7 @@ const ManagerDashboardView = ({ onNavigateTab }) => {
               return (
                 <div key={idx} className="flex-1 flex flex-col items-center gap-1 group relative h-full justify-end">
                   <div className="opacity-0 group-hover:opacity-100 pointer-events-none absolute -top-8 bg-inverse-surface text-inverse-on-surface text-[10px] font-mono px-2 py-1 rounded shadow-lg transition-opacity whitespace-nowrap z-20">
-                    ${item.sales} ({item.orders} orders)
+                    ₹{item.sales} ({item.orders} orders)
                   </div>
                   <div
                     className="w-full rounded-t-lg bg-primary/80 group-hover:bg-primary transition-all"
@@ -290,7 +290,7 @@ const ManagerDashboardView = ({ onNavigateTab }) => {
                   <tr key={r.receiptNo} className="border-b border-outline-variant/50 hover:bg-surface-container-low transition-all">
                     <td className="py-3.5 px-4 text-on-surface">{r.receiptNo}</td>
                     <td className="py-3.5 px-4 text-on-surface-variant">{r.tableNumber}</td>
-                    <td className="py-3.5 px-4 font-bold text-on-surface">${(r.grandTotal || 0).toFixed(2)}</td>
+                    <td className="py-3.5 px-4 font-bold text-on-surface">₹{(r.grandTotal || 0).toFixed(2)}</td>
                     <td className="py-3.5 px-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${STATUS_BADGE[r.status] || 'bg-surface-container text-on-surface-variant'}`}>
                         {r.status}

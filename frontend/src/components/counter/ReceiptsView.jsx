@@ -137,9 +137,7 @@ const ReceiptsView = () => {
                     <td className="py-3 px-3 font-mono text-stone-700">
                       {rec.paymentMethod}
                     </td>
-                    <td className="py-3 px-3 text-right font-bold text-emerald-700 text-sm">
-                      ${rec.grandTotal.toFixed(2)}
-                    </td>
+                    <td className="py-3 px-3 text-right font-bold text-emerald-700 text-sm">₹{rec.grandTotal.toFixed(2)}</td>
                     <td className="py-3 px-3 text-center">
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
@@ -248,7 +246,7 @@ const ReceiptsView = () => {
                 {selectedReceipt.items.map((it, idx) => (
                   <div key={idx} className="flex justify-between text-[11px]">
                     <span className="truncate max-w-[200px]">{it.quantity}x {it.name}</span>
-                    <span className="font-bold">${(it.total || it.price * it.quantity).toFixed(2)}</span>
+                    <span className="font-bold">₹{(it.total || it.price * it.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -257,7 +255,7 @@ const ReceiptsView = () => {
               <div className="space-y-1 text-[11px] text-stone-800 border-b border-stone-300 pb-2">
                 <div className="flex justify-between">
                   <span>SUBTOTAL:</span>
-                  <span>${selectedReceipt.subtotal.toFixed(2)}</span>
+                  <span>₹{selectedReceipt.subtotal.toFixed(2)}</span>
                 </div>
                 
                 {selectedReceipt.discount > 0 && (
@@ -269,24 +267,24 @@ const ReceiptsView = () => {
 
                 <div className="flex justify-between text-stone-600 text-[10px]">
                   <span>SERVICE TAX (5%):</span>
-                  <span>${selectedReceipt.tax.toFixed(2)}</span>
+                  <span>₹{selectedReceipt.tax.toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between text-stone-600 text-[10px]">
                   <span>VAT (8%):</span>
-                  <span>${selectedReceipt.vat.toFixed(2)}</span>
+                  <span>₹{selectedReceipt.vat.toFixed(2)}</span>
                 </div>
 
                 {selectedReceipt.tip > 0 && (
                   <div className="flex justify-between">
                     <span>GRATUITY:</span>
-                    <span>${selectedReceipt.tip.toFixed(2)}</span>
+                    <span>₹{selectedReceipt.tip.toFixed(2)}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between font-bold text-sm text-stone-950 pt-1 border-t border-stone-400">
                   <span>GRAND TOTAL:</span>
-                  <span>${selectedReceipt.grandTotal.toFixed(2)}</span>
+                  <span>₹{selectedReceipt.grandTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -299,13 +297,13 @@ const ReceiptsView = () => {
                 {selectedReceipt.tenderedAmount && (
                   <div className="flex justify-between">
                     <span>CASH TENDERED:</span>
-                    <span>${selectedReceipt.tenderedAmount.toFixed(2)}</span>
+                    <span>₹{selectedReceipt.tenderedAmount.toFixed(2)}</span>
                   </div>
                 )}
                 {selectedReceipt.changeGiven > 0 && (
                   <div className="flex justify-between font-bold">
                     <span>CHANGE RETURNED:</span>
-                    <span>${selectedReceipt.changeGiven.toFixed(2)}</span>
+                    <span>₹{selectedReceipt.changeGiven.toFixed(2)}</span>
                   </div>
                 )}
               </div>

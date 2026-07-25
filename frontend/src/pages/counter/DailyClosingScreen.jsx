@@ -61,7 +61,7 @@ const DailyClosingScreen = () => {
   const handleExportCSV = () => {
     let csvContent = 'data:text/csv;charset=utf-8,ReceiptNo,Table,PaymentMethod,GrandTotal,Timestamp\n';
     paidReceipts.forEach((r) => {
-      csvContent += `${r.receiptNo},${r.tableNumber},${r.paymentMethod},${r.grandTotal},${r.timestamp}\n`;
+      csvContent += `${r.receiptNo},${r.tableNumber},${r.paymentMethod},₹{r.grandTotal},${r.timestamp}\n`;
     });
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -110,8 +110,8 @@ const DailyClosingScreen = () => {
                 <Banknote className="w-5 h-5 text-secondary" />
               </div>
             </div>
-            <span className="text-3xl font-bold text-on-surface">${totalNetRevenue.toFixed(2)}</span>
-            <span className="text-xs text-on-surface-variant">Excludes ${totalTaxCollected.toFixed(2)} tax/VAT</span>
+            <span className="text-3xl font-bold text-on-surface">₹{totalNetRevenue.toFixed(2)}</span>
+            <span className="text-xs text-on-surface-variant">Excludes ₹{totalTaxCollected.toFixed(2)} tax/VAT</span>
           </div>
 
           <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/20 flex flex-col gap-2">
@@ -121,7 +121,7 @@ const DailyClosingScreen = () => {
                 <Undo2 className="w-5 h-5 text-error" />
               </div>
             </div>
-            <span className="text-3xl font-bold text-on-surface">${totalRefunds.toFixed(2)}</span>
+            <span className="text-3xl font-bold text-on-surface">₹{totalRefunds.toFixed(2)}</span>
             <span className="text-xs text-on-surface-variant">{refundedReceipts.length} transactions total</span>
           </div>
 
@@ -132,7 +132,7 @@ const DailyClosingScreen = () => {
                 <Wallet className="w-5 h-5 text-green-700" />
               </div>
             </div>
-            <span className="text-3xl font-bold text-on-surface">${cashInDrawer.toFixed(2)}</span>
+            <span className="text-3xl font-bold text-on-surface">₹{cashInDrawer.toFixed(2)}</span>
             <span className="text-xs text-on-surface-variant">Opening float + cash sales</span>
           </div>
         </div>
@@ -155,34 +155,34 @@ const DailyClosingScreen = () => {
                 <tr>
                   <td className="py-3 flex items-center gap-2 text-on-surface"><Banknote className="w-4 h-4 text-on-surface-variant" /> Cash</td>
                   <td className="py-3 text-right text-on-surface">{cashSales.length}</td>
-                  <td className="py-3 text-right font-semibold text-on-surface">${cashTotal.toFixed(2)}</td>
+                  <td className="py-3 text-right font-semibold text-on-surface">₹{cashTotal.toFixed(2)}</td>
                 </tr>
                 <tr>
                   <td className="py-3 flex items-center gap-2 text-on-surface"><CreditCard className="w-4 h-4 text-on-surface-variant" /> Credit / Debit Card</td>
                   <td className="py-3 text-right text-on-surface">{cardSales.length}</td>
-                  <td className="py-3 text-right font-semibold text-on-surface">${cardTotal.toFixed(2)}</td>
+                  <td className="py-3 text-right font-semibold text-on-surface">₹{cardTotal.toFixed(2)}</td>
                 </tr>
                 <tr>
                   <td className="py-3 flex items-center gap-2 text-on-surface"><QrCode className="w-4 h-4 text-on-surface-variant" /> UPI / Digital</td>
                   <td className="py-3 text-right text-on-surface">{upiSales.length}</td>
-                  <td className="py-3 text-right font-semibold text-on-surface">${upiTotal.toFixed(2)}</td>
+                  <td className="py-3 text-right font-semibold text-on-surface">₹{upiTotal.toFixed(2)}</td>
                 </tr>
                 <tr className="bg-surface-container-low/30">
                   <td className="py-3 italic text-on-surface-variant">Discounts Applied</td>
                   <td className="py-3 text-right">-</td>
-                  <td className="py-3 text-right text-error">-${totalDiscounts.toFixed(2)}</td>
+                  <td className="py-3 text-right text-error">-₹{totalDiscounts.toFixed(2)}</td>
                 </tr>
                 <tr className="bg-surface-container-low/30">
                   <td className="py-3 italic text-on-surface-variant">Taxes Collected</td>
                   <td className="py-3 text-right">-</td>
-                  <td className="py-3 text-right text-secondary">${totalTaxCollected.toFixed(2)}</td>
+                  <td className="py-3 text-right text-secondary">₹{totalTaxCollected.toFixed(2)}</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr className="font-bold text-lg">
                   <td className="pt-4 pb-2">Total Net Revenue</td>
                   <td />
-                  <td className="pt-4 pb-2 text-right text-primary">${totalNetRevenue.toFixed(2)}</td>
+                  <td className="pt-4 pb-2 text-right text-primary">₹{totalNetRevenue.toFixed(2)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -275,7 +275,7 @@ const DailyClosingScreen = () => {
         <div className="flex items-center gap-6">
           <div className="text-right hidden sm:block">
             <span className="text-xs text-on-surface-variant uppercase tracking-widest">Total Revenue Today</span>
-            <p className="font-bold text-xl text-primary">${totalGrossRevenue.toFixed(2)}</p>
+            <p className="font-bold text-xl text-primary">₹{totalGrossRevenue.toFixed(2)}</p>
           </div>
           <button
             onClick={handleFinalize}

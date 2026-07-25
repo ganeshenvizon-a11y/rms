@@ -26,7 +26,7 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
 
   const handleSettle = (billId, tableNumber, amount) => {
     settleBillRequest(billId, tableNumber);
-    showToast(`Table #${tableNumber} bill ($${amount.toFixed(2)}) settled & table cleared!`, 'success');
+    showToast(`Table #${tableNumber} bill (₹${amount.toFixed(2)}) settled & table cleared!`, 'success');
   };
 
   const handlePrintCheck = (tableNumber) => {
@@ -193,15 +193,15 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
                     <div className="p-3 bg-surface-container-low rounded-2xl border border-outline-variant/20 space-y-1.5 text-xs">
                       <div className="flex justify-between text-on-surface-variant">
                         <span>Subtotal:</span>
-                        <span className="font-mono font-semibold">${bill.subtotal.toFixed(2)}</span>
+                        <span className="font-mono font-semibold">₹{bill.subtotal.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-on-surface-variant">
                         <span>Tax & VAT:</span>
-                        <span className="font-mono font-semibold">${(bill.tax + bill.vat).toFixed(2)}</span>
+                        <span className="font-mono font-semibold">₹{(bill.tax + bill.vat).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-on-surface font-bold border-t border-outline-variant/30 pt-1.5 text-sm">
                         <span>Grand Total:</span>
-                        <span className="font-mono text-primary">${bill.grandTotal.toFixed(2)}</span>
+                        <span className="font-mono text-primary">₹{bill.grandTotal.toFixed(2)}</span>
                       </div>
                     </div>
 
@@ -245,7 +245,7 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
                     key={bill.id}
                     className="p-3 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 flex items-center justify-between text-xs text-on-surface-variant opacity-75 shadow-xs"
                   >
-                    <span>Table #{bill.tableNumber} — ${bill.grandTotal.toFixed(2)}</span>
+                    <span>Table #{bill.tableNumber} — ₹{bill.grandTotal.toFixed(2)}</span>
                     <span className="text-emerald-700 font-mono text-[10px] flex items-center gap-1 font-bold">
                       <CheckCircle2 className="w-3.5 h-3.5 inline" /> Settled
                     </span>

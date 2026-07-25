@@ -108,7 +108,7 @@ const PendingBillsScreen = () => {
                         <span className="text-sm font-semibold text-primary">#{bill.id.toUpperCase()}</span>
                       </td>
                       <td className="px-6 py-4 text-on-surface">T-{bill.tableNumber}</td>
-                      <td className="px-6 py-4 text-xl font-semibold text-on-surface">${bill.grandTotal.toFixed(2)}</td>
+                      <td className="px-6 py-4 text-xl font-semibold text-on-surface">₹{bill.grandTotal.toFixed(2)}</td>
                       <td className="px-6 py-4 text-on-surface-variant">{timeAgo(bill.requestedAt)}</td>
                       <td className="px-6 py-4">
                         {bill.status === 'pending' ? (
@@ -170,7 +170,7 @@ const PendingBillsScreen = () => {
             </div>
             <div>
               <p className="text-xs text-on-surface-variant">Pending Value</p>
-              <p className="text-xl font-bold text-on-surface">${pendingValue.toFixed(2)}</p>
+              <p className="text-xl font-bold text-on-surface">₹{pendingValue.toFixed(2)}</p>
             </div>
           </div>
           <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 shadow-sm flex items-center gap-4">
@@ -208,11 +208,11 @@ const PendingBillsScreen = () => {
               <div className="flex justify-between"><span>Table</span><span className="font-semibold text-on-surface">T-{viewingBill.tableNumber}</span></div>
               <div className="flex justify-between"><span>Server</span><span className="font-semibold text-on-surface">{viewingBill.serverName}</span></div>
               <div className="flex justify-between"><span>Guests</span><span className="font-semibold text-on-surface">{viewingBill.guestCount}</span></div>
-              <div className="border-t border-outline-variant/20 pt-2 flex justify-between"><span>Subtotal</span><span>${viewingBill.subtotal.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>Tax</span><span>${viewingBill.tax.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>VAT</span><span>${viewingBill.vat.toFixed(2)}</span></div>
+              <div className="border-t border-outline-variant/20 pt-2 flex justify-between"><span>Subtotal</span><span>₹{viewingBill.subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>Tax</span><span>₹{viewingBill.tax.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>VAT</span><span>₹{viewingBill.vat.toFixed(2)}</span></div>
               <div className="flex justify-between text-base font-bold text-on-surface pt-2 border-t border-outline-variant/20">
-                <span>Total</span><span className="text-primary">${viewingBill.grandTotal.toFixed(2)}</span>
+                <span>Total</span><span className="text-primary">₹{viewingBill.grandTotal.toFixed(2)}</span>
               </div>
             </div>
             <button

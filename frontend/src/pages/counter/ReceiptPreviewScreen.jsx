@@ -96,19 +96,19 @@ const ReceiptPreviewScreen = () => {
                       <span className="w-5">{it.quantity}x</span>
                       <span>{it.name}</span>
                     </div>
-                    <span>${(it.total || it.price * it.quantity).toFixed(2)}</span>
+                    <span>₹{(it.total || it.price * it.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
               <div className="border-t border-dashed border-on-surface-variant pt-3 space-y-1 text-sm">
-                <div className="flex justify-between"><span>Subtotal</span><span>${receipt.subtotal.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>Tax</span><span>${receipt.tax.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>VAT</span><span>${receipt.vat.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Subtotal</span><span>₹{receipt.subtotal.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Tax</span><span>₹{receipt.tax.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>VAT</span><span>₹{receipt.vat.toFixed(2)}</span></div>
                 {receipt.tip > 0 && (
-                  <div className="flex justify-between"><span>Tip</span><span>${receipt.tip.toFixed(2)}</span></div>
+                  <div className="flex justify-between"><span>Tip</span><span>₹{receipt.tip.toFixed(2)}</span></div>
                 )}
                 <div className="flex justify-between text-xl font-bold pt-3 border-t border-on-surface mt-2">
-                  <span>TOTAL</span><span>${receipt.grandTotal.toFixed(2)}</span>
+                  <span>TOTAL</span><span>₹{receipt.grandTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ const ReceiptPreviewScreen = () => {
             <header className="mb-6">
               <h3 className="text-xl font-bold text-on-surface mb-1">Payment Successful</h3>
               <p className="text-on-surface-variant">
-                The transaction of <strong>${receipt.grandTotal.toFixed(2)}</strong> was processed successfully. How
+                The transaction of <strong>₹{receipt.grandTotal.toFixed(2)}</strong> was processed successfully. How
                 would the customer like their receipt?
               </p>
             </header>

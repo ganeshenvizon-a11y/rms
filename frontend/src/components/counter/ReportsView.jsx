@@ -1,7 +1,7 @@
 import React from 'react';
 import { useOrder } from '../../context/OrderContext';
 import {
-  DollarSign,
+  IndianRupee,
   TrendingUp,
   CreditCard,
   Banknote,
@@ -57,7 +57,7 @@ const ReportsView = () => {
   const handleExportCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,ReceiptNo,Table,PaymentMethod,GrandTotal,Timestamp\n";
     paidReceipts.forEach((r) => {
-      csvContent += `${r.receiptNo},${r.tableNumber},${r.paymentMethod},${r.grandTotal},${r.timestamp}\n`;
+      csvContent += `${r.receiptNo},${r.tableNumber},${r.paymentMethod},₹{r.grandTotal},${r.timestamp}\n`;
     });
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -111,11 +111,9 @@ const ReportsView = () => {
         <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-stone-500 text-xs font-mono">
             <span>Gross Sales Today</span>
-            <DollarSign className="w-4 h-4 text-amber-600" />
+            <IndianRupee className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-2xl font-bold font-mono text-stone-900">
-            ${totalGrossRevenue.toFixed(2)}
-          </div>
+          <div className="text-2xl font-bold font-mono text-stone-900">₹{totalGrossRevenue.toFixed(2)}</div>
           <div className="text-[11px] text-stone-500 font-mono">
             {paidReceipts.length} Settled Transactions
           </div>
@@ -126,11 +124,9 @@ const ReportsView = () => {
             <span>Net Revenue</span>
             <TrendingUp className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold font-mono text-emerald-700">
-            ${totalNetRevenue.toFixed(2)}
-          </div>
+          <div className="text-2xl font-bold font-mono text-emerald-700">₹{totalNetRevenue.toFixed(2)}</div>
           <div className="text-[11px] text-stone-500 font-mono">
-            Excludes ${totalTaxCollected.toFixed(2)} Tax/VAT
+            Excludes ₹{totalTaxCollected.toFixed(2)} Tax/VAT
           </div>
         </div>
 
@@ -139,9 +135,7 @@ const ReportsView = () => {
             <span>Average Check Size</span>
             <PieChart className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-2xl font-bold font-mono text-blue-700">
-            ${avgOrderValue.toFixed(2)}
-          </div>
+          <div className="text-2xl font-bold font-mono text-blue-700">₹{avgOrderValue.toFixed(2)}</div>
           <div className="text-[11px] text-stone-500 font-mono">
             Per Table Check
           </div>
@@ -153,10 +147,10 @@ const ReportsView = () => {
             <Banknote className="w-4 h-4 text-purple-600" />
           </div>
           <div className="text-2xl font-bold font-mono text-purple-700">
-            ${(registerSession.openingFloat + cashSales).toFixed(2)}
+            ₹{(registerSession.openingFloat + cashSales).toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 font-mono">
-            Float: ${registerSession.openingFloat.toFixed(2)} + Cash: ${cashSales.toFixed(2)}
+            Float: ₹{registerSession.openingFloat.toFixed(2)} + Cash: ₹{cashSales.toFixed(2)}
           </div>
         </div>
       </div>
@@ -182,7 +176,7 @@ const ReportsView = () => {
                     <CreditCard className="w-3.5 h-3.5 text-blue-600" />
                     Credit / Debit Cards:
                   </span>
-                  <span className="font-bold">${cardSales.toFixed(2)} ({cardPct.toFixed(1)}%)</span>
+                  <span className="font-bold">₹{cardSales.toFixed(2)} ({cardPct.toFixed(1)}%)</span>
                 </div>
                 <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-600 rounded-full" style={{ width: `${cardPct}%` }} />
@@ -196,7 +190,7 @@ const ReportsView = () => {
                     <Banknote className="w-3.5 h-3.5 text-emerald-600" />
                     Cash Payments:
                   </span>
-                  <span className="font-bold">${cashSales.toFixed(2)} ({cashPct.toFixed(1)}%)</span>
+                  <span className="font-bold">₹{cashSales.toFixed(2)} ({cashPct.toFixed(1)}%)</span>
                 </div>
                 <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
                   <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${cashPct}%` }} />
@@ -210,7 +204,7 @@ const ReportsView = () => {
                     <QrCode className="w-3.5 h-3.5 text-purple-600" />
                     UPI / QR Code Digital:
                   </span>
-                  <span className="font-bold">${upiSales.toFixed(2)} ({upiPct.toFixed(1)}%)</span>
+                  <span className="font-bold">₹{upiSales.toFixed(2)} ({upiPct.toFixed(1)}%)</span>
                 </div>
                 <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
                   <div className="h-full bg-purple-600 rounded-full" style={{ width: `${upiPct}%` }} />
@@ -229,15 +223,15 @@ const ReportsView = () => {
             <div className="bg-stone-50 border border-stone-200 rounded-xl p-3.5 space-y-2 text-stone-700">
               <div className="flex justify-between">
                 <span>Opening Cash Float:</span>
-                <span>${registerSession.openingFloat.toFixed(2)}</span>
+                <span>₹{registerSession.openingFloat.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Cash Sales Collected:</span>
-                <span className="text-emerald-700">+${cashSales.toFixed(2)}</span>
+                <span className="text-emerald-700">+₹{cashSales.toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-stone-200 pt-2 font-bold text-stone-900">
                 <span>Expected Cash In Drawer:</span>
-                <span className="text-amber-700">${(registerSession.openingFloat + cashSales).toFixed(2)}</span>
+                <span className="text-amber-700">₹{(registerSession.openingFloat + cashSales).toFixed(2)}</span>
               </div>
             </div>
           </div>

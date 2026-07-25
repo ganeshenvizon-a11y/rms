@@ -33,7 +33,7 @@ Date: ${new Date().toLocaleString()}
 Transaction Ref: ${transactionDetails?.transactionId || 'CASH-PAY'}
 Payment Method: ${transactionDetails?.method || 'Card/UPI'}
 
-Total Amount Paid: $${transactionDetails?.amount?.toFixed(2) || '0.00'}
+Total Amount Paid: ₹${transactionDetails?.amount?.toFixed(2) || '0.00'}
 
 Nandri & Vanakkam!
 Thank you for dining with us at Dakshin Heritage.

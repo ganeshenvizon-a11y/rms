@@ -4,7 +4,7 @@ import { useToast } from '../../context/ToastContext';
 import {
   Settings,
   Store,
-  DollarSign,
+  IndianRupee,
   Clock,
   Save,
   CheckCircle2,
@@ -128,7 +128,7 @@ const ManagerSettingsView = () => {
         {/* Section 2: Taxes & Financial Rules */}
         <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant shadow-sm space-y-4">
           <h3 className="text-base font-bold text-on-surface flex items-center gap-2 pb-3 border-b border-outline-variant/50">
-            <DollarSign className="w-4 h-4 text-primary" />
+            <IndianRupee className="w-4 h-4 text-primary" />
             Financial &amp; Tax Accounting
           </h3>
 

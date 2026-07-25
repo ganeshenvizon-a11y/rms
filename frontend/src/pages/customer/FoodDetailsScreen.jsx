@@ -165,7 +165,7 @@ const FoodDetailsScreen = () => {
                       }`}
                     >
                       {option.name}
-                      {option.price > 0 && ` (+${formatCurrency(option.price)})`}
+                      {option.price > 0 && ` (+₹{formatCurrency(option.price)})`}
                     </button>
                   );
                 })}

@@ -64,9 +64,7 @@ const CounterDashboardScreen = () => {
               </div>
               <div className="flex flex-col">
                 <p className="text-sm font-medium text-on-surface-variant">Today's Total Revenue</p>
-                <h3 className="text-4xl font-black text-primary mt-1 tracking-tight">
-                  ${todaysRevenue.toFixed(2)}
-                </h3>
+                <h3 className="text-4xl font-black text-primary mt-1 tracking-tight">₹{todaysRevenue.toFixed(2)}</h3>
               </div>
               <div className="flex items-center gap-2 mt-4 text-xs font-bold text-green-700 bg-green-50 w-fit px-2 py-1 rounded">
                 <TrendingUp className="w-3.5 h-3.5" />
@@ -93,9 +91,9 @@ const CounterDashboardScreen = () => {
                 <Wallet className="w-5 h-5 text-secondary" />
               </div>
               <div className="mt-4">
-                <h3 className="text-3xl font-bold text-on-surface">${cashInDrawer.toFixed(2)}</h3>
+                <h3 className="text-3xl font-bold text-on-surface">₹{cashInDrawer.toFixed(2)}</h3>
                 <p className="text-xs text-on-surface-variant font-medium">
-                  Opening balance: ${registerSession.openingFloat.toFixed(2)}
+                  Opening balance: ₹{registerSession.openingFloat.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -113,7 +111,7 @@ const CounterDashboardScreen = () => {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-on-surface-variant uppercase">{label}</p>
-                  <p className="text-lg font-bold text-on-surface">${value.toFixed(2)}</p>
+                  <p className="text-lg font-bold text-on-surface">₹{value.toFixed(2)}</p>
                 </div>
               </div>
             ))}
@@ -169,7 +167,7 @@ const CounterDashboardScreen = () => {
                               <span>{timeAgo(bill.requestedAt)}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm font-bold text-on-surface">${bill.grandTotal.toFixed(2)}</td>
+                          <td className="px-6 py-4 text-sm font-bold text-on-surface">₹{bill.grandTotal.toFixed(2)}</td>
                           <td className="px-6 py-4 text-right">
                             <button
                               onClick={() => handleProcessPayment(bill)}
@@ -218,7 +216,7 @@ const CounterDashboardScreen = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-black text-on-surface">${rec.grandTotal.toFixed(2)}</p>
+                      <p className="text-sm font-black text-on-surface">₹{rec.grandTotal.toFixed(2)}</p>
                       <p className={`text-[10px] font-bold uppercase ${rec.status === 'paid' ? 'text-green-600' : 'text-red-600'}`}>
                         {rec.status === 'paid' ? 'Success' : rec.status}
                       </p>

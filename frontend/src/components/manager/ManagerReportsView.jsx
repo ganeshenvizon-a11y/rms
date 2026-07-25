@@ -4,7 +4,7 @@ import { REPORTS_MOCK_DATA, addAuditLog } from '../../services/managerService';
 import { useToast } from '../../context/ToastContext';
 import {
   Download,
-  DollarSign,
+  IndianRupee,
   CreditCard,
   Banknote,
   QrCode,
@@ -96,11 +96,11 @@ const ManagerReportsView = () => {
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant shadow-sm">
           <div className="flex items-center justify-between text-xs text-on-surface-variant uppercase font-bold tracking-wider">
             <span>Gross Sales</span>
-            <DollarSign className="w-4 h-4 text-primary" />
+            <IndianRupee className="w-4 h-4 text-primary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">${grossSales.toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">₹{grossSales.toFixed(2)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">
-            Net Revenue: <strong className="text-on-surface">${netRevenue.toFixed(2)}</strong>
+            Net Revenue: <strong className="text-on-surface">₹{netRevenue.toFixed(2)}</strong>
           </div>
         </div>
 
@@ -109,9 +109,9 @@ const ManagerReportsView = () => {
             <span>Tax &amp; VAT Collected</span>
             <Receipt className="w-4 h-4 text-secondary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">${(taxCollected + vatCollected).toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">₹{(taxCollected + vatCollected).toFixed(2)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">
-            5% Tax (${taxCollected.toFixed(2)}) • 8% VAT (${vatCollected.toFixed(2)})
+            5% Tax (₹{taxCollected.toFixed(2)}) • 8% VAT (₹{vatCollected.toFixed(2)})
           </div>
         </div>
 
@@ -120,7 +120,7 @@ const ManagerReportsView = () => {
             <span>Discounts &amp; Comps</span>
             <Percent className="w-4 h-4 text-tertiary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">${baseOverview.discountsGiven.toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">₹{baseOverview.discountsGiven.toFixed(2)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">Promotions &amp; manager comps</div>
         </div>
 
@@ -129,7 +129,7 @@ const ManagerReportsView = () => {
             <span>Staff Tips Pool</span>
             <Award className="w-4 h-4 text-primary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">${baseOverview.tipsCollected.toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">₹{baseOverview.tipsCollected.toFixed(2)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">Distributed to floor staff</div>
         </div>
       </div>
@@ -157,7 +157,7 @@ const ManagerReportsView = () => {
                     <span className="text-[10px] text-on-surface-variant">{pay.percentage}% of total volume</span>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-on-surface">${pay.amount.toFixed(2)}</div>
+                <div className="text-sm font-bold text-on-surface">₹{pay.amount.toFixed(2)}</div>
               </div>
             ))}
           </div>
@@ -185,8 +185,8 @@ const ManagerReportsView = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs font-bold text-on-surface">${staff.totalSales.toFixed(2)} sales</div>
-                  <div className="text-[10px] text-green-700 font-bold">+${staff.tips.toFixed(2)} tips</div>
+                  <div className="text-xs font-bold text-on-surface">₹{staff.totalSales.toFixed(2)} sales</div>
+                  <div className="text-[10px] text-green-700 font-bold">+₹{staff.tips.toFixed(2)} tips</div>
                 </div>
               </div>
             ))}
@@ -224,7 +224,7 @@ const ManagerReportsView = () => {
                       {cat.name}
                     </td>
                     <td className="py-3 px-3 text-center font-bold text-on-surface-variant">{cat.count} units</td>
-                    <td className="py-3 px-3 text-right font-bold text-primary">${cat.sales.toFixed(2)}</td>
+                    <td className="py-3 px-3 text-right font-bold text-primary">₹{cat.sales.toFixed(2)}</td>
                     <td className="py-3 px-3 text-right font-bold text-on-surface">{sharePercent}%</td>
                   </tr>
                 );
