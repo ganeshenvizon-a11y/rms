@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Lock, Eye, EyeOff, LogIn, Store } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, LogIn, Store, ArrowLeft } from 'lucide-react';
 import { RESTAURANT_INFO } from '../../utils/mockData';
 
 const CounterLoginScreen = () => {
@@ -18,6 +18,14 @@ const CounterLoginScreen = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <button
+        onClick={() => navigate('/portal')}
+        className="fixed top-6 left-6 flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary/40 text-sm font-semibold shadow-sm transition-colors z-20"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Back to Portal</span>
+      </button>
+
       <div className="relative z-10 w-full max-w-[480px]">
         {/* Brand Header */}
         <div className="flex flex-col items-center mb-8">

@@ -9,7 +9,8 @@ import {
   Receipt,
   BarChart3,
   User,
-  Plus
+  Plus,
+  ArrowLeft
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -28,6 +29,15 @@ const CounterSidebar = () => {
 
   return (
     <aside className="hidden md:flex flex-col h-screen w-64 shrink-0 p-4 gap-2 border-r border-outline-variant/30 bg-surface-container-lowest">
+      <button
+        onClick={() => navigate('/portal')}
+        className="flex items-center gap-1.5 px-2 py-1.5 -ml-1 mb-4 w-fit rounded-lg text-xs font-semibold text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors"
+        title="Return to System Launchpad"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        <span>Back to Portal</span>
+      </button>
+
       <div className="mb-8 px-2">
         <h1 className="text-xl font-bold text-primary tracking-tight">{RESTAURANT_INFO.name}</h1>
         <p className="text-xs text-on-surface-variant opacity-70">Counter Management System</p>

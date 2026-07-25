@@ -7,6 +7,7 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   AlertCircle,
   Headset,
@@ -63,6 +64,16 @@ const ManagerLoginScreen = () => {
       {/* Right Side: Login Container */}
       <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-4 py-10 md:p-10 bg-surface">
         <div className="w-full max-w-[440px]">
+          {/* Back to Portal */}
+          <button
+            type="button"
+            onClick={() => navigate('/portal')}
+            className="flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Portal</span>
+          </button>
+
           {/* Brand Header */}
           <div className="flex flex-col items-center mb-8">
             <span className="text-2xl font-bold text-primary tracking-tight mb-1.5">{RESTAURANT_INFO.name}</span>

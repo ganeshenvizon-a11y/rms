@@ -7,6 +7,7 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
+  ArrowLeft,
   Info
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -27,6 +28,16 @@ const WaiterLoginScreen = () => {
     <div className="min-h-screen bg-background text-on-surface flex flex-col items-center justify-between px-4 py-8 font-sans antialiased">
       {/* Branding Header */}
       <header className="w-full flex flex-col items-center mt-6">
+        <div className="w-full max-w-md mb-4">
+          <button
+            onClick={() => navigate('/portal')}
+            className="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Portal
+          </button>
+        </div>
+
         <div className="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center justify-center shadow-lg mb-3">
           <UtensilsCrossed className="w-7 h-7" />
         </div>

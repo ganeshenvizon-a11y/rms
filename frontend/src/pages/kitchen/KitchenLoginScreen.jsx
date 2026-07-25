@@ -5,6 +5,7 @@ import {
   IdCard,
   Lock,
   ArrowRight,
+  ArrowLeft,
   AlertCircle,
   ChefHat,
   Flame,
@@ -101,6 +102,16 @@ const KitchenLoginScreen = ({ onLoginSuccess }) => {
         transition={{ duration: 0.3 }}
         className="w-full max-w-md bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-6 sm:p-8 shadow-xl shadow-outline-variant/20 flex flex-col gap-6"
       >
+        {/* Back to Portal */}
+        <button
+          type="button"
+          onClick={() => navigate('/portal')}
+          className="flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors -mb-2 self-start"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Portal</span>
+        </button>
+
         {/* Brand Header */}
         <header className="flex flex-col items-center text-center gap-2">
           <div className="w-16 h-16 rounded-full bg-primary-container/10 flex items-center justify-center mb-1">
