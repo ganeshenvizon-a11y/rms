@@ -64,28 +64,32 @@ const TopAppBar = ({
   }
 
   return (
-    <header className="fixed top-0 left-0 w-full z-40 bg-surface/80 backdrop-blur-md shadow-sm flex items-center justify-between px-4 md:px-10 h-16">
+    <header
+      className="fixed top-0 left-0 w-full z-40 bg-surface/95 backdrop-blur-md border-b border-border flex items-center px-4 md:px-10 gap-2"
+      style={{ height: 'calc(56px + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)' }}
+    >
       <div
-        className="flex items-center gap-2 cursor-pointer"
+        className="flex items-center gap-2 cursor-pointer min-w-0 flex-1"
         onClick={() => navigate('/')}
       >
-        <Icon name="restaurant" className="text-primary" />
-        <h1 className="text-lg font-bold italic text-primary tracking-tight truncate max-w-[180px] sm:max-w-none">
+        <Icon name="restaurant" className="text-primary shrink-0" />
+        <h1 className="text-[17px] leading-[22px] font-bold italic text-primary tracking-tight truncate min-w-0">
           {RESTAURANT_INFO.name}
         </h1>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         {onOpenTrustProfile && (
           <button
             onClick={onOpenTrustProfile}
-            className="px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-xs font-semibold text-primary flex items-center gap-1 transition-colors"
+            className="w-9 h-9 shrink-0 rounded-full bg-surface-container hover:bg-surface-container-high text-primary flex items-center justify-center transition-colors"
+            aria-label="About Our Kitchen"
+            title="About Our Kitchen"
           >
-            <Icon name="verified_user" className="text-sm" />
-            <span className="hidden sm:inline">About Our Kitchen</span>
+            <Icon name="verified_user" className="text-lg" />
           </button>
         )}
-        <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
+        <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20 min-w-[68px] text-center shrink-0">
           Table {tableNumber}
         </div>
       </div>

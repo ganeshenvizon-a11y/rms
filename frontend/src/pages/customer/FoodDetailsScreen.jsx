@@ -272,38 +272,44 @@ const FoodDetailsScreen = () => {
         onRequestAssistance={(type) => addAssistanceRequest(tableNumber, type)}
       />
 
-      {/* 15. Sticky "Customize & Add" footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest border-t border-border px-4 py-3 shadow-lg">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <div>
-            <span className="text-[10px] text-muted uppercase font-bold tracking-wider block">Total Price</span>
-            <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-xl" />
-          </div>
+      {/* 15. Sticky "Customize & Add" footer — hidden while the customization
+          sheet is open so it can't receive stray clicks/focus behind the modal */}
+      {!isCustomizationOpen && (
+        <footer
+          className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest border-t border-border px-4 pt-3 shadow-lg"
+          style={{ paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}
+        >
+          <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] text-muted uppercase font-bold tracking-wider block">Total Price</span>
+              <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-xl" />
+            </div>
 
-          {!isOrderable ? (
-            <button disabled className="flex-1 py-3 px-6 bg-surface-container-high text-muted font-bold rounded-xl text-sm cursor-not-allowed">
-              Ask Your Server
-            </button>
-          ) : dish.customizationAvailable ? (
-            <button
-              onClick={() => setIsCustomizationOpen(true)}
-              disabled={!isAvailable}
-              className="flex-1 py-3 px-6 bg-saffron-600 hover:bg-saffron-500 disabled:bg-surface-container-high disabled:text-muted text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
-            >
-              <span>Customize & Add</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              onClick={handleDirectAddToCart}
-              disabled={!isAvailable}
-              className="flex-1 py-3 px-6 bg-saffron-600 hover:bg-saffron-500 disabled:bg-surface-container-high disabled:text-muted text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
-            >
-              <span>Add to Cart</span>
-            </button>
-          )}
-        </div>
-      </footer>
+            {!isOrderable ? (
+              <button disabled className="flex-1 py-3 px-6 bg-surface-container-high text-muted font-bold rounded-xl text-sm cursor-not-allowed">
+                Ask Your Server
+              </button>
+            ) : dish.customizationAvailable ? (
+              <button
+                onClick={() => setIsCustomizationOpen(true)}
+                disabled={!isAvailable}
+                className="flex-1 py-3 px-6 bg-saffron-600 hover:bg-saffron-500 disabled:bg-surface-container-high disabled:text-muted text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
+              >
+                <span>Customize & Add</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={handleDirectAddToCart}
+                disabled={!isAvailable}
+                className="flex-1 py-3 px-6 bg-saffron-600 hover:bg-saffron-500 disabled:bg-surface-container-high disabled:text-muted text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
+              >
+                <span>Add</span>
+              </button>
+            )}
+          </div>
+        </footer>
+      )}
 
       {isCustomizationOpen && (
         <CustomizationModal isOpen={isCustomizationOpen} onClose={() => setIsCustomizationOpen(false)} dish={dish} onAddToCart={handleAddToCartFromModal} />

@@ -235,3 +235,39 @@ html, body, button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, span, di
 .animate-pulse-ring {
   animation: pulse-ring 2.5s infinite ease-in-out;
 }
+
+/* Mobile customer shell: prevent horizontal scroll drift and give a stable
+   dynamic-viewport-aware min-height so fixed chrome (header/bottom nav) can't
+   be miscalculated when mobile browser toolbars show/hide. */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.customer-page {
+  min-height: 100dvh;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+/* Applied to <body> while the dish customization sheet is open so the page
+   behind it can't scroll; the sheet's own content region scrolls independently. */
+body.customization-modal-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

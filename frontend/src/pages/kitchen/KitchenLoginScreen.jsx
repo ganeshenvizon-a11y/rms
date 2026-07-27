@@ -52,7 +52,7 @@ const KitchenLoginScreen = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [selectedPreset, setSelectedPreset] = useState(STAFF_PRESETS[0]);
   const [employeeId, setEmployeeId] = useState(STAFF_PRESETS[0].employeeId);
-  const [pin, setPin] = useState('');
+  const [pin, setPin] = useState(STAFF_PRESETS[0].pin);
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);

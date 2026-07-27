@@ -18,7 +18,8 @@ import {
   CreditCard,
   ArrowLeftCircle,
   RefreshCw,
-  Users
+  Users,
+  LayoutGrid
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -73,7 +74,16 @@ const ManagerLayout = ({ children, activeTab, setActiveTab }) => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-outline-variant space-y-1">
+        <div className="p-4 border-t border-outline-variant space-y-2">
+          {/* App Hub — prominent switcher */}
+          <button
+            onClick={() => navigate('/portal')}
+            className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary font-bold transition-all border border-primary/20"
+          >
+            <LayoutGrid className="w-4 h-4" />
+            <span className="text-sm">Switch App / Portal Hub</span>
+          </button>
+
           <button
             onClick={resetKitchenDemoData}
             className="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all"
@@ -138,10 +148,11 @@ const ManagerLayout = ({ children, activeTab, setActiveTab }) => {
               </button>
               <button
                 onClick={() => navigate('/portal')}
-                className="p-2 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
-                title="Return to System Gateway"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary font-bold text-sm hover:opacity-90 transition-all shadow-sm"
+                title="Return to App Hub"
               >
-                <ArrowLeftCircle className="w-5 h-5" />
+                <LayoutGrid className="w-4 h-4" />
+                <span>App Hub</span>
               </button>
             </div>
 

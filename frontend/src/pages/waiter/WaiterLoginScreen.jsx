@@ -12,10 +12,13 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+const DEMO_EMPLOYEE_ID = 'waiter01';
+const DEMO_PASSWORD = 'waiter123';
+
 const WaiterLoginScreen = () => {
   const navigate = useNavigate();
-  const [employeeId, setEmployeeId] = useState('');
-  const [password, setPassword] = useState('');
+  const [employeeId, setEmployeeId] = useState(DEMO_EMPLOYEE_ID);
+  const [password, setPassword] = useState(DEMO_PASSWORD);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 

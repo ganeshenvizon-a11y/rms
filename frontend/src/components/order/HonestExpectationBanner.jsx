@@ -4,35 +4,50 @@ import Icon from '../common/Icon';
 const HonestExpectationBanner = ({ kitchenLoad, estimatedRange, isCompact = false }) => {
   if (!kitchenLoad) return null;
 
+  // Solid, always-dark-on-light text — this card never switches to a dark
+  // background, so a `dark:` text variant here would (and did) wash out to
+  // pale yellow-on-yellow when the device has a dark color-scheme preference.
   const getStatusBadge = () => {
     switch (kitchenLoad.status) {
       case 'BUSY':
         return {
-          bg: 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-300',
+          bg: 'bg-amber-100 border-amber-300',
+          text: 'text-amber-950',
+          iconBg: 'bg-amber-200/70',
+          tagBg: 'bg-amber-200/80',
           icon: 'schedule',
           label: 'Kitchen is currently busy',
-          desc: 'Expected preparation range: 20–25 minutes'
+          statusTag: 'Busy',
         };
       case 'VERY_BUSY':
         return {
-          bg: 'bg-orange-500/10 border-orange-500/30 text-orange-900 dark:text-orange-300',
+          bg: 'bg-orange-100 border-orange-300',
+          text: 'text-orange-950',
+          iconBg: 'bg-orange-200/70',
+          tagBg: 'bg-orange-200/80',
           icon: 'warning',
           label: 'Longer preparation times are expected',
-          desc: 'Average kitchen load is high right now'
+          statusTag: 'Very Busy',
         };
       case 'PAUSED':
         return {
-          bg: 'bg-rose-500/10 border-rose-500/30 text-rose-900 dark:text-rose-300',
+          bg: 'bg-rose-100 border-rose-300',
+          text: 'text-rose-950',
+          iconBg: 'bg-rose-200/70',
+          tagBg: 'bg-rose-200/80',
           icon: 'pause_circle',
           label: 'New food orders are temporarily paused',
-          desc: 'Kitchen is clearing active tickets'
+          statusTag: 'Paused',
         };
       default:
         return {
-          bg: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-300',
+          bg: 'bg-emerald-100 border-emerald-300',
+          text: 'text-emerald-950',
+          iconBg: 'bg-emerald-200/70',
+          tagBg: 'bg-emerald-200/80',
           icon: 'check_circle',
           label: 'Kitchen running normally',
-          desc: 'Standard preparation times apply'
+          statusTag: 'Normal',
         };
     }
   };
@@ -41,31 +56,31 @@ const HonestExpectationBanner = ({ kitchenLoad, estimatedRange, isCompact = fals
 
   if (isCompact) {
     return (
-      <div className={`px-3 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 ${badge.bg}`}>
+      <div className={`px-3 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 ${badge.bg} ${badge.text}`}>
         <Icon name={badge.icon} className="text-sm shrink-0" />
         <span className="truncate">{badge.label}</span>
       </div>
     );
   }
 
+  // Single status card with one shared estimate — never show two different
+  // preparation-time ranges on the same screen.
   return (
-    <div className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${badge.bg}`}>
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-          <Icon name={badge.icon} className="text-xl" />
-        </div>
-        <div>
-          <span className="font-bold text-sm block">{badge.label}</span>
-          <span className="opacity-90">{badge.desc}</span>
-        </div>
+    <div className={`px-3.5 py-3 rounded-xl border flex items-center gap-3 text-xs ${badge.bg} ${badge.text}`}>
+      <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${badge.iconBg}`}>
+        <Icon name={badge.icon} className="text-xl" />
       </div>
-
-      {estimatedRange && (
-        <div className="bg-surface/80 backdrop-blur px-3.5 py-2 rounded-lg border border-outline-variant/20 flex items-center gap-2 font-bold text-on-surface self-start sm:self-auto">
-          <Icon name="timer" className="text-primary text-base" />
-          <span>Current estimate: {estimatedRange}</span>
-        </div>
-      )}
+      <div className="min-w-0 flex-1">
+        <span className="font-bold text-sm block leading-snug">{badge.label}</span>
+        {estimatedRange ? (
+          <span className="font-semibold">Expected preparation: {estimatedRange}</span>
+        ) : (
+          <span>Standard preparation times apply</span>
+        )}
+      </div>
+      <span className={`shrink-0 px-2 py-1 rounded-full font-bold text-[11px] self-start ${badge.tagBg}`}>
+        {badge.statusTag}
+      </span>
     </div>
   );
 };

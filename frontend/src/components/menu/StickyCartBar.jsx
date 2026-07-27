@@ -11,7 +11,10 @@ const StickyCartBar = () => {
   if (totals.itemCount <= 0) return null;
 
   return (
-    <div className="fixed bottom-20 left-0 w-full z-40 px-4">
+    <div
+      className="fixed left-0 w-full z-40 px-4"
+      style={{ bottom: 'calc(64px + env(safe-area-inset-bottom) + 12px)' }}
+    >
       <div
         onClick={() => navigate('/cart')}
         className="max-w-md mx-auto bg-primary text-on-primary rounded-2xl shadow-2xl flex items-center justify-between p-4 cursor-pointer active:scale-[0.98] transition-transform"

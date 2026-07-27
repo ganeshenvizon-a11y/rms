@@ -130,7 +130,10 @@ const MenuScreen = () => {
     <>
       <TopAppBar variant="brand" onOpenTrustProfile={() => setIsTrustOpen(true)} onOpenPreferences={() => setIsPrefsOpen(true)} />
 
-      <main className="flex-1 pb-40 pt-20 px-4 max-w-screen-xl mx-auto w-full">
+      <main
+        className="customer-page flex-1 px-4 max-w-screen-xl mx-auto w-full"
+        style={{ paddingTop: 'calc(56px + env(safe-area-inset-top) + 12px)' }}
+      >
         <section className="mt-2">
           <HonestExpectationBanner
             kitchenLoad={kitchenLoad}
@@ -138,19 +141,23 @@ const MenuScreen = () => {
           />
         </section>
 
-        <section className="mt-4">
+        <section className="mt-5">
           <SearchBar value={searchQuery} onChange={setSearchQuery} onClear={() => setSearchQuery('')} />
         </section>
 
-        {/* Quick dietary & availability filters */}
-        <section className="mt-3 overflow-x-auto no-scrollbar -mx-4 px-4 flex gap-2 py-1">
+        {/* Quick dietary & availability filters — horizontal scroll rail, never clipped */}
+        <section
+          className="mt-3 overflow-x-auto no-scrollbar -mx-4 px-4 flex gap-2 py-1"
+          style={{ scrollPaddingInline: '16px', overscrollBehaviorInline: 'contain' }}
+        >
           {QUICK_FILTERS.map((f) => (
             <button
               key={f.id}
               onClick={() => toggleFilter(f.id)}
-              className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+              aria-pressed={activeFilters.includes(f.id)}
+              className={`shrink-0 whitespace-nowrap min-h-[36px] px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                 activeFilters.includes(f.id)
-                  ? 'bg-maroon-800 text-white border-maroon-800'
+                  ? 'bg-maroon-800/10 text-maroon-900 border-maroon-800'
                   : 'bg-surface-container-lowest text-on-surface-variant border-border hover:bg-surface-container'
               }`}
             >
@@ -163,7 +170,10 @@ const MenuScreen = () => {
         {categories.length === 0 && isLoading ? (
           <CategorySkeletonRow />
         ) : (
-          <section className="mt-4 overflow-x-auto no-scrollbar -mx-4 px-4 flex gap-2 py-2">
+          <section
+            className="mt-4 overflow-x-auto no-scrollbar -mx-4 px-4 flex gap-2 py-2"
+            style={{ scrollSnapType: 'x proximity', scrollPaddingInline: '16px' }}
+          >
             {categories.map((cat) => (
               <CategoryChip key={cat.id} category={cat} isActive={selectedCategory === cat.id} onClick={() => setSelectedCategory(cat.id)} />
             ))}
@@ -172,13 +182,13 @@ const MenuScreen = () => {
 
         {/* New here? */}
         {showCuratedSections && newGuestDishes.length > 0 && (
-          <section className="mt-6">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="w-5 h-5 text-saffron-600" />
-              <h2 className="text-base font-bold text-ink">New here? Try these</h2>
+          <section className="mt-5">
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-saffron-600" aria-hidden="true" />
+              <h2 className="text-lg font-bold text-ink leading-6">New here? Try these</h2>
             </div>
-            <p className="text-xs text-muted mb-3">Approachable dishes selected for first-time guests</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <p className="text-[13px] text-muted mt-1 mb-3">Approachable dishes selected for first-time guests</p>
+            <div className="flex flex-col gap-3">
               {newGuestDishes.map((dish) => (
                 <FoodCard key={dish.id} dish={dish} variant="compact" onCustomize={handleOpenCustomize} />
               ))}
@@ -186,17 +196,23 @@ const MenuScreen = () => {
           </section>
         )}
 
-        {/* Mangamma Favourites */}
+        {/* Mangamma Favourites — horizontally scrollable visual-card row, never
+            squeezed into a cramped 2-column grid on narrow phones */}
         {showCuratedSections && favouriteDishes.length > 0 && (
-          <section ref={favouritesRef} className="mt-8 scroll-mt-20">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="w-5 h-5 text-maroon-800" />
-              <h2 className="text-base font-bold text-ink">Mangamma Favourites</h2>
+          <section ref={favouritesRef} className="mt-6 scroll-mt-20">
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-maroon-800" aria-hidden="true" />
+              <h2 className="text-lg font-bold text-ink leading-6">Mangamma Favourites</h2>
             </div>
-            <p className="text-xs text-muted mb-3">Signature dishes our guests reorder most</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <p className="text-[13px] text-muted mt-1 mb-3">Signature dishes our guests reorder most</p>
+            <div
+              className="flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1"
+              style={{ scrollSnapType: 'x proximity', scrollPaddingInline: '16px' }}
+            >
               {favouriteDishes.map((dish) => (
-                <FoodCard key={dish.id} dish={dish} variant="featured" onCustomize={handleOpenCustomize} />
+                <div key={dish.id} className="w-[220px] shrink-0" style={{ scrollSnapAlign: 'start' }}>
+                  <FoodCard dish={dish} variant="featured" onCustomize={handleOpenCustomize} />
+                </div>
               ))}
             </div>
           </section>
@@ -263,8 +279,8 @@ const MenuScreen = () => {
       />
       <CustomerPreferencesModal isOpen={isPrefsOpen} onClose={() => setIsPrefsOpen(false)} />
 
-      <StickyCartBar />
-      <BottomNavBar />
+      {!isCustomizationOpen && <StickyCartBar />}
+      {!isCustomizationOpen && <BottomNavBar />}
     </>
   );
 };

@@ -1,12 +1,14 @@
 import React from 'react';
-import { Home, LayoutGrid, Utensils, User } from 'lucide-react';
+import { Home, LayoutGrid, Utensils, User, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { id: 'home', label: 'Home', icon: Home, badgeKey: 'homeCount' },
   { id: 'tables', label: 'Tables', icon: LayoutGrid },
   { id: 'orders', label: 'Orders', icon: Utensils, badgeKey: 'readyCount' },
   { id: 'profile', label: 'Profile', icon: User },
+  { id: '__hub__', label: 'App Hub', icon: Store, isPortal: true },
 ];
 
 const WaiterBottomNav = ({
@@ -16,6 +18,8 @@ const WaiterBottomNav = ({
   requestsCount = 0,
   billsCount = 0
 }) => {
+  const navigate = useNavigate();
+
   const getBadgeCount = (key) => {
     if (key === 'readyCount') return readyCount;
     if (key === 'homeCount') return requestsCount + billsCount;
@@ -34,11 +38,13 @@ const WaiterBottomNav = ({
             <motion.button
               key={item.id}
               whileTap={{ scale: 0.9 }}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => item.isPortal ? navigate('/portal') : setActiveTab(item.id)}
               className={`relative flex flex-col items-center justify-center w-16 h-12 rounded-2xl transition-all ${
-                isActive
-                  ? 'text-primary'
-                  : 'text-on-surface-variant hover:text-on-surface'
+                item.isPortal
+                  ? 'text-primary bg-primary/10'
+                  : isActive
+                    ? 'text-primary'
+                    : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
               <div className="relative">
