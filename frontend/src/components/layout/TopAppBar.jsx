@@ -38,7 +38,7 @@ const TopAppBar = ({
         >
           <Icon name="arrow_back" className="text-on-surface" />
         </button>
-        <span className="font-bold text-lg tracking-tight text-primary italic truncate max-w-[45%]">
+        <span className="font-bold text-lg tracking-tight text-primary truncate max-w-[45%]">
           {title || RESTAURANT_INFO.name}
         </span>
         <div className="flex items-center gap-2">
@@ -98,7 +98,7 @@ const TopAppBar = ({
               <UtensilsCrossed className="w-4 h-4" />
             </div>
           )}
-          <span className="text-[17px] leading-tight font-bold italic text-[#A30F3B] tracking-tight truncate min-w-0">
+          <span className="text-[17px] leading-tight font-bold text-[#A30F3B] tracking-tight truncate min-w-0">
             {RESTAURANT_INFO.name}
           </span>
         </div>
