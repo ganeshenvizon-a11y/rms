@@ -16,8 +16,8 @@ export const cartService = {
   async applyPromoCode(code) {
     try {
       const validPromos = {
-        'DAKSHIN10': { discountPercent: 10, code: 'DAKSHIN10', description: '10% off South Indian Feast' },
-        'DOSA10': { discountPercent: 10, code: 'DOSA10', description: '10% off South Indian Special' },
+        'MANGAMMA10': { discountPercent: 10, code: 'MANGAMMA10', description: '10% off your order' },
+        'BIRYANI10': { discountPercent: 10, code: 'BIRYANI10', description: '10% off Biryanis' },
         'WELCOME20': { discountPercent: 20, code: 'WELCOME20', description: '20% Welcome Feast Discount' }
       };
 

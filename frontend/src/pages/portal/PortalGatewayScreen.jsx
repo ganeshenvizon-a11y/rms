@@ -32,7 +32,7 @@ const MODULE_CARDS = [
     badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     requiresPin: false,
     demoPin: null,
-    desc: 'Browse South Indian menu (Dosas, Biryanis, Filter Kaapi), customize dishes, place table orders, track preparation stages, and request bills.',
+    desc: 'Browse our regional Andhra menu (Biryanis, Tandoor Grills, Curries), customize dishes, place table orders, track preparation stages, and request bills.',
   },
   {
     id: 'kitchen',
@@ -46,7 +46,7 @@ const MODULE_CARDS = [
     badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
     requiresPin: false,
     demoPin: null,
-    desc: 'Real-time kitchen order tickets, station filtering (Dosa & Tiffins, Biryani & Rice, Curries), rush alerts, and cook completion timers.',
+    desc: 'Real-time kitchen order tickets, station filtering (Starters & Tandoor, Biryani & Rice, Curries), rush alerts, and cook completion timers.',
   },
   {
     id: 'waiter',
@@ -88,7 +88,7 @@ const MODULE_CARDS = [
     badgeColor: 'bg-purple-100 text-purple-900 border-purple-300',
     requiresPin: false,
     demoPin: null,
-    desc: 'Full operational suite: Real-time KPIs, South Indian menu CRUD, employee roster management, financial analytics, table layouts, and settings.',
+    desc: 'Full operational suite: Real-time KPIs, regional menu CRUD, employee roster management, financial analytics, table layouts, and settings.',
   },
 ];
 
@@ -151,7 +151,7 @@ const PortalGatewayScreen = () => {
 
             <div>
               <h1 className="text-lg font-serif font-bold tracking-wide text-white">
-                Dakshin Heritage
+                Mangamma Ruchulu
               </h1>
               <p className="text-xs text-stone-400 font-mono flex items-center gap-1.5">
                 <Compass className="w-3.5 h-3.5 text-amber-400" />
@@ -251,7 +251,7 @@ const PortalGatewayScreen = () => {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-stone-800/80 px-6 py-4 text-center text-xs font-mono text-stone-500">
-        Dakshin Heritage • South Indian Restaurant Management Suite v2.4 • All Systems Connected
+        Mangamma Ruchulu • Andhra Restaurant Management Suite v2.4 • All Systems Connected
       </footer>
 
       {/* Security Login Modal */}

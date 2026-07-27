@@ -30,10 +30,10 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
 
   // Default demo check if no order is selected
   const defaultItems = [
-    { id: 'b-1', name: 'Chettinad Seeraga Samba Chicken Biryani', quantity: 2, price: 320.00 },
-    { id: 'b-2', name: 'Special South Veg Thali', quantity: 1, price: 220.00 },
-    { id: 'b-3', name: 'Desi Ghee Roast Masala Dosa', quantity: 1, price: 140.00 },
-    { id: 'b-4', name: 'Kumbakonam Degree Filter Coffee', quantity: 2, price: 60.00 }
+    { id: 'b-1', name: 'Special Chicken Dum Biryani', quantity: 2, price: 300.00 },
+    { id: 'b-2', name: 'Aritaku Bojanam (Veg)', quantity: 1, price: 250.00 },
+    { id: 'b-3', name: 'Gobi 65', quantity: 1, price: 220.00 },
+    { id: 'b-4', name: 'Sweet Lassi', quantity: 2, price: 100.00 }
   ];
 
   const currentOrder = selectedBillOrder || {
@@ -203,13 +203,13 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
                 serverName: 'Counter Express',
                 guestCount: 1,
                 items: [
-                  { id: 'w-1', name: 'Margherita DOC Woodfired Pizza', quantity: 1, price: 18.50 },
-                  { id: 'w-2', name: 'Sparkling Blood Orange Soda', quantity: 1, price: 5.50 }
+                  { id: 'w-1', name: 'Chicken Dum Biryani', quantity: 1, price: 250 },
+                  { id: 'w-2', name: 'Lime & Mint', quantity: 1, price: 120 }
                 ],
                 createdAt: new Date().toISOString()
               })
             }
-            className="w-full mt-3 py-2 bg-stone-50 border border-stone-200 hover:border-amber-400 hover:bg-stone-100 rounded-xl text-xs font-semibold text-amber-800 flex items-center justify-center gap-1.5 transition-colors"
+            className="w-full mt-3 py-2 bg-cream border border-border hover:border-saffron-600/40 hover:bg-sand rounded-xl text-xs font-semibold text-maroon-800 flex items-center justify-center gap-1.5 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create Quick Counter Sale</span>
@@ -399,10 +399,7 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
 
             <div className="flex justify-between text-base font-bold text-stone-900 pt-2 border-t-2 border-stone-900 mt-1">
               <span>Total Payable:</span>
-              <span className="text-amber-700 font-mono">₹{totalPayable.toFixed(2)}</span>
-            </div>
-          </div>
-              <span className="text-amber-700 font-mono">₹{grandTotal.toFixed(2)}</span>
+              <span className="text-maroon-800 font-mono">₹{totalPayable.toFixed(2)}</span>
             </div>
           </div>
 

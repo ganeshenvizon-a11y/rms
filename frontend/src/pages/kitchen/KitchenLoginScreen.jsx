@@ -23,11 +23,11 @@ const STAFF_PRESETS = [
     icon: ChefHat
   },
   {
-    role: 'Dosa & Tiffin Master',
+    role: 'Starters & Tandoor Master',
     name: 'Chef Vignesh Iyer',
     employeeId: 'EMP-1002',
     pin: '2222',
-    station: 'Dosa & Tiffin Station',
+    station: 'Starter & Tandoor Station',
     icon: Flame
   },
   {
@@ -118,7 +118,7 @@ const KitchenLoginScreen = ({ onLoginSuccess }) => {
             <UtensilsCrossed className="w-8 h-8 text-primary" />
           </div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
-            Dakshin Heritage
+            Mangamma Ruchulu
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant font-medium">
             Welcome Back, Kitchen Team
@@ -246,7 +246,7 @@ const KitchenLoginScreen = ({ onLoginSuccess }) => {
           <div className="flex items-center gap-3 text-[11px] text-on-surface-variant opacity-70">
             <span>KDS Version 2.4.0</span>
             <span className="w-1 h-1 rounded-full bg-outline-variant" />
-            <span>Dakshin Heritage Management</span>
+            <span>Mangamma Ruchulu Management</span>
           </div>
           <button
             onClick={() => navigate('/menu')}

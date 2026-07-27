@@ -18,9 +18,9 @@ const ReportIssueScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const activeItems = activeOrder?.items || [
-    { id: 'item-1048-01', name: 'Masala Dosa' },
-    { id: 'item-1048-02', name: 'Filter Coffee' },
-    { id: 'item-1048-03', name: 'Veg Meals / Thali' }
+    { id: 'item-1048-01', name: 'Chicken Dum Biryani' },
+    { id: 'item-1048-02', name: 'Sweet Lassi' },
+    { id: 'item-1048-03', name: 'Aritaku Bojanam (Veg)' }
   ];
 
   const handleSubmit = () => {

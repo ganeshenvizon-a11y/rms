@@ -58,7 +58,7 @@ const WaiterMainScreen = () => {
                 {TAB_TITLES[activeTab]}
               </h1>
               <p className="text-[10px] text-on-surface-variant font-mono font-medium">
-                WAITER MOBILE PORTAL • DAKSHIN HERITAGE
+                WAITER MOBILE PORTAL • MANGAMMA RUCHULU
               </p>
             </div>
           </div>

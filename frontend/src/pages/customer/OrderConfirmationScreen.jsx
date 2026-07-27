@@ -26,14 +26,14 @@ const OrderConfirmationScreen = () => {
   const prepRange = `${kitchenLoad?.averagePreparationMinutes || 20}–${(kitchenLoad?.averagePreparationMinutes || 20) + 5} mins`;
 
   return (
-    <main className="flex-1 flex flex-col bg-gray-50 min-h-screen">
+    <main className="flex-1 flex flex-col bg-surface-container min-h-screen">
       <div className="w-full max-w-md mx-auto min-h-screen flex flex-col px-4 py-4">
         {/* Header */}
         <header className="flex justify-between items-center py-4">
-          <button aria-label="Back" onClick={() => navigate('/menu')} className="p-2 -ml-2 text-gray-700">
+          <button aria-label="Back" onClick={() => navigate('/menu')} className="p-2 -ml-2 text-text">
             <Icon name="arrow_back" />
           </button>
-          <span className="text-xs font-bold text-amber-800 bg-amber-100 px-3 py-1 rounded-full">
+          <span className="text-xs font-bold text-maroon-800 bg-saffron-100 px-3 py-1 rounded-full">
             Table #{tableNumber}
           </span>
         </header>
@@ -48,52 +48,52 @@ const OrderConfirmationScreen = () => {
               <div key={idx} className={`absolute w-1.5 h-1.5 rounded-full ${dot.className}`} />
             ))}
           </div>
-          <h1 className="text-2xl font-bold mt-2 text-gray-900">Order sent to kitchen!</h1>
-          <p className="text-gray-600 mt-1 text-xs">
+          <h1 className="text-2xl font-bold mt-2 text-ink">Order sent to kitchen!</h1>
+          <p className="text-text mt-1 text-xs">
             Thanks! Your customized order is being prepared with care ❤️
           </p>
         </section>
 
         {/* Review Customizations Warning Banner */}
-        <div className="bg-amber-100/80 border border-amber-300 rounded-xl p-3.5 mb-4 text-amber-900 text-xs flex items-center gap-2.5">
-          <AlertTriangle className="w-5 h-5 text-amber-700 flex-shrink-0" />
+        <div className="bg-saffron-100/80 border border-saffron-600/30 rounded-xl p-3.5 mb-4 text-maroon-800 text-xs flex items-center gap-2.5">
+          <AlertTriangle className="w-5 h-5 text-maroon-800 flex-shrink-0" />
           <span>
             <strong>Review customizations before confirming your order.</strong> All selected modifiers have been dispatched to kitchen displays.
           </span>
         </div>
 
         {/* Order Quick Details */}
-        <section className="bg-white rounded-2xl p-4 flex justify-between items-center mb-4 border border-gray-200 shadow-sm">
+        <section className="bg-surface-container-lowest rounded-2xl p-4 flex justify-between items-center mb-4 border border-border shadow-sm">
           <div className="text-center flex-1">
-            <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">Order ID</p>
-            <p className="text-amber-700 font-bold text-base">#{activeOrder?.orderId || 'ORD-1048'}</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Order ID</p>
+            <p className="text-maroon-800 font-bold text-base">#{activeOrder?.orderId || 'ORD-1048'}</p>
           </div>
-          <div className="w-px h-8 bg-gray-200" />
+          <div className="w-px h-8 bg-border" />
           <div className="text-center flex-1">
-            <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">Table</p>
-            <p className="font-bold text-base text-gray-900">{tableNumber}</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Table</p>
+            <p className="font-bold text-base text-ink">{tableNumber}</p>
           </div>
-          <div className="w-px h-8 bg-gray-200" />
+          <div className="w-px h-8 bg-border" />
           <div className="text-center flex-1">
-            <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold">Order Time</p>
-            <p className="font-bold text-base text-gray-900">{orderTime}</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Order Time</p>
+            <p className="font-bold text-base text-ink">{orderTime}</p>
           </div>
         </section>
 
         {/* Honest Preparation Card */}
-        <section className="bg-white rounded-2xl p-4 flex items-center justify-between mb-4 border border-gray-200 shadow-sm">
+        <section className="bg-surface-container-lowest rounded-2xl p-4 flex items-center justify-between mb-4 border border-border shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="bg-amber-100 p-2.5 rounded-xl text-amber-800">
+            <div className="bg-saffron-100 p-2.5 rounded-xl text-maroon-800">
               <Clock className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs text-gray-500">Estimated preparation window</p>
-              <p className="font-bold text-base text-gray-900">{prepRange}</p>
+              <p className="text-xs text-muted">Estimated preparation window</p>
+              <p className="font-bold text-base text-ink">{prepRange}</p>
             </div>
           </div>
           <button
             onClick={() => navigate('/order-tracking')}
-            className="bg-amber-50 border border-amber-200 py-2 px-3 rounded-xl text-xs font-bold text-amber-900 flex items-center gap-1 hover:bg-amber-100"
+            className="bg-saffron-100 border border-saffron-600/30 py-2 px-3 rounded-xl text-xs font-bold text-maroon-800 flex items-center gap-1 hover:bg-saffron-100/70"
           >
             Track order
             <Icon name="chevron_right" className="text-base" />
@@ -101,43 +101,43 @@ const OrderConfirmationScreen = () => {
         </section>
 
         {/* Order Summary with Modifiers */}
-        <section className="bg-white rounded-2xl p-5 shadow-sm mb-6 border border-gray-200">
-          <h2 className="font-bold text-base mb-4 text-gray-900">Order & Modifier Summary</h2>
+        <section className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm mb-6 border border-border">
+          <h2 className="font-bold text-base mb-4 text-ink">Order & Modifier Summary</h2>
           <div className="space-y-4 mb-6">
             {(activeOrder?.items || []).map((item, idx) => {
               const itemTotalPrice = (item.unitPrice !== undefined ? item.unitPrice : item.price) * item.quantity;
               const hasModifiers = (item.selectedCustomizations && item.selectedCustomizations.length > 0) || item.makeVegan || item.jainPreparation;
 
               return (
-                <div key={idx} className="border-b border-gray-100 pb-3 last:border-b-0 space-y-2">
+                <div key={idx} className="border-b border-border pb-3 last:border-b-0 space-y-2">
                   <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
                       {item.image ? (
                         <img alt={item.name} className="w-full h-full object-cover" src={item.image} />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <div className="w-full h-full flex items-center justify-center text-muted">
                           <Icon name="restaurant" />
                         </div>
                       )}
                     </div>
                     <div className="flex-grow min-w-0">
                       <div className="flex justify-between items-start">
-                        <p className="font-bold text-gray-900 text-sm">{item.name}</p>
-                        <p className="font-bold text-amber-700 text-sm font-mono">{formatInvoiceAmount(itemTotalPrice)}</p>
+                        <p className="font-bold text-ink text-sm">{item.name}</p>
+                        <p className="font-bold text-maroon-800 text-sm font-mono">{formatInvoiceAmount(itemTotalPrice)}</p>
                       </div>
-                      <p className="text-xs text-gray-500 font-medium">Quantity: {item.quantity}</p>
+                      <p className="text-xs text-muted font-medium">Quantity: {item.quantity}</p>
                     </div>
                   </div>
 
                   {/* Selected Modifiers Display */}
                   {hasModifiers && (
-                    <div className="ml-17 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/80 text-xs space-y-1 text-gray-800">
+                    <div className="ml-17 bg-saffron-100/70 p-2.5 rounded-xl border border-saffron-600/30 text-xs space-y-1 text-ink">
                       {item.makeVegan && <div className="font-semibold text-emerald-800">🌱 Vegan Preparation</div>}
                       {item.jainPreparation && <div className="font-semibold text-emerald-800">🌿 Jain Preparation</div>}
                       {item.selectedCustomizations?.map((mod, mIdx) => (
                         <div key={mIdx} className="flex justify-between">
                           <span>• {mod.label || mod.name}</span>
-                          {mod.priceDelta > 0 && <span className="font-mono text-amber-800">+{formatMenuPrice(mod.priceDelta)}</span>}
+                          {mod.priceDelta > 0 && <span className="font-mono text-maroon-800">+{formatMenuPrice(mod.priceDelta)}</span>}
                         </div>
                       ))}
                     </div>
@@ -156,7 +156,7 @@ const OrderConfirmationScreen = () => {
 
                   {/* Special instructions */}
                   {item.itemNote && (
-                    <div className="ml-17 text-xs text-gray-600 italic">
+                    <div className="ml-17 text-xs text-text italic">
                       Special instruction: "{item.itemNote}"
                     </div>
                   )}
@@ -165,7 +165,7 @@ const OrderConfirmationScreen = () => {
             })}
           </div>
 
-          <div className="border-t border-dashed border-gray-200 pt-4 space-y-2 text-xs text-gray-600">
+          <div className="border-t border-dashed border-border pt-4 space-y-2 text-xs text-text">
             <div className="flex justify-between font-medium">
               <span>Subtotal</span>
               <span>{formatInvoiceAmount(totals.subtotal || 0)}</span>
@@ -181,15 +181,15 @@ const OrderConfirmationScreen = () => {
               <span>{formatInvoiceAmount(totals.gst ?? totals.tax ?? 0)}</span>
             </div>
             {totals.tipAmount > 0 && (
-              <div className="flex justify-between font-medium text-amber-800">
+              <div className="flex justify-between font-medium text-maroon-800">
                 <span>Optional Staff Tip</span>
                 <span>+{formatInvoiceAmount(totals.tipAmount)}</span>
               </div>
             )}
           </div>
-          <div className="border-t border-gray-200 mt-4 pt-3 flex justify-between items-center">
-            <span className="font-bold text-base text-gray-900">Total Payable</span>
-            <span className="font-bold text-xl text-amber-700">{formatInvoiceAmount(totals.totalPayable || totals.grandTotal || 0)}</span>
+          <div className="border-t border-border mt-4 pt-3 flex justify-between items-center">
+            <span className="font-bold text-base text-ink">Total Payable</span>
+            <span className="font-bold text-xl text-maroon-800">{formatInvoiceAmount(totals.totalPayable || totals.grandTotal || 0)}</span>
           </div>
         </section>
 
@@ -197,16 +197,16 @@ const OrderConfirmationScreen = () => {
         <footer className="mt-auto space-y-3 pb-6">
           <button
             onClick={() => navigate('/order-tracking')}
-            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-colors text-sm"
+            className="w-full bg-saffron-600 hover:bg-saffron-500 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-colors text-sm"
           >
             <span>Track Order Status</span>
             <Icon name="chevron_right" />
           </button>
           <button
             onClick={() => navigate('/menu')}
-            className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm"
+            className="w-full bg-surface-container-lowest border border-border hover:bg-surface-container text-ink font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm"
           >
-            <Icon name="add" className="text-amber-600" />
+            <Icon name="add" className="text-maroon-800" />
             <span>Order More Dishes</span>
           </button>
         </footer>

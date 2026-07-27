@@ -6,7 +6,7 @@ import Icon from '../common/Icon';
 const STATIONS = [
   { id: 'All', label: 'All Stations' },
   { id: 'MY_STATION', label: 'My Station' },
-  { id: 'DOSA_STATION', label: 'Dosa Station' },
+  { id: 'STARTER_STATION', label: 'Starter Station' },
   { id: 'TANDOOR', label: 'Tandoor' },
   { id: 'CURRY_STATION', label: 'Curry Station' },
   { id: 'BIRYANI_STATION', label: 'Biryani Station' },

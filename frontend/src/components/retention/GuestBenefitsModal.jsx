@@ -395,7 +395,7 @@ const GuestBenefitsModal = ({ isOpen, onClose }) => {
                 <input
                   type="text"
                   readOnly
-                  value="DAKSHIN-GUEST-1048"
+                  value="MANGAMMA-GUEST-1048"
                   className="flex-1 p-2 rounded-xl border border-outline-variant font-mono font-bold text-center text-xs bg-surface-container-low text-primary"
                 />
                 <button

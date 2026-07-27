@@ -77,9 +77,9 @@ const PaymentProcessingScreen = () => {
       });
     }
     return [
-      { name: 'Chettinad Seeraga Samba Chicken Biryani', quantity: 2, price: 320.00 },
-      { name: 'Special South Veg Thali', quantity: 1, price: 220.00 },
-      { name: 'Kumbakonam Degree Filter Coffee', quantity: 1, price: 60.00 }
+      { name: 'Special Chicken Dum Biryani', quantity: 2, price: 300.00 },
+      { name: 'Aritaku Bojanam (Veg)', quantity: 1, price: 250.00 },
+      { name: 'Sweet Lassi', quantity: 1, price: 100.00 }
     ];
   }, [kitchenOrders, bill]);
 

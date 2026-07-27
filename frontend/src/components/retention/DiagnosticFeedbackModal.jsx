@@ -46,7 +46,7 @@ const DiagnosticFeedbackModal = ({ isOpen, onClose, order }) => {
     cleanliness: 5,
     value: 4,
   });
-  const [memorableDishId, setMemorableDishId] = useState(order?.items?.[0]?.dishId || 'dish-001');
+  const [memorableDishId, setMemorableDishId] = useState(order?.items?.[0]?.dishId || 'biryani-chicken-dum');
   const [selectedImprovementCategories, setSelectedImprovementCategories] = useState([]);
   const [comment, setComment] = useState('');
   const [submittedRecord, setSubmittedRecord] = useState(null);
@@ -54,8 +54,8 @@ const DiagnosticFeedbackModal = ({ isOpen, onClose, order }) => {
 
   // Available dishes from completed order ONLY
   const orderDishes = order?.items || [
-    { dishId: 'dish-001', name: 'Masala Dosa', unitPrice: 140 },
-    { dishId: 'dish-008', name: 'Filter Coffee', unitPrice: 60 },
+    { dishId: 'biryani-chicken-dum', name: 'Chicken Dum Biryani', unitPrice: 250 },
+    { dishId: 'drink-sweet-lassi', name: 'Sweet Lassi', unitPrice: 100 },
   ];
 
   const handleRatingChange = (category, value) => {
@@ -86,7 +86,7 @@ const DiagnosticFeedbackModal = ({ isOpen, onClose, order }) => {
       tableNumber: order?.tableNumber || '08',
       ratings,
       memorableDishId,
-      memorableDishName: selectedDishObj?.name || 'Masala Dosa',
+      memorableDishName: selectedDishObj?.name || 'Chicken Dum Biryani',
       improvementCategories: selectedImprovementCategories,
       improvementCategoriesLabels: selectedImprovementCategories.map(
         (k) => IMPROVEMENT_OPTIONS.find((o) => o.key === k)?.label || k

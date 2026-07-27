@@ -38,7 +38,7 @@ const CustomerPreferencesModal = ({
       customerMemoryId: `MEM-${Math.floor(100 + Math.random() * 900)}`,
       sessionType: 'QR_TABLE_SESSION',
       consent,
-      favourites: customerMemory?.favourites || ['dish-001', 'dish-008'],
+      favourites: customerMemory?.favourites || ['meals-aritaku-veg', 'mcveg-paneer-butter-masala'],
       spicePreference: consent.spicePreference ? spiceLevel : null,
       dietaryPreference: consent.dietaryPreference ? dietary : null,
       allergies: consent.allergyInformation && savedAllergyConsent && allergyNote ? [allergyNote] : [],

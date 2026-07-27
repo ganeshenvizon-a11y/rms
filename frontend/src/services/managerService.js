@@ -6,17 +6,17 @@ import { formatDateTime } from '../utils/formatters';
 export { dashboardMockData };
 
 // Storage Keys
-const EMPLOYEES_STORAGE_KEY = 'bella_vista_employees';
-const SETTINGS_STORAGE_KEY = 'bella_vista_manager_settings';
-const RESERVATIONS_STORAGE_KEY = 'bella_vista_reservations';
-const AUDIT_LOG_STORAGE_KEY = 'bella_vista_audit_logs';
+const EMPLOYEES_STORAGE_KEY = 'mangamma_employees';
+const SETTINGS_STORAGE_KEY = 'mangamma_manager_settings';
+const RESERVATIONS_STORAGE_KEY = 'mangamma_reservations';
+const AUDIT_LOG_STORAGE_KEY = 'mangamma_audit_logs';
 
 export const INITIAL_EMPLOYEES = [
   {
     id: 'staff-1',
     name: 'Rahul Sharma',
     role: 'Waiter',
-    email: 'rahul.s@dakshin.in',
+    email: 'rahul.s@mangammaruchulu.in',
     phone: '+91 98401 11223',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
     shift: 'Morning Shift (09:00 - 18:00)',
@@ -31,7 +31,7 @@ export const INITIAL_EMPLOYEES = [
     id: 'staff-2',
     name: 'Ananya Reddy',
     role: 'Waiter',
-    email: 'ananya.r@dakshin.in',
+    email: 'ananya.r@mangammaruchulu.in',
     phone: '+91 98402 22334',
     avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
     shift: 'Morning Shift (09:00 - 18:00)',
@@ -46,7 +46,7 @@ export const INITIAL_EMPLOYEES = [
     id: 'staff-3',
     name: 'Imran Khan',
     role: 'Counter',
-    email: 'imran.k@dakshin.in',
+    email: 'imran.k@mangammaruchulu.in',
     phone: '+91 98403 33445',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
     shift: 'Shift A (08:30 - 17:30)',
@@ -61,7 +61,7 @@ export const INITIAL_EMPLOYEES = [
     id: 'staff-4',
     name: 'Sneha Patel',
     role: 'Kitchen Staff',
-    email: 'sneha.p@dakshin.in',
+    email: 'sneha.p@mangammaruchulu.in',
     phone: '+91 98404 44556',
     avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=200&q=80',
     shift: 'Mid Shift (10:00 - 19:00)',
@@ -76,7 +76,7 @@ export const INITIAL_EMPLOYEES = [
     id: 'staff-5',
     name: 'Priya Nair',
     role: 'Head Chef',
-    email: 'priya.n@dakshin.in',
+    email: 'priya.n@mangammaruchulu.in',
     phone: '+91 98405 55667',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
     shift: 'Off Today',
@@ -95,7 +95,7 @@ export const INITIAL_SETTINGS = {
   established: RESTAURANT_INFO.established,
   address: RESTAURANT_INFO.address,
   phone: "+91 (80) 4123-8888",
-  email: "contact@dakshinheritage.in",
+  email: "contact@mangammaruchulu.in",
   country: restaurantConfig.countryName,
   countryCode: restaurantConfig.countryCode,
   currency: restaurantConfig.currencySymbol,
@@ -128,8 +128,8 @@ export const INITIAL_SETTINGS = {
     saturday: "07:00 AM - 11:30 PM",
     sunday: "07:00 AM - 10:30 PM"
   },
-  receiptHeader: "Nandri / Thank you for dining at Dakshin Heritage!",
-  receiptFooter: "Please visit us again! Authentic South Indian Culinary Gastronomy.",
+  receiptHeader: "Dhanyavadamulu / Thank you for dining at Mangamma Ruchulu!",
+  receiptFooter: "Please visit us again! A Journey of Tradition. A Legacy of Flavour.",
   autoPrintReceipt: true,
   lowStockAlertThreshold: 5,
   kitchenDelayAlertMinutes: 15,
@@ -147,7 +147,7 @@ export const INITIAL_RESERVATIONS = [
     tableNumber: '04',
     section: 'Main Dining Room',
     status: 'Confirmed',
-    notes: 'Family dinner. Requested Ghee Podi Dosa & Filter Coffee ready.'
+    notes: 'Family dinner. Requested Chicken Dum Biryani & Sweet Lassi ready.'
   },
   {
     id: 'res-302',
@@ -159,7 +159,7 @@ export const INITIAL_RESERVATIONS = [
     tableNumber: 'VIP-1',
     section: 'VIP Lounge',
     status: 'Confirmed',
-    notes: 'VIP Guests. Chettinad Feast menu preference.'
+    notes: 'VIP Guests. Andhra Feast menu preference.'
   },
   {
     id: 'res-303',
@@ -219,8 +219,8 @@ export const REPORTS_MOCK_DATA = {
   categoryPerformance: [
     { name: 'Biryanis & Rice Specials', sales: 21760.00, count: 68, color: 'bg-rose-500' },
     { name: 'Thalis & Curries', sales: 16768.00, count: 69, color: 'bg-amber-500' },
-    { name: 'Dosas & Tiffins', sales: 7560.00, count: 54, color: 'bg-emerald-500' },
-    { name: 'Filter Coffee & Drinks', sales: 4620.00, count: 77, color: 'bg-purple-500' }
+    { name: 'Starters & Tandoor', sales: 7560.00, count: 54, color: 'bg-emerald-500' },
+    { name: 'Refreshing Drinks', sales: 4620.00, count: 77, color: 'bg-purple-500' }
   ],
   topDishes: dashboardMockData.popularItems,
   staffPerformance: dashboardMockData.activeStaff

@@ -14,7 +14,7 @@ const ReportSubmittedScreen = () => {
         <button onClick={() => navigate('/order-tracking')} className="text-primary active:scale-95 transition-transform" aria-label="Go back">
           <Icon name="arrow_back" />
         </button>
-        <h1 className="text-xl font-bold text-primary">Dakshin Premium</h1>
+        <h1 className="text-xl font-bold text-primary">Mangamma Ruchulu</h1>
         <span className="text-sm font-semibold text-primary">Table {tableNumber}</span>
       </header>
 

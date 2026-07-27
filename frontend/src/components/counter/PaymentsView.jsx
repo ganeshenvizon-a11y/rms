@@ -24,15 +24,15 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
     tableNumber: '05',
     serverName: 'Ananya Reddy',
     guestCount: 2,
-    subtotal: 410.00,
-    tax: 20.50,
+    subtotal: 700.00,
+    tax: 35.00,
     vat: 0,
     discountAmount: 0,
     serviceCharge: 0,
-    grandTotal: 430.50,
+    grandTotal: 735.00,
     items: [
-      { name: 'Ghee Roast Masala Dosa', quantity: 2, price: 140 },
-      { name: 'Filter Coffee', quantity: 2, price: 65 },
+      { name: 'Chicken Dum Biryani', quantity: 2, price: 250 },
+      { name: 'Sweet Lassi', quantity: 2, price: 100 },
     ]
   };
 

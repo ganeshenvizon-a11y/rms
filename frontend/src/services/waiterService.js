@@ -3,7 +3,7 @@ export const WAITER_PROFILE = {
   employeeId: 'STF-2024',
   name: 'Ananya Reddy',
   role: 'Senior Waiter & Terrace Lead',
-  badge: 'DAKSHIN HERITAGE LEAD',
+  badge: 'MANGAMMA RUCHULU LEAD',
   avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80',
   onDuty: true,
   assignedSection: 'Main Dining Hall & Courtyard',
@@ -68,7 +68,7 @@ export const INITIAL_WAITER_TABLES = [
   },
   {
     tableNumber: '05',
-    section: 'Heritage Courtyard',
+    section: 'Outdoor Courtyard',
     capacity: 2,
     status: 'call_waiter',
     serverName: 'Ananya Reddy',
@@ -79,7 +79,7 @@ export const INITIAL_WAITER_TABLES = [
   },
   {
     tableNumber: '06',
-    section: 'Heritage Courtyard',
+    section: 'Outdoor Courtyard',
     capacity: 4,
     status: 'cooking',
     serverName: 'Rahul Sharma',
@@ -90,7 +90,7 @@ export const INITIAL_WAITER_TABLES = [
   },
   {
     tableNumber: '07',
-    section: 'Heritage Courtyard',
+    section: 'Outdoor Courtyard',
     capacity: 2,
     status: 'available',
     serverName: 'Unassigned',
@@ -101,7 +101,7 @@ export const INITIAL_WAITER_TABLES = [
   },
   {
     tableNumber: '08',
-    section: 'Heritage Courtyard',
+    section: 'Outdoor Courtyard',
     capacity: 4,
     status: 'cooking',
     serverName: 'Ananya Reddy',
@@ -112,7 +112,7 @@ export const INITIAL_WAITER_TABLES = [
   },
   {
     tableNumber: '09',
-    section: 'Heritage Courtyard',
+    section: 'Outdoor Courtyard',
     capacity: 6,
     status: 'bill_requested',
     serverName: 'Ananya Reddy',
@@ -145,7 +145,7 @@ export const INITIAL_WAITER_TABLES = [
   },
   {
     tableNumber: '12',
-    section: 'Heritage Courtyard',
+    section: 'Outdoor Courtyard',
     capacity: 2,
     status: 'ready',
     serverName: 'Ananya Reddy',

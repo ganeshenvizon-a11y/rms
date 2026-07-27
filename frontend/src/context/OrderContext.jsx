@@ -231,12 +231,12 @@ export const OrderProvider = ({ children }) => {
   const [dishAvailability, setDishAvailability] = useState(() => {
     const stored = getStoredDishAvailability();
     return stored || {
-      'dish-001': { availabilityStatus: 'AVAILABLE', availableQuantity: 12, dailyLimit: 40, soldQuantityToday: 28, availableAfter: null, linkedIngredients: ['ING-DOSA-BATTER'] },
-      'dish-002': { availabilityStatus: 'LOW_STOCK', availableQuantity: 4, dailyLimit: 30, soldQuantityToday: 26, availableAfter: null, linkedIngredients: ['ING-CHICKEN'] },
-      'dish-003': { availabilityStatus: 'AVAILABLE', availableQuantity: 15, dailyLimit: 35, soldQuantityToday: 20, availableAfter: null, linkedIngredients: ['ING-PANEER'] },
-      'dish-004': { availabilityStatus: 'AVAILABLE', availableQuantity: 20, dailyLimit: 50, soldQuantityToday: 30, availableAfter: null, linkedIngredients: [] },
-      'dish-007': { availabilityStatus: 'AVAILABLE_LATER', availableQuantity: 0, dailyLimit: 25, soldQuantityToday: 25, availableAfter: '7:30 PM', linkedIngredients: ['ING-COCONUT'] },
-      'dish-008': { availabilityStatus: 'AVAILABLE', availableQuantity: 50, dailyLimit: 100, soldQuantityToday: 50, availableAfter: null, linkedIngredients: [] },
+      'biryani-chicken-dum': { availabilityStatus: 'AVAILABLE', availableQuantity: 12, dailyLimit: 40, soldQuantityToday: 28, availableAfter: null, linkedIngredients: ['ING-BIRYANI-MASALA'] },
+      'biryani-mutton-dum': { availabilityStatus: 'LOW_STOCK', availableQuantity: 4, dailyLimit: 30, soldQuantityToday: 26, availableAfter: null, linkedIngredients: ['ING-CHICKEN'] },
+      'mcveg-paneer-butter-masala': { availabilityStatus: 'AVAILABLE', availableQuantity: 15, dailyLimit: 35, soldQuantityToday: 20, availableAfter: null, linkedIngredients: ['ING-PANEER'] },
+      'meals-aritaku-veg': { availabilityStatus: 'AVAILABLE', availableQuantity: 20, dailyLimit: 50, soldQuantityToday: 30, availableAfter: null, linkedIngredients: [] },
+      'dessert-carrot-halwa': { availabilityStatus: 'AVAILABLE_LATER', availableQuantity: 0, dailyLimit: 25, soldQuantityToday: 25, availableAfter: '7:30 PM', linkedIngredients: ['ING-CARROT'] },
+      'drink-sweet-lassi': { availabilityStatus: 'AVAILABLE', availableQuantity: 50, dailyLimit: 100, soldQuantityToday: 50, availableAfter: null, linkedIngredients: [] },
     };
   });
 
@@ -968,12 +968,11 @@ export const OrderProvider = ({ children }) => {
 
     // Convert customer items into kitchen ticket items format
     const kitchenTicketItems = (orderData.items || []).map((item, idx) => {
-      let station = 'Dosa & Tiffin Station';
-      if (item.category === 'dosas') station = 'Dosa & Tiffin Station';
-      else if (item.category === 'rice_biryani') station = 'Biryani & Rice Station';
-      else if (item.category === 'curries') station = 'Curry & Sambar Station';
-      else if (item.category === 'starters') station = 'Vada & Appetizer Station';
-      else if (item.category === 'desserts' || item.category === 'beverages') station = 'Beverage & Dessert Station';
+      let station = 'Main Kitchen Station';
+      if (item.category === 'biryanis') station = 'Biryani & Rice Station';
+      else if (item.category === 'main_course_veg' || item.category === 'main_course_nonveg') station = 'Curry & Gravy Station';
+      else if (item.category === 'nonveg_starters' || item.category === 'chinese_veg_starters' || item.category === 'fish_prawns' || item.category === 'tandoor') station = 'Starter & Tandoor Station';
+      else if (item.category === 'desserts' || item.category === 'drinks') station = 'Beverage & Dessert Station';
 
       return {
         id: `k-item-${Date.now()}-${idx}`,

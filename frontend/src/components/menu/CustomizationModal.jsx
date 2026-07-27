@@ -4,8 +4,6 @@ import { X, Plus, Minus, AlertTriangle, Sparkles, Check, Info } from 'lucide-rea
 import { formatMenuPrice } from '../../utils/formatters';
 
 export default function CustomizationModal({ isOpen, onClose, dish, onAddToCart, initialSelections = null }) {
-  if (!isOpen || !dish) return null;
-
   // Initialize state based on dish modifier groups and initialSelections (for edit flow)
   const [selectedOptions, setSelectedOptions] = useState({});
   const [makeVegan, setMakeVegan] = useState(false);
@@ -128,9 +126,9 @@ export default function CustomizationModal({ isOpen, onClose, dish, onAddToCart,
 
   // Calculate Unit Price and Total Price
   const calculatedUnitPrice = useMemo(() => {
-    let unitPrice = dish.price || 0;
+    let unitPrice = dish?.price || 0;
 
-    (dish.modifierGroups || []).forEach(group => {
+    (dish?.modifierGroups || []).forEach(group => {
       const selectedIds = selectedOptions[group.id] || [];
       group.options.forEach(option => {
         if (selectedIds.includes(option.id)) {
@@ -146,7 +144,7 @@ export default function CustomizationModal({ isOpen, onClose, dish, onAddToCart,
 
   // Validation: Check if required single selects have selection
   const isValid = useMemo(() => {
-    for (const group of (dish.modifierGroups || [])) {
+    for (const group of (dish?.modifierGroups || [])) {
       if (group.required) {
         const selected = selectedOptions[group.id];
         if (!selected || selected.length === 0) {
@@ -220,6 +218,8 @@ export default function CustomizationModal({ isOpen, onClose, dish, onAddToCart,
     onClose();
   };
 
+  if (!isOpen || !dish) return null;
+
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
@@ -228,7 +228,7 @@ export default function CustomizationModal({ isOpen, onClose, dish, onAddToCart,
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 100 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+          className="bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
           role="dialog"
           aria-modal="true"
           aria-labelledby="customization-title"

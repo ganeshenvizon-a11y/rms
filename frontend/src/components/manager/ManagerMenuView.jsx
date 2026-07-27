@@ -28,12 +28,12 @@ const CategoryIcon = ({ icon, className = 'w-3.5 h-3.5 inline' }) => {
   return icon ? <span>{icon}</span> : null;
 };
 
-const DISHES_STORAGE_KEY = 'dakshin_menu_dishes';
-const CATEGORIES_STORAGE_KEY = 'dakshin_menu_categories';
+const DISHES_STORAGE_KEY = 'mangamma_menu_dishes';
+const CATEGORIES_STORAGE_KEY = 'mangamma_menu_categories';
 
 const DEFAULT_DISH_FORM = {
   name: '',
-  category: 'dosas',
+  category: 'meals',
   price: '',
   prepTime: '15-20 min',
   description: '',
@@ -93,8 +93,8 @@ const ManagerMenuView = () => {
     setEditingDish(null);
     setDishForm({
       ...DEFAULT_DISH_FORM,
-      category: categories[0]?.id || 'dosas',
-      image: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=800&q=80',
+      category: categories[0]?.id || 'meals',
+      image: 'https://images.pexels.com/photos/8820783/pexels-photo-8820783.jpeg?auto=compress&cs=tinysrgb&w=1200',
     });
     setIsDishModalOpen(true);
   };
@@ -103,7 +103,7 @@ const ManagerMenuView = () => {
     setEditingDish(dish);
     setDishForm({
       name: dish.name || '',
-      category: dish.category || categories[0]?.id || 'dosas',
+      category: dish.category || categories[0]?.id || 'meals',
       price: dish.price ? dish.price.toString() : '',
       prepTime: dish.prepTime || '15-20 min',
       description: dish.description || '',
@@ -510,7 +510,7 @@ const ManagerMenuView = () => {
                   required
                   value={dishForm.name}
                   onChange={(e) => setDishForm({ ...dishForm, name: e.target.value })}
-                  placeholder="e.g. Ghee Roast Masala Dosa"
+                  placeholder="e.g. Chicken Dum Biryani"
                   className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-semibold text-on-surface"
                 />
               </div>
@@ -550,7 +550,7 @@ const ManagerMenuView = () => {
                   rows={2}
                   value={dishForm.description}
                   onChange={(e) => setDishForm({ ...dishForm, description: e.target.value })}
-                  placeholder="Crisp golden fermented rice crepe served with coconut chutney..."
+                  placeholder="Rich, slow dum-cooked rice layered with hand-ground biryani spices..."
                   className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 text-on-surface resize-none"
                 />
               </div>

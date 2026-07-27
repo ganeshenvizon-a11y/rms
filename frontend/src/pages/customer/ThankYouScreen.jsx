@@ -16,7 +16,7 @@ import SignatureDishStoryModal from '../../components/retention/SignatureDishSto
 import ContentRemovalModal from '../../components/retention/ContentRemovalModal';
 import { Heart, RefreshCw, MessageSquare, Award, Camera, ShieldCheck } from 'lucide-react';
 
-const CONFETTI_COLORS = ['#93000b', '#fed01b', '#735c00', '#ffffff'];
+const CONFETTI_COLORS = ['#8D1230', '#E97818', '#F28C28', '#ffffff'];
 
 const useConfettiBurst = (canvasRef) => {
   useEffect(() => {
@@ -162,7 +162,7 @@ const ThankYouScreen = () => {
             </p>
             <p className="text-xs text-outline">Order #{activeOrder?.orderId || 'ORD-1048'} Completed</p>
             <p className="text-lg font-bold text-primary mt-1">
-              Total Paid: {formatInvoiceAmount(activeOrder?.totals?.totalPayable || activeOrder?.totals?.grandTotal || activeOrder?.grandTotal || 672)}
+              Total Paid: {formatInvoiceAmount(activeOrder?.totals?.totalPayable || activeOrder?.totals?.grandTotal || activeOrder?.grandTotal || 997.5)}
             </p>
           </div>
         </div>
@@ -229,7 +229,7 @@ const ThankYouScreen = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-xs text-on-surface">3. Share a Dish Moment</h4>
-                  <p className="text-[11px] text-on-surface-variant">Watch Masala Dosa story or submit authentic content.</p>
+                  <p className="text-[11px] text-on-surface-variant">Watch Chicken Dum Biryani story or submit authentic content.</p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
@@ -293,7 +293,7 @@ const ThankYouScreen = () => {
       <SignatureDishStoryModal
         isOpen={isSignatureDishOpen}
         onClose={() => setIsSignatureDishOpen(false)}
-        dish={{ id: 'dish-001', name: 'Masala Dosa' }}
+        dish={{ id: 'biryani-chicken-dum', name: 'Chicken Dum Biryani' }}
       />
 
       <ContentRemovalModal

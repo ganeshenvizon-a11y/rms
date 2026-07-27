@@ -14,7 +14,7 @@ import Icon from '../../components/common/Icon';
 import BillingSummary from '../../components/common/BillingSummary';
 import CustomizationModal from '../../components/menu/CustomizationModal';
 import HonestExpectationBanner from '../../components/order/HonestExpectationBanner';
-import { AlertTriangle, Edit3, Trash2, Plus, Minus, Info } from 'lucide-react';
+import { AlertTriangle, Edit3, Trash2, Plus, Minus } from 'lucide-react';
 
 const CartScreen = () => {
   const navigate = useNavigate();
@@ -45,7 +45,6 @@ const CartScreen = () => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [showMobileDetails, setShowMobileDetails] = useState(false);
 
-  // Editing state for customization modal
   const [editingItem, setEditingItem] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -107,7 +106,7 @@ const CartScreen = () => {
           <EmptyState
             icon={() => <Icon name="shopping_bag" className="text-4xl" />}
             title="Your cart is empty"
-            description="Explore our authentic South Indian menu and add items to your cart to begin your dining experience."
+            description="Explore our regional menu of biryanis, curries and tandoor grills, and add items to your cart to begin your order."
             actionLabel="Browse Full Menu"
             onAction={() => navigate('/menu')}
           />
@@ -123,13 +122,10 @@ const CartScreen = () => {
 
       <main className="flex-1 pt-20 pb-56 md:pb-16 max-w-[1280px] mx-auto w-full px-4 md:px-10">
         <header className="mb-4">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900">Your Selection</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Table {tableNumber} &bull; Ready for an authentic culinary journey.
-          </p>
+          <h2 className="text-2xl md:text-4xl font-bold text-ink">Your Selection</h2>
+          <p className="text-sm text-muted mt-1">Table {tableNumber} &bull; Review your order before sending it to the kitchen.</p>
         </header>
 
-        {/* Honest Expectation Banner before checkout */}
         <section className="mb-6">
           <HonestExpectationBanner
             kitchenLoad={kitchenLoad}
@@ -146,86 +142,59 @@ const CartScreen = () => {
               const hasModifiers = (item.selectedCustomizations && item.selectedCustomizations.length > 0) || item.makeVegan || item.jainPreparation;
 
               return (
-                <div
-                  key={item.cartItemId || item.id}
-                  className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm flex flex-col gap-3"
-                >
+                <div key={item.cartItemId || item.id} className="bg-surface-container-lowest rounded-2xl p-4 border border-border shadow-card flex flex-col gap-3">
                   <div className="flex gap-4 items-start">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-gray-100"
-                    />
+                    <img src={item.image} alt={item.name} className="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-border" />
 
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-bold text-gray-900 text-base">{item.name}</h3>
-                          <span className="text-xs text-amber-700 font-semibold font-mono">
-                            {formatMenuPrice(singleUnitPrice)} each
-                          </span>
+                          <h3 className="font-bold text-ink text-base">{item.name}</h3>
+                          <span className="text-xs text-maroon-800 font-semibold">{formatMenuPrice(singleUnitPrice)} each</span>
                         </div>
                         <button
                           onClick={() => removeFromCart(item.cartItemId || item.id)}
-                          className="text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded-lg hover:bg-red-50"
+                          className="text-muted hover:text-danger transition-colors p-1.5 rounded-lg hover:bg-danger/10"
                           title="Remove item"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
 
-                      {/* Display Selected Modifiers List */}
                       {hasModifiers && (
-                        <div className="mt-2 text-xs space-y-1 bg-amber-50/60 p-2.5 rounded-xl border border-amber-100">
-                          {item.makeVegan && (
-                            <div className="text-emerald-800 font-semibold flex items-center gap-1">
-                              <span>🌱 Vegan Preparation</span>
-                            </div>
-                          )}
-                          {item.jainPreparation && (
-                            <div className="text-emerald-800 font-semibold flex items-center gap-1">
-                              <span>🌿 Jain Preparation</span>
-                            </div>
-                          )}
+                        <div className="mt-2 text-xs space-y-1 bg-cream p-2.5 rounded-xl border border-border">
+                          {item.makeVegan && <div className="text-success font-semibold flex items-center gap-1"><span>🌱 Vegan Preparation</span></div>}
+                          {item.jainPreparation && <div className="text-success font-semibold flex items-center gap-1"><span>🌿 Jain Preparation</span></div>}
                           {item.selectedCustomizations?.map((mod, idx) => (
-                            <div key={idx} className="text-gray-700 font-medium flex justify-between">
+                            <div key={idx} className="text-text font-medium flex justify-between">
                               <span>• {mod.label || mod.name}</span>
-                              {mod.priceDelta && mod.priceDelta > 0 ? (
-                                <span className="font-mono text-amber-800">+{formatMenuPrice(mod.priceDelta)}</span>
-                              ) : null}
+                              {mod.priceDelta && mod.priceDelta > 0 ? <span className="text-maroon-800">+{formatMenuPrice(mod.priceDelta)}</span> : null}
                             </div>
                           ))}
                         </div>
                       )}
 
-                      {/* Allergy Alert Highlighting */}
                       {item.allergyAlert && (
-                        <div className="mt-2 bg-red-100 border-l-4 border-red-600 p-2.5 rounded-r-xl text-xs text-red-900 space-y-0.5">
-                          <div className="font-bold uppercase tracking-wider flex items-center gap-1">
-                            <AlertTriangle className="w-4 h-4 text-red-600" />
+                        <div className="mt-2 bg-danger/10 border-l-4 border-danger p-2.5 rounded-r-xl text-xs text-ink space-y-0.5">
+                          <div className="font-bold uppercase tracking-wider flex items-center gap-1 text-danger">
+                            <AlertTriangle className="w-4 h-4" />
                             <span>ALLERGY ALERT</span>
                           </div>
                           <p className="font-semibold">{item.allergyAlert}</p>
                         </div>
                       )}
 
-                      {/* Special Instruction */}
-                      {item.itemNote && (
-                        <div className="mt-1 text-xs text-gray-600 italic">
-                          <span>Special instruction: "{item.itemNote}"</span>
-                        </div>
-                      )}
+                      {item.itemNote && <div className="mt-1 text-xs text-muted italic"><span>Special instruction: "{item.itemNote}"</span></div>}
                     </div>
                   </div>
 
-                  {/* Actions & Quantity Controls */}
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
                     <div className="flex items-center gap-2">
                       {item.originalDish?.customizationAvailable !== false && (
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(item)}
-                          className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold rounded-lg border border-amber-200 flex items-center gap-1 transition-colors"
+                          className="px-3 py-1.5 bg-saffron-100 hover:bg-saffron-100/70 text-maroon-900 text-xs font-bold rounded-lg border border-saffron-600/30 flex items-center gap-1 transition-colors"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
                           <span>Edit Customization</span>
@@ -234,60 +203,55 @@ const CartScreen = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                      {/* Quantity Stepper */}
-                      <div className="flex items-center bg-gray-100 rounded-xl p-1">
+                      <div className="flex items-center bg-surface-container rounded-xl p-1">
                         <button
                           onClick={() => updateQuantity(item.cartItemId || item.id, item.quantity - 1)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-white shadow-sm text-gray-700 hover:bg-gray-50 active:scale-90"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest shadow-sm text-text hover:bg-surface-container-low active:scale-90"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="font-bold w-6 text-center text-xs text-gray-900">{item.quantity}</span>
+                        <span className="font-bold w-6 text-center text-xs text-ink">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.cartItemId || item.id, item.quantity + 1)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-white shadow-sm text-gray-700 hover:bg-gray-50 active:scale-90"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest shadow-sm text-text hover:bg-surface-container-low active:scale-90"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
-                      <span className="font-bold text-amber-700 text-base">{formatInvoiceAmount(itemTotalPrice)}</span>
+                      <span className="font-bold text-maroon-800 text-base">{formatInvoiceAmount(itemTotalPrice)}</span>
                     </div>
                   </div>
                 </div>
               );
             })}
 
-            {/* Table Special Order Notes */}
             <div>
-              <label className="text-xs font-semibold text-gray-700 mb-2 block">Special Order Notes</label>
+              <label className="text-xs font-semibold text-text mb-2 block">Special Order Notes</label>
               <textarea
                 rows={2}
                 value={specialOrderNotes}
                 onChange={(e) => setSpecialOrderNotes(e.target.value)}
                 placeholder="e.g. Please bring water first, separate bill requested, etc."
-                className="w-full bg-white border border-gray-200 rounded-xl p-3 focus:ring-2 focus:ring-amber-500 text-xs placeholder:text-gray-400 shadow-sm resize-none outline-none"
+                className="w-full bg-surface-container-lowest border border-border rounded-xl p-3 focus:ring-2 focus:ring-maroon-700/40 text-xs placeholder:text-muted shadow-sm resize-none outline-none"
               />
             </div>
 
-            {/* Promo Code */}
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm space-y-3">
+            <div className="bg-surface-container-lowest rounded-2xl p-4 border border-border shadow-card space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Icon name="sell" className="text-amber-600" />
-                  <span className="text-xs font-bold text-gray-900">Promo Code or Voucher</span>
+                  <Icon name="sell" className="text-saffron-600" />
+                  <span className="text-xs font-bold text-ink">Promo Code or Voucher</span>
                 </div>
-                <span className="text-[10px] text-gray-500 font-medium">Try: DAKSHIN10</span>
+                <span className="text-[10px] text-muted font-medium">Try: MANGAMMA10</span>
               </div>
               {appliedPromo ? (
-                <div className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs">
+                <div className="flex items-center justify-between p-3 bg-success/10 border border-success/30 rounded-xl text-xs">
                   <div>
-                    <span className="font-bold text-emerald-900">{appliedPromo.code}</span>
-                    <p className="text-[10px] text-emerald-700">{appliedPromo.description}</p>
+                    <span className="font-bold text-success">{appliedPromo.code}</span>
+                    <p className="text-[10px] text-success">{appliedPromo.description}</p>
                   </div>
-                  <button onClick={() => setAppliedPromo(null)} className="text-[11px] font-bold text-red-600 underline">
-                    Remove
-                  </button>
+                  <button onClick={() => setAppliedPromo(null)} className="text-[11px] font-bold text-danger underline">Remove</button>
                 </div>
               ) : (
                 <form onSubmit={handleApplyPromo} className="flex gap-2">
@@ -296,12 +260,12 @@ const CartScreen = () => {
                     value={promoCodeInput}
                     onChange={(e) => setPromoCodeInput(e.target.value)}
                     placeholder="Enter promo code"
-                    className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs uppercase font-bold outline-none"
+                    className="flex-1 px-3 py-2 bg-surface-container border border-border rounded-xl text-xs uppercase font-bold outline-none"
                   />
                   <button
                     type="submit"
                     disabled={isApplyingPromo || !promoCodeInput.trim()}
-                    className="px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 hover:bg-amber-700"
+                    className="px-4 py-2 bg-saffron-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 hover:bg-saffron-500"
                   >
                     Apply
                   </button>
@@ -309,7 +273,6 @@ const CartScreen = () => {
               )}
             </div>
 
-            {/* Mobile Billing Summary */}
             <div className="md:hidden">
               <BillingSummary
                 totals={totals}
@@ -323,18 +286,17 @@ const CartScreen = () => {
               />
             </div>
 
-            {/* Desktop Actions */}
             <div className="hidden md:flex gap-4 mt-2">
               <button
                 onClick={() => navigate('/menu')}
-                className="flex-grow h-14 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors active:scale-95 text-sm"
+                className="flex-grow h-14 border border-border text-text rounded-xl font-semibold hover:bg-surface-container transition-colors active:scale-95 text-sm"
               >
                 Continue Ordering
               </button>
               <button
                 onClick={handlePlaceOrder}
                 disabled={isPlacingOrder}
-                className="flex-[2] h-14 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition-opacity active:scale-95 shadow-md disabled:opacity-60 text-sm"
+                className="flex-[2] h-14 bg-saffron-600 text-white rounded-xl font-bold hover:bg-saffron-500 transition-opacity active:scale-95 shadow-md disabled:opacity-60 text-sm"
               >
                 {isPlacingOrder ? 'Placing Order...' : `Place Order • ${formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}`}
               </button>
@@ -359,7 +321,6 @@ const CartScreen = () => {
         </div>
       </main>
 
-      {/* Editing Customization Modal */}
       {editingItem && (
         <CustomizationModal
           isOpen={isEditModalOpen}
@@ -380,52 +341,38 @@ const CartScreen = () => {
         />
       )}
 
-      {/* Mobile Sticky Summary */}
-      <div className="md:hidden fixed bottom-20 left-0 w-full bg-white p-4 flex flex-col gap-2 z-40 border-t border-gray-200 shadow-xl">
+      {/* Mobile sticky footer — "N items · ₹total / Review Order" */}
+      <div className="md:hidden fixed bottom-20 left-0 w-full bg-surface-container-lowest p-4 flex flex-col gap-2 z-40 border-t border-border shadow-xl">
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-[11px] text-gray-500">Total Payable</span>
-            <span className="text-xl font-bold text-amber-700">{formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}</span>
+            <span className="text-[11px] text-muted">
+              {totals.itemCount} {totals.itemCount === 1 ? 'item' : 'items'} · {formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}
+            </span>
           </div>
-          <button
-            onClick={() => setShowMobileDetails((s) => !s)}
-            className="text-amber-700 text-xs font-semibold flex items-center gap-0.5"
-          >
+          <button onClick={() => setShowMobileDetails((s) => !s)} className="text-maroon-800 text-xs font-semibold flex items-center gap-0.5">
             Details
             <Icon name={showMobileDetails ? 'expand_more' : 'expand_less'} />
           </button>
         </div>
         {showMobileDetails && (
-          <div className="flex flex-col gap-1.5 pb-2 border-b border-gray-200 text-xs text-gray-600">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span>{formatInvoiceAmount(totals.subtotal)}</span>
-            </div>
+          <div className="flex flex-col gap-1.5 pb-2 border-b border-border text-xs text-muted">
+            <div className="flex justify-between"><span>Subtotal</span><span>{formatInvoiceAmount(totals.subtotal)}</span></div>
             {totals.discountAmount > 0 && (
-              <div className="flex justify-between text-emerald-600">
-                <span>Discount</span>
-                <span>-{formatInvoiceAmount(totals.discountAmount)}</span>
-              </div>
+              <div className="flex justify-between text-success"><span>Discount</span><span>-{formatInvoiceAmount(totals.discountAmount)}</span></div>
             )}
-            <div className="flex justify-between">
-              <span>GST @ 5%</span>
-              <span>{formatInvoiceAmount(totals.gst)}</span>
-            </div>
+            <div className="flex justify-between"><span>GST @ 5%</span><span>{formatInvoiceAmount(totals.gst)}</span></div>
           </div>
         )}
         <div className="flex gap-2">
-          <button
-            onClick={() => navigate('/menu')}
-            className="flex-1 h-12 border border-gray-300 text-gray-700 rounded-xl font-semibold active:scale-95 text-xs"
-          >
+          <button onClick={() => navigate('/menu')} className="flex-1 h-12 border border-border text-text rounded-xl font-semibold active:scale-95 text-xs">
             Continue
           </button>
           <button
             onClick={handlePlaceOrder}
             disabled={isPlacingOrder}
-            className="flex-[2] h-12 bg-amber-600 text-white rounded-xl font-bold active:scale-95 shadow-md text-xs disabled:opacity-60"
+            className="flex-[2] h-12 bg-saffron-600 text-white rounded-xl font-bold active:scale-95 shadow-md text-xs disabled:opacity-60"
           >
-            {isPlacingOrder ? 'Placing...' : 'Place Order'}
+            {isPlacingOrder ? 'Placing...' : 'Review Order'}
           </button>
         </div>
       </div>

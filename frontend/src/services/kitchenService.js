@@ -10,26 +10,26 @@ export const INITIAL_KITCHEN_ORDERS = [
     isRush: true,
     createdAt: new Date(Date.now() - 4 * 60 * 1000).toISOString(), // 4 min ago
     elapsedSeconds: 240,
-    specialNotes: 'ALLERGY WARNING: Customer has GLUTEN SENSITIVITY. Use separate Dosa Tava.',
+    specialNotes: 'ALLERGY WARNING: Customer has GLUTEN SENSITIVITY. Use separate cooking equipment.',
     items: [
       {
         id: 'k-item-1',
-        dishId: 'dish-1',
-        name: 'Desi Ghee Roast Masala Dosa',
+        dishId: 'cveg-gobi-65',
+        name: 'Gobi 65',
         quantity: 2,
-        station: 'Dosa & Tiffin Station',
+        station: 'Starter & Tandoor Station',
         isDone: false,
-        selectedOptions: ['Extra Pure Cow Ghee', 'Fiery Garlic Red Chutney'],
-        notes: 'Serve piping hot with extra sambar'
+        selectedOptions: ['Extra Spicy', 'No Onion'],
+        notes: 'Serve piping hot'
       },
       {
         id: 'k-item-2',
-        dishId: 'dish-3',
-        name: 'Steamed Rice Idli & Medu Vada Platter',
+        dishId: 'cveg-crispy-corn',
+        name: 'Crispy Corn Kernel',
         quantity: 1,
-        station: 'Dosa & Tiffin Station',
+        station: 'Starter & Tandoor Station',
         isDone: true,
-        selectedOptions: ['1 Extra Crispy Medu Vada'],
+        selectedOptions: ['Extra Crispy'],
         notes: ''
       }
     ]
@@ -43,27 +43,27 @@ export const INITIAL_KITCHEN_ORDERS = [
     isRush: false,
     createdAt: new Date(Date.now() - 12 * 60 * 1000).toISOString(), // 12 min ago
     elapsedSeconds: 720,
-    specialNotes: 'Anniversary celebration! Serve filter coffee after main course.',
+    specialNotes: 'Anniversary celebration! Serve dessert after main course.',
     items: [
       {
         id: 'k-item-3',
-        dishId: 'dish-4',
-        name: 'Chettinad Seeraga Samba Chicken Biryani',
+        dishId: 'biryani-chicken-special',
+        name: 'Special Chicken Dum Biryani',
         quantity: 1,
         station: 'Biryani & Rice Station',
         isDone: true,
-        selectedOptions: ['Authentic Chettinad Spicy'],
+        selectedOptions: ['Extra Spicy'],
         notes: 'Extra onion raita on side'
       },
       {
         id: 'k-item-4',
-        dishId: 'dish-5',
-        name: 'Malabar Layered Parotta & Veg Kurma',
+        dishId: 'mcveg-mix-veg-curry',
+        name: 'Mix Veg Curry with Lacha Paratha',
         quantity: 1,
-        station: 'Curry & Sambar Station',
+        station: 'Curry & Gravy Station',
         isDone: false,
-        selectedOptions: ['Upgrade to Spicy Chicken Sukka Gravy'],
-        notes: 'Flaky warm parottas'
+        selectedOptions: ['Extra Spicy'],
+        notes: 'Flaky warm parathas'
       }
     ]
   },
@@ -76,27 +76,27 @@ export const INITIAL_KITCHEN_ORDERS = [
     isRush: false,
     createdAt: new Date(Date.now() - 8 * 60 * 1000).toISOString(), // 8 min ago
     elapsedSeconds: 480,
-    specialNotes: 'Kids at table - bring idli and sweet payasam first.',
+    specialNotes: 'Kids at table - bring starters and dessert first.',
     items: [
       {
         id: 'k-item-5',
-        dishId: 'dish-3',
-        name: 'Steamed Rice Idli & Medu Vada Platter',
+        dishId: 'cveg-crispy-corn',
+        name: 'Crispy Corn Kernel',
         quantity: 2,
-        station: 'Dosa & Tiffin Station',
+        station: 'Starter & Tandoor Station',
         isDone: true,
         selectedOptions: [],
-        notes: 'Mild coconut chutney'
+        notes: 'Mild seasoning'
       },
       {
         id: 'k-item-6',
-        dishId: 'dish-2',
-        name: 'Mysore Red Masala Dosa Special',
+        dishId: 'cveg-paneer-65',
+        name: 'Paneer 65',
         quantity: 2,
-        station: 'Dosa & Tiffin Station',
+        station: 'Starter & Tandoor Station',
         isDone: false,
-        selectedOptions: ['Melted Amul Cheese Grating'],
-        notes: 'Extra crispy roast'
+        selectedOptions: ['Extra Spicy'],
+        notes: 'Extra crispy'
       }
     ]
   },
@@ -113,23 +113,23 @@ export const INITIAL_KITCHEN_ORDERS = [
     items: [
       {
         id: 'k-item-7',
-        dishId: 'dish-8',
-        name: 'Tender Coconut Elaneer Payasam',
+        dishId: 'dessert-carrot-halwa',
+        name: 'Carrot Halwa',
         quantity: 2,
         station: 'Beverage & Dessert Station',
         isDone: true,
         selectedOptions: [],
-        notes: 'Chilled serving'
+        notes: 'Fresh serving'
       },
       {
         id: 'k-item-8',
-        dishId: 'dish-9',
-        name: 'Kumbakonam Degree Filter Kaapi',
+        dishId: 'drink-sweet-lassi',
+        name: 'Sweet Lassi',
         quantity: 2,
         station: 'Beverage & Dessert Station',
         isDone: true,
-        selectedOptions: ['Organic Palm Jaggery (Karupatti)'],
-        notes: 'Frothy hot in brass Dabarah'
+        selectedOptions: ['Less Sweet'],
+        notes: 'Served chilled'
       }
     ]
   },
@@ -146,10 +146,10 @@ export const INITIAL_KITCHEN_ORDERS = [
     items: [
       {
         id: 'k-item-9',
-        dishId: 'dish-1',
-        name: 'Desi Ghee Roast Masala Dosa',
+        dishId: 'cveg-gobi-65',
+        name: 'Gobi 65',
         quantity: 1,
-        station: 'Dosa & Tiffin Station',
+        station: 'Starter & Tandoor Station',
         isDone: true,
         selectedOptions: [],
         notes: ''
@@ -169,7 +169,7 @@ export const INITIAL_ASSISTANCE_REQUESTS = [
   {
     id: 'req-2',
     tableNumber: '05',
-    requestType: 'Request Hot Filter Coffee Tumblers',
+    requestType: 'Request Chilled Sweet Lassi Glasses',
     status: 'pending',
     timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString()
   },

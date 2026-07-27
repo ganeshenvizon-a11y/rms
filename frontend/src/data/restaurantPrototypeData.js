@@ -18,19 +18,19 @@ export const SHARED_PROTOTYPE_IDS = {
 
 export const RESTAURANT_TRUST_PROFILE = {
   restaurantId: 'REST-001',
-  restaurantName: 'Dakshin Heritage Restaurant',
+  restaurantName: 'Mangamma Ruchulu',
   shortKitchenIntroduction:
-    'Regional South Indian food prepared fresh for each service period using authentic stone-ground spices.',
+    'Regional Andhra & Telangana food prepared fresh for each service period using authentic stone-ground spices.',
 
   chefProfile: {
     name: 'Chef Arjun Rao',
     role: 'Head Chef',
     experienceLabel: '12 years of professional kitchen experience',
     story:
-      'Trained under traditional master cooks across Udupi and Karaikudi, Chef Arjun emphasizes slow-fermented batters, fresh morning spice roasts, and precise cooking timing.',
+      'Trained under traditional master cooks across Andhra Pradesh and Telangana, Chef Arjun emphasizes hand-ground masalas, wood-fired tandoor technique, and precise dum-cooking timing.',
     image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=400&q=80',
     philosophy: 'Authentic flavors through fresh ingredients and traditional heat techniques.',
-    speciality: 'Seeraga Samba Biryanis & Ghee Roast Dosas'
+    speciality: 'Andhra-Style Dum Biryanis & Tandoor Specialities'
   },
 
   ingredientSourcing: [
@@ -99,7 +99,7 @@ export const VERIFIED_CUSTOMER_PHOTOS = [
     verifiedOrder: true,
     submittedAt: '26 Jul 2026',
     image: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=600&q=80',
-    caption: 'Crisp Masala Dosa served hot'
+    caption: 'Fragrant Chicken Dum Biryani served hot'
   },
   {
     photoId: 'PHOTO-1043-1',
@@ -109,7 +109,7 @@ export const VERIFIED_CUSTOMER_PHOTOS = [
     verifiedOrder: true,
     submittedAt: '25 Jul 2026',
     image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80',
-    caption: 'Chettinad Biryani with fresh raita'
+    caption: 'Mutton Dum Biryani with fresh raita'
   }
 ];
 
@@ -119,7 +119,7 @@ export const VERIFIED_CUSTOMER_REVIEWS = [
     orderId: 'ORD-1048',
     billId: 'BILL-1048',
     rating: 5,
-    reviewText: 'The dosa was crisp and the updated preparation time was accurate.',
+    reviewText: 'The biryani was fragrant and the updated preparation time was accurate.',
     submittedAt: '26 Jul 2026',
     verificationStatus: 'VERIFIED_COMPLETED_ORDER',
     displayName: 'Verified guest'
@@ -129,7 +129,7 @@ export const VERIFIED_CUSTOMER_REVIEWS = [
     orderId: 'ORD-1039',
     billId: 'BILL-1039',
     rating: 4,
-    reviewText: 'Great Veg Thali meal. Kitchen load updates kept us informed about the short wait.',
+    reviewText: 'Great Aritaku Bojanam (Veg) meal. Kitchen load updates kept us informed about the short wait.',
     submittedAt: '25 Jul 2026',
     verificationStatus: 'VERIFIED_COMPLETED_ORDER',
     displayName: 'Verified guest'
@@ -151,7 +151,7 @@ export const INITIAL_PROTOTYPE_EMPLOYEES = [
     name: 'Rahul Sharma',
     role: 'Waiter',
     phone: '+91 98401 11223',
-    email: 'rahul.s@dakshin.in',
+    email: 'rahul.s@mangammaruchulu.in',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
     shift: 'Morning Shift (09:00 - 18:00)',
     status: 'On Shift',
@@ -166,7 +166,7 @@ export const INITIAL_PROTOTYPE_EMPLOYEES = [
     name: 'Ananya Reddy',
     role: 'Shift Manager',
     phone: '+91 98402 22334',
-    email: 'ananya.r@dakshin.in',
+    email: 'ananya.r@mangammaruchulu.in',
     avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
     shift: 'Morning Shift (09:00 - 18:00)',
     status: 'On Shift',
@@ -181,7 +181,7 @@ export const INITIAL_PROTOTYPE_EMPLOYEES = [
     name: 'Imran Khan',
     role: 'Counter Staff',
     phone: '+91 98403 33445',
-    email: 'imran.k@dakshin.in',
+    email: 'imran.k@mangammaruchulu.in',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
     shift: 'Full Shift (08:30 - 17:30)',
     status: 'On Shift',
@@ -196,7 +196,7 @@ export const INITIAL_PROTOTYPE_EMPLOYEES = [
     name: 'Sneha Patel',
     role: 'Kitchen Staff',
     phone: '+91 98404 44556',
-    email: 'sneha.p@dakshin.in',
+    email: 'sneha.p@mangammaruchulu.in',
     avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=200&q=80',
     shift: 'Mid Shift (10:00 - 19:00)',
     status: 'On Shift',
@@ -211,7 +211,7 @@ export const INITIAL_PROTOTYPE_EMPLOYEES = [
     name: 'Chef Arjun Rao',
     role: 'Head Chef',
     phone: '+91 98405 55667',
-    email: 'arjun.r@dakshin.in',
+    email: 'arjun.r@mangammaruchulu.in',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
     shift: 'Full Day',
     status: 'On Shift',
@@ -228,29 +228,29 @@ export const INITIAL_INGREDIENTS = [
     ingredientId: 'ING-PANEER',
     ingredientName: 'Paneer',
     status: 'AVAILABLE',
-    affectedItems: ['dish-003'],
+    affectedItems: ['mcveg-paneer-butter-masala'],
     affectedItemNames: ['Paneer Butter Masala']
   },
   {
     ingredientId: 'ING-CHICKEN',
     ingredientName: 'Chicken Stock',
     status: 'AVAILABLE',
-    affectedItems: ['dish-002'],
-    affectedItemNames: ['Chettinad Chicken Biryani']
+    affectedItems: ['biryani-mutton-dum'],
+    affectedItemNames: ['Mutton Dum Biryani']
   },
   {
-    ingredientId: 'ING-DOSA-BATTER',
-    ingredientName: 'Fermented Dosa Batter',
+    ingredientId: 'ING-BIRYANI-MASALA',
+    ingredientName: 'Dum Biryani Masala Mix',
     status: 'AVAILABLE',
-    affectedItems: ['dish-001', 'dish-009'],
-    affectedItemNames: ['Masala Dosa', 'Ghee Podi Idli']
+    affectedItems: ['biryani-chicken-dum', 'cveg-crispy-corn'],
+    affectedItemNames: ['Chicken Dum Biryani', 'Crispy Corn Kernel']
   },
   {
-    ingredientId: 'ING-COCONUT',
-    ingredientName: 'Tender Coconut Pulp',
+    ingredientId: 'ING-CARROT',
+    ingredientName: 'Fresh Carrot',
     status: 'AVAILABLE',
-    affectedItems: ['dish-007'],
-    affectedItemNames: ['Elaneer Payasam']
+    affectedItems: ['dessert-carrot-halwa'],
+    affectedItemNames: ['Carrot Halwa']
   }
 ];
 
@@ -366,31 +366,31 @@ export const INITIAL_PROTOTYPE_ORDERS = [
         orderItemId: 'ITEM-1048-01',
         id: 'item-1048-01',
         orderId: 'ORD-1048',
-        dishId: 'dish-001',
-        name: 'Masala Dosa',
+        dishId: 'biryani-chicken-dum',
+        name: 'Chicken Dum Biryani',
         quantity: 2,
-        unitPrice: 140,
-        total: 280,
-        station: 'DOSA_STATION',
+        unitPrice: 250,
+        total: 500,
+        station: 'BIRYANI_STATION',
         course: 'MAIN',
         courseAction: 'FIRE_NOW',
         status: 'READY',
         readinessStatus: 'READY',
         preparationStartedAt: '7:23 PM',
         expectedReadyAt: '7:38 PM',
-        note: 'Extra crispy, less oil',
+        note: 'Extra raita, less oil',
         spiceLevel: 'MEDIUM',
-        modifiers: ['Medium Spice', 'Use Ghee', 'No Onion']
+        modifiers: ['Medium Spice', 'Extra Raita', 'No Onion']
       },
       {
         orderItemId: 'ITEM-1048-02',
         id: 'item-1048-02',
         orderId: 'ORD-1048',
-        dishId: 'dish-008',
-        name: 'Filter Coffee',
+        dishId: 'drink-sweet-lassi',
+        name: 'Sweet Lassi',
         quantity: 2,
-        unitPrice: 60,
-        total: 120,
+        unitPrice: 100,
+        total: 200,
         station: 'BEVERAGE_STATION',
         course: 'BEVERAGE',
         courseAction: 'FIRE_NOW',
@@ -398,19 +398,19 @@ export const INITIAL_PROTOTYPE_ORDERS = [
         readinessStatus: 'READY',
         preparationStartedAt: '7:20 PM',
         expectedReadyAt: '7:25 PM',
-        note: 'Strong blend',
+        note: 'Less sweet',
         spiceLevel: 'MILD',
-        modifiers: ['Strong Blend', 'Less Sugar']
+        modifiers: ['Less Sweet', 'Chilled']
       },
       {
         orderItemId: 'ITEM-1048-03',
         id: 'item-1048-03',
         orderId: 'ORD-1048',
-        dishId: 'dish-004',
-        name: 'Veg Meals / Thali',
+        dishId: 'meals-aritaku-veg',
+        name: 'Aritaku Bojanam (Veg)',
         quantity: 1,
-        unitPrice: 240,
-        total: 240,
+        unitPrice: 250,
+        total: 250,
         station: 'BIRYANI_STATION',
         course: 'MAIN',
         courseAction: 'FIRE_NOW',
@@ -423,10 +423,10 @@ export const INITIAL_PROTOTYPE_ORDERS = [
         modifiers: ['Standard Spice']
       }
     ],
-    subtotal: 640,
-    tax: 32,
+    subtotal: 950,
+    tax: 47.5,
     tip: 0,
-    total: 672
+    total: 997.5
   },
   {
     orderId: 'ORD-1043',
@@ -447,7 +447,7 @@ export const INITIAL_PROTOTYPE_ORDERS = [
     prepStartedAt: '6:55 PM',
     previousEstimate: '7:10 PM',
     estimatedReadyAt: '7:22 PM',
-    etaChangeReason: 'High kitchen queue for Chettinad dishes',
+    etaChangeReason: 'High kitchen queue for biryani orders',
     etaUpdatedAt: '7:05 PM',
     elapsedMinutes: 34,
     guestCount: 4,
@@ -458,11 +458,11 @@ export const INITIAL_PROTOTYPE_ORDERS = [
         orderItemId: 'ITEM-1043-01',
         id: 'item-1043-01',
         orderId: 'ORD-1043',
-        dishId: 'dish-002',
-        name: 'Chettinad Chicken Biryani',
+        dishId: 'biryani-mutton-dum',
+        name: 'Mutton Dum Biryani',
         quantity: 2,
-        unitPrice: 320,
-        total: 640,
+        unitPrice: 381,
+        total: 762,
         station: 'BIRYANI_STATION',
         course: 'MAIN',
         courseAction: 'FIRE_NOW',
@@ -478,11 +478,11 @@ export const INITIAL_PROTOTYPE_ORDERS = [
         orderItemId: 'ITEM-1043-02',
         id: 'item-1043-02',
         orderId: 'ORD-1043',
-        dishId: 'dish-003',
+        dishId: 'mcveg-paneer-butter-masala',
         name: 'Paneer Butter Masala',
         quantity: 1,
-        unitPrice: 260,
-        total: 260,
+        unitPrice: 311,
+        total: 311,
         station: 'CURRY_STATION',
         course: 'MAIN',
         courseAction: 'FIRE_NOW',
@@ -498,11 +498,11 @@ export const INITIAL_PROTOTYPE_ORDERS = [
         orderItemId: 'ITEM-1043-03',
         id: 'item-1043-03',
         orderId: 'ORD-1043',
-        dishId: 'dish-007',
-        name: 'Elaneer Payasam',
+        dishId: 'dessert-carrot-halwa',
+        name: 'Carrot Halwa',
         quantity: 2,
-        unitPrice: 140,
-        total: 280,
+        unitPrice: 120,
+        total: 240,
         station: 'DESSERT_STATION',
         course: 'DESSERT',
         courseAction: 'HOLD',
@@ -510,15 +510,15 @@ export const INITIAL_PROTOTYPE_ORDERS = [
         readinessStatus: 'HOLD',
         preparationStartedAt: null,
         expectedReadyAt: 'After Main Course',
-        note: 'Chilled - Serve after main course',
+        note: 'Serve after main course',
         spiceLevel: 'MILD',
-        modifiers: ['Chilled']
+        modifiers: ['Extra Nuts']
       }
     ],
-    subtotal: 1180,
-    tax: 59,
+    subtotal: 1313,
+    tax: 65.65,
     tip: 0,
-    total: 1239
+    total: 1378.65
   },
   {
     orderId: 'ORD-1044',
@@ -543,14 +543,14 @@ export const INITIAL_PROTOTYPE_ORDERS = [
     guestCount: 3,
     isDelayed: false,
     items: [
-      { orderItemId: 'ITEM-1044-01', id: 'item-1044-01', orderId: 'ORD-1044', dishId: 'dish-001', name: 'Masala Dosa', quantity: 2, unitPrice: 140, total: 280, station: 'DOSA_STATION', course: 'MAIN', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
-      { orderItemId: 'ITEM-1044-02', id: 'item-1044-02', orderId: 'ORD-1044', dishId: 'dish-003', name: 'Paneer Butter Masala', quantity: 1, unitPrice: 260, total: 260, station: 'CURRY_STATION', course: 'MAIN', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
-      { orderItemId: 'ITEM-1044-03', id: 'item-1044-03', orderId: 'ORD-1044', dishId: 'dish-008', name: 'Filter Coffee', quantity: 3, unitPrice: 60, total: 180, station: 'BEVERAGE_STATION', course: 'BEVERAGE', status: 'SERVED', readinessStatus: 'READY', modifiers: [] }
+      { orderItemId: 'ITEM-1044-01', id: 'item-1044-01', orderId: 'ORD-1044', dishId: 'biryani-chicken-dum', name: 'Chicken Dum Biryani', quantity: 2, unitPrice: 250, total: 500, station: 'BIRYANI_STATION', course: 'MAIN', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
+      { orderItemId: 'ITEM-1044-02', id: 'item-1044-02', orderId: 'ORD-1044', dishId: 'mcveg-paneer-butter-masala', name: 'Paneer Butter Masala', quantity: 1, unitPrice: 311, total: 311, station: 'CURRY_STATION', course: 'MAIN', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
+      { orderItemId: 'ITEM-1044-03', id: 'item-1044-03', orderId: 'ORD-1044', dishId: 'drink-sweet-lassi', name: 'Sweet Lassi', quantity: 3, unitPrice: 100, total: 300, station: 'BEVERAGE_STATION', course: 'BEVERAGE', status: 'SERVED', readinessStatus: 'READY', modifiers: [] }
     ],
-    subtotal: 720,
-    tax: 36,
+    subtotal: 1111,
+    tax: 55.55,
     tip: 0,
-    total: 756
+    total: 1166.55
   },
   {
     orderId: 'ORD-1039',
@@ -575,16 +575,16 @@ export const INITIAL_PROTOTYPE_ORDERS = [
     guestCount: 2,
     isDelayed: false,
     items: [
-      { orderItemId: 'ITEM-1039-01', id: 'item-1039-01', orderId: 'ORD-1039', dishId: 'dish-004', name: 'Veg Meals / Thali', quantity: 2, unitPrice: 240, total: 480, station: 'BIRYANI_STATION', course: 'MAIN', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
-      { orderItemId: 'ITEM-1039-02', id: 'item-1039-02', orderId: 'ORD-1039', dishId: 'dish-008', name: 'Filter Coffee', quantity: 2, unitPrice: 60, total: 120, station: 'BEVERAGE_STATION', course: 'BEVERAGE', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
-      { orderItemId: 'ITEM-1039-03', id: 'item-1039-03', orderId: 'ORD-1039', dishId: 'dish-009', name: 'Ghee Podi Idli', quantity: 1, unitPrice: 130, total: 130, station: 'DOSA_STATION', course: 'STARTER', status: 'SERVED', readinessStatus: 'READY', modifiers: [] }
+      { orderItemId: 'ITEM-1039-01', id: 'item-1039-01', orderId: 'ORD-1039', dishId: 'meals-aritaku-veg', name: 'Aritaku Bojanam (Veg)', quantity: 2, unitPrice: 250, total: 500, station: 'BIRYANI_STATION', course: 'MAIN', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
+      { orderItemId: 'ITEM-1039-02', id: 'item-1039-02', orderId: 'ORD-1039', dishId: 'drink-sweet-lassi', name: 'Sweet Lassi', quantity: 2, unitPrice: 100, total: 200, station: 'BEVERAGE_STATION', course: 'BEVERAGE', status: 'SERVED', readinessStatus: 'READY', modifiers: [] },
+      { orderItemId: 'ITEM-1039-03', id: 'item-1039-03', orderId: 'ORD-1039', dishId: 'cveg-crispy-corn', name: 'Crispy Corn Kernel', quantity: 1, unitPrice: 250, total: 250, station: 'STARTER_STATION', course: 'STARTER', status: 'SERVED', readinessStatus: 'READY', modifiers: [] }
     ],
-    subtotal: 730,
-    tax: 36.5,
+    subtotal: 950,
+    tax: 47.5,
     tip: 0,
-    total: 766.5,
-    invoiceTotal: 820.00,
-    paymentRecorded: 800.00,
+    total: 997.5,
+    invoiceTotal: 997.5,
+    paymentRecorded: 977.5,
     mismatchDifference: 20.00,
     mismatchNote: 'Cash rounding dispute of ₹20'
   }
@@ -612,18 +612,18 @@ export const INITIAL_PROTOTYPE_BILLS = [
     tableNumber: '08',
     orderId: 'ORD-1048',
     orderIds: ['ORD-1048'],
-    subtotal: 640,
+    subtotal: 950,
     discount: 0,
     discountReason: null,
     discountApprovedBy: null,
     compItems: [],
     packagingCharge: 20,
-    gst: 33,
-    invoiceTotal: 693,
-    amount: 693,
+    gst: 48.5,
+    invoiceTotal: 1018.5,
+    amount: 1018.5,
     paymentStatus: 'UNPAID',
     paidAmount: 0,
-    balanceDue: 693,
+    balanceDue: 1018.5,
     billRequestTime: '7:40 PM',
     waitingDurationMinutes: 5,
     assignedCounter: 'Imran Khan',
@@ -631,7 +631,7 @@ export const INITIAL_PROTOTYPE_BILLS = [
     paymentRecords: [],
     refundRecords: [],
     reconciliationStatus: 'PARTIALLY_PAID',
-    reconciliationDifference: 693,
+    reconciliationDifference: 1018.5,
     isVoided: false,
     splitMode: 'NONE',
     splitDetails: null
@@ -642,18 +642,18 @@ export const INITIAL_PROTOTYPE_BILLS = [
     tableNumber: '04',
     orderId: 'ORD-1044',
     orderIds: ['ORD-1044'],
-    subtotal: 720,
+    subtotal: 1111,
     discount: 50,
     discountReason: 'Service Delay Recovery',
     discountApprovedBy: 'Ananya Reddy',
     compItems: [],
     packagingCharge: 0,
-    gst: 33.5,
-    invoiceTotal: 703.5,
-    amount: 703.5,
+    gst: 53.05,
+    invoiceTotal: 1114.05,
+    amount: 1114.05,
     paymentStatus: 'UNPAID',
     paidAmount: 0,
-    balanceDue: 703.5,
+    balanceDue: 1114.05,
     billRequestTime: '7:15 PM',
     waitingDurationMinutes: 9,
     assignedCounter: 'Imran Khan',
@@ -661,7 +661,7 @@ export const INITIAL_PROTOTYPE_BILLS = [
     paymentRecords: [],
     refundRecords: [],
     reconciliationStatus: 'PARTIALLY_PAID',
-    reconciliationDifference: 703.5,
+    reconciliationDifference: 1114.05,
     isVoided: false,
     splitMode: 'NONE',
     splitDetails: null
@@ -672,24 +672,24 @@ export const INITIAL_PROTOTYPE_BILLS = [
     tableNumber: '02',
     orderId: 'ORD-1039',
     orderIds: ['ORD-1039'],
-    subtotal: 730,
+    subtotal: 950,
     discount: 0,
     discountReason: null,
     discountApprovedBy: null,
     compItems: [],
     packagingCharge: 0,
-    gst: 36.5,
-    invoiceTotal: 766.5,
-    amount: 766.5,
+    gst: 47.5,
+    invoiceTotal: 997.5,
+    amount: 997.5,
     paymentStatus: 'MISMATCH',
-    paidAmount: 746.5,
+    paidAmount: 977.5,
     balanceDue: 20.00,
     billRequestTime: '6:40 PM',
     waitingDurationMinutes: 44,
     assignedCounter: 'Imran Khan',
     status: 'MISMATCH_REVIEW',
     paymentRecords: [
-      { paymentId: 'PAY-1039-1', method: 'CASH', amount: 746.5, payerName: 'Guest 1', paidAt: '6:50 PM' }
+      { paymentId: 'PAY-1039-1', method: 'CASH', amount: 977.5, payerName: 'Guest 1', paidAt: '6:50 PM' }
     ],
     refundRecords: [],
     reconciliationStatus: 'MISMATCH',
@@ -710,8 +710,8 @@ export const INITIAL_PROTOTYPE_ISSUES = [
     category: 'MISSING_ITEM',
     categoryLabel: 'Missing Item',
     affectedItemId: 'item-1048-03',
-    affectedItemName: 'Veg Meals / Thali',
-    description: 'Veg Thali shown in order summary was missing from the tray delivered to table.',
+    affectedItemName: 'Aritaku Bojanam (Veg)',
+    description: 'Aritaku Bojanam (Veg) shown in order summary was missing from the tray delivered to table.',
     priority: 'HIGH',
     status: 'ACTION_IN_PROGRESS', // REPORTED, ACKNOWLEDGED, OWNER_ASSIGNED, ACTION_IN_PROGRESS, WAITING_FOR_CUSTOMER, RESOLVED, REOPENED, CLOSED
     statusLabel: 'Replacement being prepared',
@@ -738,7 +738,7 @@ export const INITIAL_PROTOTYPE_ISSUES = [
     category: 'EXCESSIVE_DELAY',
     categoryLabel: 'Excessive Delay',
     affectedItemId: 'item-1043-01',
-    affectedItemName: 'Chettinad Chicken Biryani',
+    affectedItemName: 'Mutton Dum Biryani',
     description: 'Biryani order taking over 30 minutes. Customer requested immediate check with head chef.',
     priority: 'HIGH',
     status: 'OWNER_ASSIGNED',
@@ -771,7 +771,7 @@ export const INITIAL_PROTOTYPE_CUSTOMER_MEMORY = {
     celebrations: false,
     loyalty: true
   },
-  favourites: ['dish-001', 'dish-008'],
+  favourites: ['biryani-chicken-dum', 'drink-sweet-lassi'],
   spicePreference: 'MEDIUM',
   dietaryPreference: 'VEGETARIAN',
   allergies: [],
@@ -829,8 +829,8 @@ export const INITIAL_PROTOTYPE_AUDIT_LOGS = [
     actionId: 'AUD-1002',
     actionType: 'ITEM_STOCK_UPDATED',
     entityType: 'MENU_ITEM',
-    entityId: 'dish-006',
-    entityLabel: 'Medu Vada',
+    entityId: 'cveg-gobi-65',
+    entityLabel: 'Gobi 65',
     reason: 'Evening batch sold out',
     note: 'Marked Temporarily Unavailable',
     performedBy: 'Chef Arjun Rao (Head Chef)',
@@ -921,15 +921,15 @@ export const INITIAL_PROTOTYPE_CUSTOMER_MEMBERSHIP = {
     guestNote: 'Window bay table preferred if available'
   },
   favouriteDishAlerts: [
-    { dishId: 'dish-001', dishName: 'Masala Dosa', preferenceChannel: 'In-app' },
-    { dishId: 'dish-008', dishName: 'Filter Coffee', preferenceChannel: 'In-app' }
+    { dishId: 'biryani-chicken-dum', dishName: 'Chicken Dum Biryani', preferenceChannel: 'In-app' },
+    { dishId: 'drink-sweet-lassi', dishName: 'Sweet Lassi', preferenceChannel: 'In-app' }
   ],
   activeHospitalityBenefits: [
     {
       benefitId: 'BEN-501',
       milestoneId: 'VISIT-5',
       title: 'Complimentary Chef-Selected Dessert',
-      description: 'Chef-selected dessert (Elaneer Payasam) after 5 completed visits.',
+      description: 'Chef-selected dessert (Carrot Halwa) after 5 completed visits.',
       status: 'Eligible', // 'Eligible', 'Redeemed', 'Expired', 'Not Currently Available'
       redeemedAt: null,
       validUntil: '30 Aug 2026',
@@ -941,24 +941,24 @@ export const INITIAL_PROTOTYPE_CUSTOMER_MEMBERSHIP = {
 export const INITIAL_CHEF_PREVIEWS = [
   {
     id: 'PREV-201',
-    eventTitle: 'Monsoon Malabar Spice Tasting',
+    eventTitle: 'Monsoon Andhra Spice Tasting',
     date: '10 Aug 2026',
     time: '7:30 PM',
     totalSeats: 12,
     availableSeats: 4,
-    dietaryTheme: 'Vegetarian & Coastal Malabar Fusion',
+    dietaryTheme: 'Vegetarian & Regional Andhra Fusion',
     chefNote: 'Chef Arjun presents 4 seasonal trial recipes for guest feedback.',
     status: 'REQUEST_INVITATION'
   },
   {
     id: 'PREV-202',
-    eventTitle: 'Temple Cuisine Heirloom Grains Preview',
+    eventTitle: 'Heirloom Grains Preview',
     date: '25 Aug 2026',
     time: '8:00 PM',
     totalSeats: 12,
     availableSeats: 2,
     dietaryTheme: 'Millet & Hand-Pounded Spice Heritage',
-    chefNote: 'Traditional Udupi recipe revival with slow-clay-pot cooking.',
+    chefNote: 'Traditional Telangana recipe revival with slow-clay-pot cooking.',
     status: 'REQUEST_INVITATION'
   }
 ];
@@ -975,62 +975,62 @@ export const INITIAL_REGIONAL_FOOD_FESTIVALS = [
     id: 'FEST-102',
     title: 'Millet Menu Weekend',
     period: '15 Aug – 17 Aug 2026',
-    description: 'Ancient grain dosas, Foxtail millet khichdi, and ragi malt desserts.',
+    description: 'Ragi sangati specials, Foxtail millet khichdi, and ragi malt desserts.',
     accessLevel: 'Community Member preview'
   }
 ];
 
 export const SIGNATURE_DISH_STORIES = {
-  'dish-001': {
+  'biryani-chicken-dum': {
     signatureDish: true,
     socialStory: {
       verticalVideo: 'https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-food-in-a-pan-43407-large.mp4',
       videoDurationSeconds: 10,
-      origin: 'Originating in the temple kitchens of Udupi, Karnataka, the Masala Dosa is a masterpiece of fermented rice and black gram batter, pan-roasted to a paper-thin gold crust.',
-      chefNote: 'Best enjoyed immediately while the dosa remains crisp and golden.',
-      ingredientStory: 'Fermented rice and lentil batter prepared in controlled morning batches and cooked to order on heavy cast iron griddles.',
-      suggestedStoryTemplate: 'Trying the signature Masala Dosa at Dakshin Heritage Restaurant.',
-      restaurantTag: '@DemoRestaurant',
-      locationLabel: 'Bengaluru, Karnataka'
+      origin: 'A regional Andhra classic, Chicken Dum Biryani is layered rice and spiced chicken sealed and slow-cooked over a low flame for deep, even flavour.',
+      chefNote: 'Best enjoyed immediately while the dum seal is freshly opened at the table.',
+      ingredientStory: 'Long-grain rice and hand-ground biryani masala prepared in controlled morning batches, dum-cooked to order in heavy-bottomed handis.',
+      suggestedStoryTemplate: 'Trying the signature Chicken Dum Biryani at Mangamma Ruchulu.',
+      restaurantTag: '@MangammaRuchulu',
+      locationLabel: 'Hyderabad, Telangana'
     }
   },
-  'dish-002': {
+  'biryani-mutton-dum': {
     signatureDish: true,
     socialStory: {
       verticalVideo: 'https://assets.mixkit.co/videos/preview/mixkit-cooking-fresh-vegetables-in-a-pan-41551-large.mp4',
       videoDurationSeconds: 12,
-      origin: 'A vibrant Chettinad regional preparation featuring roasted star anise, stone-ground black pepper, and toasted coconut flakes.',
+      origin: 'A vibrant Andhra-style preparation featuring layered spices, slow-cooked tender mutton, and fragrant long-grain rice.',
       chefNote: 'Steeped for 4 hours to lock rich aromatic essential oils into every grain.',
-      ingredientStory: 'Seeraga Samba rice sourced directly from Tamil Nadu farmers, cooked in brass handis.',
-      suggestedStoryTemplate: 'Experiencing authentic Chettinad Biryani at Dakshin Heritage.',
-      restaurantTag: '@DemoRestaurant',
-      locationLabel: 'Bengaluru, Karnataka'
+      ingredientStory: 'Tender mutton and hand-pounded whole spices sourced daily, cooked in brass handis.',
+      suggestedStoryTemplate: 'Experiencing authentic Mutton Dum Biryani at Mangamma Ruchulu.',
+      restaurantTag: '@MangammaRuchulu',
+      locationLabel: 'Hyderabad, Telangana'
     }
   },
-  'dish-004': {
+  'meals-aritaku-veg': {
     signatureDish: true,
     socialStory: {
       verticalVideo: 'https://assets.mixkit.co/videos/preview/mixkit-pouring-sauce-on-a-plated-dish-42861-large.mp4',
       videoDurationSeconds: 10,
-      origin: 'A traditional South Indian thali meal featuring six balanced flavors: sweet, sour, salty, bitter, pungent, and astringent.',
+      origin: 'A traditional Andhra banana-leaf meal featuring six balanced flavors: sweet, sour, salty, bitter, pungent, and astringent.',
       chefNote: 'Served on fresh banana leaves with stone-ground chutney and warm rasam.',
       ingredientStory: 'Organic lentils, fresh farm vegetables, and morning-ground sambar powder.',
-      suggestedStoryTemplate: 'Enjoying the traditional Veg Thali feast at Dakshin Heritage.',
-      restaurantTag: '@DemoRestaurant',
-      locationLabel: 'Bengaluru, Karnataka'
+      suggestedStoryTemplate: 'Enjoying the traditional Aritaku Bojanam (Veg) feast at Mangamma Ruchulu.',
+      restaurantTag: '@MangammaRuchulu',
+      locationLabel: 'Hyderabad, Telangana'
     }
   },
-  'dish-007': {
+  'dessert-carrot-halwa': {
     signatureDish: true,
     socialStory: {
       verticalVideo: 'https://assets.mixkit.co/videos/preview/mixkit-adding-garnishes-to-a-finished-dish-42858-large.mp4',
       videoDurationSeconds: 8,
-      origin: 'A delicate coastal Kerala dessert crafted from tender coconut pulp, coconut water, and condensed milk flavored with cardamom.',
-      chefNote: 'Chilled thoroughly before serving for optimum creamy texture.',
-      ingredientStory: 'Fresh tender coconuts harvested daily and combined with pure reduced milk.',
-      suggestedStoryTemplate: 'Cooling down with Elaneer Payasam at Dakshin Heritage.',
-      restaurantTag: '@DemoRestaurant',
-      locationLabel: 'Bengaluru, Karnataka'
+      origin: 'A rich, slow-cooked dessert of grated carrot simmered in milk and finished with ghee and nuts.',
+      chefNote: 'Finished with a generous garnish of roasted cashews while still warm.',
+      ingredientStory: 'Fresh carrots grated daily and simmered slowly with pure reduced milk.',
+      suggestedStoryTemplate: 'Ending the meal with Carrot Halwa at Mangamma Ruchulu.',
+      restaurantTag: '@MangammaRuchulu',
+      locationLabel: 'Hyderabad, Telangana'
     }
   }
 };
@@ -1049,8 +1049,8 @@ export const INITIAL_PROTOTYPE_FEEDBACKS = [
       cleanliness: 5,
       value: 4
     },
-    memorableDishId: 'dish-001',
-    memorableDishName: 'Masala Dosa',
+    memorableDishId: 'biryani-chicken-dum',
+    memorableDishName: 'Chicken Dum Biryani',
     improvementCategories: ['PREPARATION_SPEED'],
     improvementCategoriesLabels: ['Preparation Speed'],
     comment: 'The food was good, but the updated delay notice arrived too late.',
@@ -1076,11 +1076,11 @@ export const INITIAL_PROTOTYPE_FEEDBACKS = [
       cleanliness: 5,
       value: 4
     },
-    memorableDishId: 'dish-004',
-    memorableDishName: 'Veg Meals / Thali',
+    memorableDishId: 'meals-aritaku-veg',
+    memorableDishName: 'Aritaku Bojanam (Veg)',
     improvementCategories: [],
     improvementCategoriesLabels: [],
-    comment: 'Great Veg Thali meal. Kitchen load updates kept us informed about the short wait.',
+    comment: 'Great Aritaku Bojanam (Veg) meal. Kitchen load updates kept us informed about the short wait.',
     feedbackRoute: 'STANDARD_LOG',
     routeReason: 'Positive ratings across all operational categories.',
     assignedManager: 'Rahul Sharma',
@@ -1098,11 +1098,11 @@ export const INITIAL_PROTOTYPE_UGC = [
     orderId: 'ORD-1048',
     billId: 'BILL-1048',
     customerMemoryId: 'MEM-001',
-    dishId: 'dish-001',
-    dishName: 'Masala Dosa',
+    dishId: 'biryani-chicken-dum',
+    dishName: 'Chicken Dum Biryani',
     mediaType: 'PHOTO',
     mediaPreview: 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=600&q=80',
-    captionText: 'Trying the signature Masala Dosa at Dakshin Heritage!',
+    captionText: 'Trying the signature Chicken Dum Biryani at Mangamma Ruchulu!',
     socialHandle: '@priya_foodie',
     permissions: {
       submittedForParticipation: true,

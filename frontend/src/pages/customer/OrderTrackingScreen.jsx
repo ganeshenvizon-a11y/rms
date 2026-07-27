@@ -120,7 +120,7 @@ const OrderTrackingScreen = () => {
               </span>
             </div>
             <div className="flex items-center justify-between bg-white/70 dark:bg-black/30 p-2.5 rounded-xl border border-amber-300/40 font-mono">
-              <span className="line-through text-gray-500 text-xs">Previous: {activeOrder.previousEstimate || '7:38 PM'}</span>
+              <span className="line-through text-muted text-xs">Previous: {activeOrder.previousEstimate || '7:38 PM'}</span>
               <span className="font-bold text-amber-800 text-sm">New ETA: {activeOrder.estimatedReadyAt || '7:46 PM'}</span>
             </div>
             <p className="text-xs"><strong>Reason:</strong> {activeOrder.etaChangeReason}</p>

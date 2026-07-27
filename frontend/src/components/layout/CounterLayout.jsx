@@ -52,7 +52,7 @@ const CounterLayout = ({ children, activeTab, setActiveTab }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-serif font-bold text-stone-900 tracking-wide">
-                  Dakshin Heritage
+                  Mangamma Ruchulu
                 </h1>
                 <span className="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[11px] font-bold uppercase font-mono">
                   Counter POS

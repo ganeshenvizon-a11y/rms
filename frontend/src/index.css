@@ -3,65 +3,99 @@
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-telugu: 'Noto Sans Telugu', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Material color tokens (Dakshin Premium palette) */
-  --color-primary: #93000b;
-  --color-primary-container: #b91c1c;
+  /* Mangamma Ruchulu brand palette — raw scale, use directly (bg-maroon-800, text-saffron-600, ...) */
+  --color-maroon-950: #4A0718;
+  --color-maroon-900: #6E0D25;
+  --color-maroon-800: #8D1230;
+  --color-maroon-700: #A61B39;
+
+  --color-saffron-600: #E97818;
+  --color-saffron-500: #F28C28;
+  --color-saffron-100: #FFF0DE;
+
+  --color-ivory: #FFFDF9;
+  --color-warm-white: #FFF9F2;
+  --color-cream: #F8F0E5;
+  --color-sand: #EBDAC6;
+
+  --color-ink: #201714;
+  --color-text: #342722;
+  --color-muted: #74655D;
+  --color-border: #E9DED3;
+
+  --color-success: #247A4A;
+  --color-warning: #B76A0B;
+  --color-danger: #B3263D;
+  --color-information: #315C9E;
+
+  /* Material semantic tokens, remapped onto the brand palette above.
+     Existing components already consume these names (bg-primary, text-on-surface-variant,
+     bg-surface-container, ...) across all five role modules — keep the names, swap the values. */
+  --color-primary: #8D1230;
+  --color-primary-container: #A61B39;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #ffcdc7;
+  --color-on-primary-container: #FFF0DE;
 
-  --color-secondary: #735c00;
-  --color-secondary-container: #fed01b;
+  --color-secondary: #E97818;
+  --color-secondary-container: #FFF0DE;
   --color-on-secondary: #ffffff;
-  --color-on-secondary-container: #6f5900;
+  --color-on-secondary-container: #6E0D25;
 
-  --color-tertiary: #474646;
-  --color-tertiary-container: #5f5e5e;
+  --color-tertiary: #74655D;
+  --color-tertiary-container: #EBDAC6;
   --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #dbd8d7;
+  --color-on-tertiary-container: #201714;
 
-  --color-background: #f9f9f8;
-  --color-surface: #f9f9f8;
-  --color-surface-dim: #dadad9;
-  --color-surface-bright: #f9f9f8;
+  --color-background: #FFFDF9;
+  --color-surface: #FFFDF9;
+  --color-surface-dim: #EBDAC6;
+  --color-surface-bright: #FFFDF9;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f4f3;
-  --color-surface-container: #eeeeed;
-  --color-surface-container-high: #e8e8e7;
-  --color-surface-container-highest: #e2e2e2;
+  --color-surface-container-low: #FFF9F2;
+  --color-surface-container: #F8F0E5;
+  --color-surface-container-high: #EBDAC6;
+  --color-surface-container-highest: #E4D5C0;
 
-  --color-on-surface: #1a1c1c;
-  --color-on-surface-variant: #5b403d;
-  --color-on-background: #1a1c1c;
+  --color-on-surface: #201714;
+  --color-on-surface-variant: #74655D;
+  --color-on-background: #201714;
 
-  --color-outline: #8f6f6c;
-  --color-outline-variant: #e4beb9;
-  --color-surface-variant: #e2e2e2;
-  --color-surface-tint: #b91c1c;
+  --color-outline: #A68E82;
+  --color-outline-variant: #E9DED3;
+  --color-surface-variant: #F8F0E5;
+  --color-surface-tint: #8D1230;
 
-  --color-error: #ba1a1a;
+  --color-error: #B3263D;
   --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
+  --color-error-container: #FBE0E4;
+  --color-on-error-container: #B3263D;
 
-  --color-inverse-surface: #2f3130;
-  --color-inverse-on-surface: #f1f1f0;
-  --color-inverse-primary: #ffb4ab;
+  --color-inverse-surface: #201714;
+  --color-inverse-on-surface: #FFFDF9;
+  --color-inverse-primary: #F28C28;
 
-  --color-primary-fixed: #ffdad6;
-  --color-primary-fixed-dim: #ffb4ab;
-  --color-on-primary-fixed: #410002;
-  --color-on-primary-fixed-variant: #93000b;
+  --color-primary-fixed: #FFF0DE;
+  --color-primary-fixed-dim: #F28C28;
+  --color-on-primary-fixed: #4A0718;
+  --color-on-primary-fixed-variant: #8D1230;
 
-  --color-secondary-fixed: #ffe083;
-  --color-secondary-fixed-dim: #eec200;
-  --color-on-secondary-fixed: #231b00;
-  --color-on-secondary-fixed-variant: #574500;
+  --color-secondary-fixed: #FFF0DE;
+  --color-secondary-fixed-dim: #F28C28;
+  --color-on-secondary-fixed: #4A0718;
+  --color-on-secondary-fixed-variant: #6E0D25;
 
-  --color-tertiary-fixed: #e5e2e1;
-  --color-tertiary-fixed-dim: #c8c6c5;
-  --color-on-tertiary-fixed: #1c1b1b;
-  --color-on-tertiary-fixed-variant: #474646;
+  --color-tertiary-fixed: #F8F0E5;
+  --color-tertiary-fixed-dim: #EBDAC6;
+  --color-on-tertiary-fixed: #201714;
+  --color-on-tertiary-fixed-variant: #342722;
+
+  /* Radius scale */
+  --radius-small: 10px;
+  --radius-medium: 16px;
+  --radius-large: 22px;
+  --radius-pill: 999px;
 
   /* Typography scale */
   --text-display-lg: 48px;
@@ -137,10 +171,14 @@ html, body, button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, span, di
 
 @layer base {
   body {
-    background-color: #f9f9f8;
-    color: #1a1c1c;
+    background-color: #FFFDF9;
+    color: #201714;
     -webkit-font-smoothing: antialiased;
   }
+}
+
+.font-telugu {
+  font-family: 'Noto Sans Telugu', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* Custom Scrollbar */
@@ -175,7 +213,16 @@ html, body, button, input, textarea, select, h1, h2, h3, h4, h5, h6, p, span, di
 }
 
 .shadow-floating {
-  box-shadow: 0 10px 30px -4px rgba(147, 0, 11, 0.25);
+  box-shadow: 0 10px 30px -4px rgba(141, 18, 48, 0.25);
+}
+
+/* Lightweight kolam-inspired line-pattern divider, used as a subtle header/section accent */
+.kolam-divider {
+  height: 10px;
+  background-image: radial-gradient(circle at 5px 5px, var(--color-saffron-500) 1.5px, transparent 1.6px);
+  background-size: 14px 10px;
+  background-repeat: repeat-x;
+  opacity: 0.5;
 }
 
 /* Pulse ring animation */

@@ -10,7 +10,7 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
   const { addUgcSubmission } = useOrder();
   const { showToast } = useToast();
 
-  const dishStoryData = SIGNATURE_DISH_STORIES[dish?.id] || SIGNATURE_DISH_STORIES['dish-001'];
+  const dishStoryData = SIGNATURE_DISH_STORIES[dish?.id] || SIGNATURE_DISH_STORIES['biryani-chicken-dum'];
   const socialStory = dishStoryData?.socialStory;
 
   const videoRef = useRef(null);
@@ -20,7 +20,7 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
 
   // Prepared Social Template State
   const [templateText, setTemplateText] = useState(
-    socialStory?.suggestedStoryTemplate || `Trying the signature ${dish?.name || 'Masala Dosa'} at Dakshin Heritage Restaurant.`
+    socialStory?.suggestedStoryTemplate || `Trying the signature ${dish?.name || 'Chicken Dum Biryani'} at Mangamma Ruchulu.`
   );
   const [includeTag, setIncludeTag] = useState(true);
   const [includeLocation, setIncludeLocation] = useState(true);
@@ -69,13 +69,13 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
 
     const submissionPayload = {
       orderId: 'ORD-1048',
-      dishId: dish?.id || 'dish-001',
-      dishName: dish?.name || 'Masala Dosa',
+      dishId: dish?.id || 'biryani-chicken-dum',
+      dishName: dish?.name || 'Chicken Dum Biryani',
       mediaType: uploadedMediaPreview ? 'CUSTOMER_MEDIA' : 'STORY_TEMPLATE',
       mediaPreview: uploadedMediaPreview || dish?.image || 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=600&q=80',
       captionText: templateText,
-      restaurantTag: includeTag ? (socialStory?.restaurantTag || '@DemoRestaurant') : null,
-      locationLabel: includeLocation ? (socialStory?.locationLabel || 'Bengaluru, Karnataka') : null,
+      restaurantTag: includeTag ? (socialStory?.restaurantTag || '@MangammaRuchulu') : null,
+      locationLabel: includeLocation ? (socialStory?.locationLabel || 'Hyderabad, Telangana') : null,
       socialHandle: optionalHandle ? `@${optionalHandle.replace('@', '')}` : null,
       permissions,
       rewardConditionsAccepted: true,
@@ -151,9 +151,9 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
                 </div>
 
                 <div className="text-white text-left space-y-0.5">
-                  <p className="text-xs font-bold">{dish?.name || 'Masala Dosa'}</p>
+                  <p className="text-xs font-bold">{dish?.name || 'Chicken Dum Biryani'}</p>
                   <p className="text-[10px] text-white/80 line-clamp-2">
-                    {socialStory?.chefNote || 'Cooked to order on cast iron griddles.'}
+                    {socialStory?.chefNote || 'Cooked to order with fresh hand-ground spices.'}
                   </p>
                 </div>
               </div>
@@ -165,7 +165,7 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
                 <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Dish Origin</h4>
                 <p className="text-xs text-on-surface leading-relaxed">
                   {socialStory?.origin ||
-                    'Originating in the temple kitchens of Udupi, Karnataka, the Masala Dosa is a masterpiece of fermented rice and black gram batter, pan-roasted to a paper-thin gold crust.'}
+                    'A regional Andhra classic, Chicken Dum Biryani is layered rice and spiced chicken sealed and slow-cooked over a low flame for deep, even flavour.'}
                 </p>
               </div>
 
@@ -175,7 +175,7 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
                   <strong className="text-primary">Chef Note:</strong> {socialStory?.chefNote || 'Best enjoyed immediately while crisp.'}
                 </p>
                 <p className="text-xs text-on-surface-variant leading-relaxed">
-                  <strong className="text-primary">Ingredients:</strong> {socialStory?.ingredientStory || 'Fermented rice and lentil batter prepared in controlled batches.'}
+                  <strong className="text-primary">Ingredients:</strong> {socialStory?.ingredientStory || 'Long-grain rice and hand-ground biryani masala prepared in controlled batches.'}
                 </p>
               </div>
             </div>
@@ -212,7 +212,7 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
                     onChange={(e) => setIncludeTag(e.target.checked)}
                     className="accent-primary"
                   />
-                  <span>Tag {socialStory?.restaurantTag || '@DemoRestaurant'}</span>
+                  <span>Tag {socialStory?.restaurantTag || '@MangammaRuchulu'}</span>
                 </label>
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
@@ -221,7 +221,7 @@ const SignatureDishStoryModal = ({ isOpen, onClose, dish }) => {
                     onChange={(e) => setIncludeLocation(e.target.checked)}
                     className="accent-primary"
                   />
-                  <span>Location ({socialStory?.locationLabel || 'Bengaluru'})</span>
+                  <span>Location ({socialStory?.locationLabel || 'Hyderabad'})</span>
                 </label>
               </div>
             </div>

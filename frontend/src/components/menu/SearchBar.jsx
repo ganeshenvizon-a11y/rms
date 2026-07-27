@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '../common/Icon';
 
-const SearchBar = ({ value, onChange, onClear, placeholder = 'Search for your favorite dish...' }) => {
+const SearchBar = ({ value, onChange, onClear, placeholder = 'Search dishes, curries, biryanis…' }) => {
   return (
     <div className="relative flex items-center">
       <Icon name="search" className="absolute left-4 text-on-surface-variant" />

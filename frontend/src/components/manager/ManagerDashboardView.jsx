@@ -51,9 +51,9 @@ const ManagerDashboardView = () => {
   const [employees, setEmployees] = useState(INITIAL_PROTOTYPE_EMPLOYEES);
   const [auditLogs, setAuditLogs] = useState(INITIAL_PROTOTYPE_AUDIT_LOGS);
   const [outOfStockItems, setOutOfStockItems] = useState([
-    { id: 'dish-006', name: 'Medu Vada', category: 'Appetizers', state: 'Temporarily Unavailable', lastUpdated: '6:45 PM', updatedBy: 'Chef Arjun Rao' },
-    { id: 'dish-007', name: 'Elaneer Payasam', category: 'Desserts', state: 'Limited', lastUpdated: '6:30 PM', updatedBy: 'Sneha Patel' },
-    { id: 'dish-010', name: 'Rava Onion Dosa', category: 'Dosas', state: 'Sold Out', lastUpdated: '5:50 PM', updatedBy: 'Chef Arjun Rao' },
+    { id: 'cveg-gobi-65', name: 'Gobi 65', category: 'Chinese Veg Starters', state: 'Temporarily Unavailable', lastUpdated: '6:45 PM', updatedBy: 'Chef Arjun Rao' },
+    { id: 'dessert-carrot-halwa', name: 'Carrot Halwa', category: 'Desserts', state: 'Limited', lastUpdated: '6:30 PM', updatedBy: 'Sneha Patel' },
+    { id: 'cveg-crispy-corn', name: 'Crispy Corn Kernel', category: 'Chinese Veg Starters', state: 'Sold Out', lastUpdated: '5:50 PM', updatedBy: 'Chef Arjun Rao' },
   ]);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
@@ -665,7 +665,7 @@ const ManagerDashboardView = () => {
             </div>
           </div>
         )}
-
+g
         {/* Section 2: Guest Relationships & Milestones */}
         {retentionTab === 'RELATIONSHIPS' && (
           <div className="space-y-4">
@@ -690,8 +690,8 @@ const ManagerDashboardView = () => {
                 <span className="font-bold text-primary uppercase tracking-wider block">Favourite Dish Alert Interests</span>
                 <div className="space-y-1">
                   {(customerMembership?.favouriteDishAlerts || [
-                    { dishName: 'Masala Dosa', preferenceChannel: 'In-app' },
-                    { dishName: 'Filter Coffee', preferenceChannel: 'In-app' }
+                    { dishName: 'Chicken Dum Biryani', preferenceChannel: 'In-app' },
+                    { dishName: 'Sweet Lassi', preferenceChannel: 'In-app' }
                   ]).map((al, idx) => (
                     <div key={idx} className="flex justify-between items-center text-[11px]">
                       <span className="font-medium text-on-surface">{al.dishName}</span>
@@ -868,7 +868,7 @@ const ManagerDashboardView = () => {
                   rows={3}
                   value={recoveryActionText}
                   onChange={(e) => setRecoveryActionText(e.target.value)}
-                  placeholder="e.g. Replacement Masala Dosa being prepared by kitchen. ETA 12 minutes."
+                  placeholder="e.g. Replacement Chicken Dum Biryani being prepared by kitchen. ETA 12 minutes."
                   className="w-full p-3 bg-surface-container-low border border-outline-variant/30 rounded-xl outline-none font-medium"
                 />
               </div>

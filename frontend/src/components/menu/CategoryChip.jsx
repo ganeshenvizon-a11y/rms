@@ -4,9 +4,9 @@ const CategoryChip = ({ category, isActive, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-95 ${
+      className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-95 ${
         isActive
-          ? 'bg-on-surface text-surface'
+          ? 'bg-primary text-on-primary'
           : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest'
       }`}
     >

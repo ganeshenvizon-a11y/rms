@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { RESTAURANT_INFO } from '../../utils/mockData';
 
-const DEMO_EMAIL = 'manager@dakshinheritage.in';
+const DEMO_EMAIL = 'manager@mangammaruchulu.in';
 const DEMO_PASSWORD = 'manager123';
 
 const ManagerLoginScreen = () => {
@@ -104,7 +104,7 @@ const ManagerLoginScreen = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="manager@dakshinheritage.in"
+                    placeholder="manager@mangammaruchulu.in"
                     className="w-full h-14 pl-11 pr-4 bg-surface-container-low border border-transparent focus:border-primary focus:ring-0 rounded-2xl text-sm outline-none transition-all placeholder:text-on-surface-variant/50"
                   />
                 </div>
