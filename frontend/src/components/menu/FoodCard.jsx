@@ -2,93 +2,195 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
-import { formatCurrency } from '../../utils/formatters';
-import Icon from '../common/Icon';
+import ResponsiveImage from '../common/ResponsiveImage';
+import { FoodTypeBadge, SpiceLevelBadge, PrepTimeBadge, AvailabilityBadge, PriceTag } from './DishBadges';
+import { Sparkles, ChevronRight } from 'lucide-react';
 
-const FoodCard = ({ dish }) => {
+/**
+ * Two visual variants sharing one implementation:
+ *  - 'compact'  — horizontal list row (menu browsing, search results)
+ *  - 'featured' — vertical card with a larger image (Mangamma Favourites, New Here)
+ */
+const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
   const navigate = useNavigate();
-  const { addToCart, updateQuantity, getDishQuantityInCart } = useCart();
+  const { addToCart, getDishQuantityInCart } = useCart();
   const { showToast } = useToast();
 
   const quantityInCart = getDishQuantityInCart(dish.id);
+  const isAvailable = dish.availabilityStatus === 'AVAILABLE' || dish.availabilityStatus === 'LIMITED_AVAILABILITY';
+  const isSoldOut = dish.availabilityStatus === 'SOLD_OUT' || dish.availabilityStatus === 'TEMPORARILY_UNAVAILABLE';
+  const isOrderable = dish.orderableInApp !== false;
 
   const handleCardClick = () => navigate(`/menu/${dish.id}`);
 
-  const handleAddDirectly = (e) => {
+  const handlePrimaryAction = (e) => {
     e.stopPropagation();
-    addToCart(dish);
-    showToast(`Added "${dish.name}" to cart`, 'success');
+    if (!isAvailable || !isOrderable) return;
+
+    if (dish.customizationAvailable && onCustomize) {
+      onCustomize(dish);
+    } else {
+      addToCart(dish);
+      showToast(`Added "${dish.name}" to cart`, 'success');
+    }
   };
 
-  const handleIncrement = (e) => {
-    e.stopPropagation();
-    addToCart(dish);
-  };
+  const actionLabel = !isOrderable
+    ? 'Ask your server'
+    : !isAvailable
+    ? (isSoldOut ? 'Sold Out' : 'Unavailable')
+    : dish.customizationAvailable
+    ? 'Customize & Add'
+    : 'Add';
 
-  const handleDecrement = (e) => {
-    e.stopPropagation();
-    updateQuantity(dish.id, quantityInCart - 1);
-  };
+  const actionShortLabel = dish.customizationAvailable && isAvailable && isOrderable ? 'Customize' : actionLabel;
+  const actionAriaLabel = dish.customizationAvailable && isAvailable && isOrderable
+    ? `Customize and add ${dish.name}`
+    : `${actionLabel} ${dish.name}`;
 
+  const actionDisabled = !isAvailable || !isOrderable;
+
+  if (variant === 'featured') {
+    return (
+      <div
+        onClick={handleCardClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
+        className={`bg-surface-container-lowest rounded-2xl border border-border shadow-card hover:shadow-soft transition-shadow cursor-pointer overflow-hidden flex flex-col ${
+          !isAvailable ? 'opacity-75' : ''
+        }`}
+      >
+        <ResponsiveImage
+          src={dish.image}
+          alt={dish.name}
+          aspectRatio="4 / 3"
+          rounded="rounded-none"
+          objectPosition="center 35%"
+          className="w-full"
+          overlay={
+            dish.bestseller && (
+              <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-maroon-800/90 text-white text-[11px] font-bold">
+                <Sparkles className="w-3 h-3" aria-hidden="true" />
+                Mangamma Favourite
+              </span>
+            )
+          }
+        />
+        <div className="p-3.5 flex flex-col gap-2 flex-1">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <FoodTypeBadge foodType={dish.foodType} />
+            {dish.spiceLevel && <SpiceLevelBadge spiceLevel={dish.spiceLevel} />}
+          </div>
+          <div>
+            <h3 className="font-bold text-ink text-[15px] leading-snug">{dish.name}</h3>
+            <p className="text-muted text-xs line-clamp-2 mt-0.5">
+              {dish.newCustomerReason || dish.shortDescription}
+            </p>
+          </div>
+          <div className="flex items-center justify-between text-xs mt-auto pt-1">
+            <PrepTimeBadge minutes={dish.preparationTimeMinutes} />
+            <AvailabilityBadge status={dish.availabilityStatus} />
+          </div>
+          <div className="flex items-center justify-between pt-2 border-t border-border mt-1">
+            <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-base" />
+            <button
+              type="button"
+              onClick={handlePrimaryAction}
+              disabled={actionDisabled}
+              aria-label={actionAriaLabel}
+              className={`min-h-[42px] px-3.5 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${
+                actionDisabled
+                  ? 'bg-surface-container-high text-muted cursor-not-allowed'
+                  : 'bg-saffron-600 hover:bg-saffron-500 text-white active:scale-95'
+              }`}
+            >
+              <span className="hidden min-[380px]:inline">{actionLabel}</span>
+              <span className="min-[380px]:hidden">{actionShortLabel}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // compact (default) — horizontal row
   return (
     <div
       onClick={handleCardClick}
-      className="bg-surface-container-lowest rounded-card shadow-sm p-4 flex gap-4 cursor-pointer hover:shadow-md transition-shadow"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
+      className={`bg-surface-container-lowest rounded-2xl border border-border shadow-card hover:shadow-soft transition-shadow p-3 flex gap-3 relative cursor-pointer ${
+        !isAvailable ? 'opacity-75' : ''
+      }`}
     >
-      {/* Left: Content */}
-      <div className="w-[62%] flex flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span
-              className={`w-3 h-3 border flex items-center justify-center p-[2px] ${
-                dish.isVeg ? 'border-green-600' : 'border-red-600'
-              }`}
-            >
-              <span className={`w-full h-full rounded-full ${dish.isVeg ? 'bg-green-600' : 'bg-red-600'}`} />
+      {/* ── Left: info column ── */}
+      <div className="flex-1 flex flex-col gap-1.5 min-w-0 overflow-hidden">
+
+        {/* Tier 1 — Tags (single scrollable row, never wraps into 2 lines).
+            Favourite uses the brand maroon accent (not the same saffron as
+            Spice) so the three pills read as distinct signals, not one blur. */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-nowrap">
+          <FoodTypeBadge foodType={dish.foodType} />
+          {dish.spiceLevel && <SpiceLevelBadge spiceLevel={dish.spiceLevel} />}
+          {dish.bestseller && (
+            <span className="inline-flex items-center gap-1 h-[22px] px-2 rounded-full bg-maroon-800/10 text-maroon-800 border border-maroon-800/25 text-[11px] leading-none font-semibold flex-shrink-0">
+              <Sparkles className="w-3 h-3" aria-hidden="true" />
+              Favourite
             </span>
-            <span className={`text-[10px] uppercase tracking-wider font-bold ${dish.isVeg ? 'text-green-700' : 'text-red-700'}`}>
-              {dish.isVeg ? 'Veg' : 'Non-Veg'}
-            </span>
-            {dish.isChefSpecial && (
-              <span className="text-[10px] uppercase tracking-wider font-bold text-on-secondary-container bg-secondary-container/70 px-1.5 py-0.5 rounded-full">
-                Chef's Pick
-              </span>
-            )}
-          </div>
-          <h3 className="font-bold text-on-surface text-base mb-1 leading-tight">{dish.name}</h3>
-          <p className="text-on-surface-variant text-xs line-clamp-2 mb-2">{dish.description}</p>
+          )}
         </div>
+
+        {/* Tier 2 — Name + description */}
         <div>
-          <div className="flex items-center text-on-surface-variant/70 gap-1 mb-2">
-            <Icon name="schedule" className="text-[16px]" />
-            <span className="text-xs">{dish.prepTime}</span>
-          </div>
-          <span className="font-bold text-primary text-lg">{formatCurrency(dish.price)}</span>
+          <h3 className="font-bold text-ink text-[15px] leading-snug truncate">{dish.name}</h3>
+          <p className="text-muted text-[12px] leading-[1.4] line-clamp-2 mt-0.5">{dish.shortDescription}</p>
+        </div>
+
+        {/* Tier 3 — Prep time (soft, subdued) */}
+        <div className="flex items-center gap-2">
+          <PrepTimeBadge minutes={dish.preparationTimeMinutes} />
+          <AvailabilityBadge status={dish.availabilityStatus} />
+        </div>
+
+        {/* Tier 4 — Price + CTA, pinned to bottom via flex */}
+        <div className="flex items-center justify-between pt-2 border-t border-border mt-auto">
+          <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[15px]" />
+          <button
+            type="button"
+            onClick={handlePrimaryAction}
+            disabled={actionDisabled}
+            aria-label={actionAriaLabel}
+            className={`h-9 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
+              actionDisabled
+                ? 'bg-surface-container-high text-muted cursor-not-allowed'
+                : 'bg-saffron-600 hover:bg-saffron-500 text-white active:scale-95 shadow-sm'
+            }`}
+          >
+            <span className="hidden min-[380px]:inline">{actionLabel}</span>
+            <span className="min-[380px]:hidden">{actionShortLabel}</span>
+            {isAvailable && isOrderable && dish.customizationAvailable && <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />}
+            {isAvailable && isOrderable && !dish.customizationAvailable && quantityInCart > 0 && (
+              <span className="bg-maroon-900/70 text-white px-1.5 py-0.5 rounded-full text-[10px] ml-0.5">{quantityInCart}</span>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Right: Image + Quantity Control */}
-      <div className="w-[38%] relative">
-        <img className="w-full h-32 object-cover rounded-xl" src={dish.image} alt={dish.name} loading="lazy" />
-
-        {quantityInCart > 0 ? (
-          <div className="absolute -bottom-2 -right-2 flex items-center bg-primary text-on-primary rounded-full px-1 shadow-lg">
-            <button onClick={handleDecrement} className="w-8 h-8 flex items-center justify-center active:scale-90 transition-transform">
-              <Icon name="remove" className="text-sm" />
-            </button>
-            <span className="px-1 font-bold text-sm">{quantityInCart}</span>
-            <button onClick={handleIncrement} className="w-8 h-8 flex items-center justify-center active:scale-90 transition-transform">
-              <Icon name="add" className="text-sm" />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={handleAddDirectly}
-            className="absolute -bottom-2 -right-2 w-[42px] h-[42px] bg-primary text-on-primary rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-all"
-          >
-            <Icon name="add" />
-          </button>
-        )}
+      {/* ── Right: dish image — fixed square, properly clipped.
+          objectPosition is biased slightly above center: the category stock
+          photos are wide banana-leaf/thali spreads, and a dead-center crop
+          on a 1:1 frame tends to cut through the food itself. ── */}
+      <div className="w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] flex-shrink-0 rounded-xl overflow-hidden self-center border border-border">
+        <ResponsiveImage
+          src={dish.image}
+          alt={dish.name}
+          aspectRatio="1 / 1"
+          rounded="rounded-none"
+          objectPosition="center 35%"
+          className="w-full h-full"
+        />
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { useToast } from '../../context/ToastContext';
+import { formatInvoiceAmount } from '../../utils/formatters';
 import EmptyState from '../../components/common/EmptyState';
-import { BellRing, Receipt, CheckCircle, CheckCircle2, Clock, CreditCard, Users, Printer } from 'lucide-react';
+import { BellRing, Receipt, CheckCircle, CheckCircle2, Clock, CreditCard, Users, Printer, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
@@ -11,6 +12,8 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
     resolveAssistanceRequest,
     billRequests,
     settleBillRequest,
+    issuesList,
+    updateIssueWorkflow
   } = useOrder();
   const { showToast } = useToast();
 
@@ -18,15 +21,27 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
   const resolvedRequests = assistanceRequests.filter((r) => r.status === 'resolved');
   const pendingBills = billRequests.filter((b) => b.status === 'pending');
   const settledBills = billRequests.filter((b) => b.status === 'settled');
+  const activeIssues = (issuesList || []).filter((i) => i.status !== 'RESOLVED' && i.status !== 'CLOSED');
 
   const handleResolve = (requestId, tableNumber, requestType) => {
     resolveAssistanceRequest(requestId);
     showToast(`Request "${requestType}" for Table #${tableNumber} resolved!`, 'success');
   };
 
+  const handleAcceptIssue = (issueId, tableNumber) => {
+    updateIssueWorkflow(issueId, {
+      assignedOwner: 'Rahul Sharma (Waiter)',
+      assignedRole: 'Waiter',
+      status: 'ACTION_IN_PROGRESS',
+      statusLabel: 'Rahul is handling this',
+      recoveryAction: 'Staff checking table directly'
+    });
+    showToast(`Assigned yourself as owner for Issue #${issueId} (Table ${tableNumber})`, 'success');
+  };
+
   const handleSettle = (billId, tableNumber, amount) => {
     settleBillRequest(billId, tableNumber);
-    showToast(`Table #${tableNumber} bill (₹${amount.toFixed(2)}) settled & table cleared!`, 'success');
+    showToast(`Table #${tableNumber} bill (${formatInvoiceAmount(amount)}) settled & table cleared!`, 'success');
   };
 
   const handlePrintCheck = (tableNumber) => {
@@ -43,7 +58,7 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
             subTab === 'customer' ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant'
           }`}
         >
-          Customer Requests
+          Customer Calls &amp; Issues
         </button>
         <button
           onClick={() => setSubTab('bill')}
@@ -57,6 +72,40 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
 
       {subTab === 'customer' ? (
         <div key="customer" className="space-y-4">
+          {/* Active Issue Alerts */}
+          {activeIssues.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-rose-700 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-rose-600" />
+                  Reported Customer Issues ({activeIssues.length})
+                </h3>
+              </div>
+
+              {activeIssues.map((iss) => (
+                <div key={iss.issueId} className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4 space-y-2 text-xs">
+                  <div className="flex justify-between items-start">
+                    <span className="font-bold text-rose-950 dark:text-rose-200 text-sm">Table #{iss.tableNumber} — Ticket #{iss.issueId}</span>
+                    <span className="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                      {iss.categoryLabel}
+                    </span>
+                  </div>
+                  <p className="text-on-surface font-semibold">Affected Dish: {iss.affectedItemName || 'Order'}</p>
+                  <p className="text-on-surface-variant italic">"{iss.description || 'Customer reported a problem.'}"</p>
+                  <div className="flex justify-between items-center pt-2 border-t border-rose-500/20">
+                    <span className="text-[11px] text-on-surface-variant">Owner: <strong>{iss.assignedOwner}</strong></span>
+                    <button
+                      onClick={() => handleAcceptIssue(iss.issueId, iss.tableNumber)}
+                      className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow"
+                    >
+                      Accept Issue Ownership
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Header Info */}
           <div className="bg-error-container/30 border border-error/20 rounded-2xl p-4 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
@@ -105,7 +154,7 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
                         className="w-full sm:w-auto px-4 py-2.5 bg-primary hover:opacity-90 text-on-primary rounded-2xl text-xs font-bold tracking-wide shadow-sm flex items-center justify-center gap-1.5 transition-all"
                       >
                         <CheckCircle className="w-4 h-4" />
-                        <span>Acknowledge & Resolve</span>
+                        <span>Acknowledge &amp; Resolve</span>
                       </button>
                     </motion.div>
                   );
@@ -150,7 +199,7 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
                 <Receipt className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-on-surface font-serif">Table Check & Bill Requests</h2>
+                <h2 className="text-base font-bold text-on-surface font-serif">Table Check &amp; Bill Requests</h2>
                 <p className="text-xs text-on-surface-variant">Payment processing and table settlement</p>
               </div>
             </div>
@@ -193,15 +242,15 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
                     <div className="p-3 bg-surface-container-low rounded-2xl border border-outline-variant/20 space-y-1.5 text-xs">
                       <div className="flex justify-between text-on-surface-variant">
                         <span>Subtotal:</span>
-                        <span className="font-mono font-semibold">₹{bill.subtotal.toFixed(2)}</span>
+                        <span className="font-mono font-semibold">{formatInvoiceAmount(bill.subtotal)}</span>
                       </div>
                       <div className="flex justify-between text-on-surface-variant">
-                        <span>Tax & VAT:</span>
-                        <span className="font-mono font-semibold">₹{(bill.tax + bill.vat).toFixed(2)}</span>
+                        <span>GST @ 5%:</span>
+                        <span className="font-mono font-semibold">{formatInvoiceAmount(bill.gst || bill.tax || 0)}</span>
                       </div>
                       <div className="flex justify-between text-on-surface font-bold border-t border-outline-variant/30 pt-1.5 text-sm">
-                        <span>Grand Total:</span>
-                        <span className="font-mono text-primary">₹{bill.grandTotal.toFixed(2)}</span>
+                        <span>Total Payable:</span>
+                        <span className="font-mono text-primary">{formatInvoiceAmount(bill.totalPayable || bill.grandTotal || 0)}</span>
                       </div>
                     </div>
 
@@ -219,7 +268,7 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
                         className="py-2.5 bg-primary hover:opacity-90 text-on-primary rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm"
                       >
                         <CheckCircle2 className="w-4 h-4" />
-                        <span>Settle & Clear Table</span>
+                        <span>Settle &amp; Clear Table</span>
                       </button>
                     </div>
                   </motion.div>
@@ -245,7 +294,7 @@ const WaiterStaffRequestsScreen = ({ subTab, setSubTab }) => {
                     key={bill.id}
                     className="p-3 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 flex items-center justify-between text-xs text-on-surface-variant opacity-75 shadow-xs"
                   >
-                    <span>Table #{bill.tableNumber} — ₹{bill.grandTotal.toFixed(2)}</span>
+                    <span>Table #{bill.tableNumber} — {formatInvoiceAmount(bill.grandTotal)}</span>
                     <span className="text-emerald-700 font-mono text-[10px] flex items-center gap-1 font-bold">
                       <CheckCircle2 className="w-3.5 h-3.5 inline" /> Settled
                     </span>

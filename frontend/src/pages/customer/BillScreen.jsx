@@ -4,12 +4,14 @@ import { useOrder } from '../../context/OrderContext';
 import { useTable } from '../../context/TableContext';
 import { useToast } from '../../context/ToastContext';
 import { orderService } from '../../services/orderService';
-import { formatCurrency } from '../../utils/formatters';
+import { formatInvoiceAmount } from '../../utils/formatters';
 import TopAppBar from '../../components/layout/TopAppBar';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Modal from '../../components/common/Modal';
 import EmptyState from '../../components/common/EmptyState';
 import Icon from '../../components/common/Icon';
+import BillingSummary from '../../components/common/BillingSummary';
+import { AlertCircle } from 'lucide-react';
 
 const BillScreen = () => {
   const navigate = useNavigate();
@@ -51,16 +53,35 @@ const BillScreen = () => {
     );
   }
 
-  const totals = activeOrder.totals || { subtotal: 0, tax: 0, vat: 0, tipAmount: 0, discountAmount: 0, grandTotal: 0 };
+  const totals = activeOrder.totals || {
+    subtotal: activeOrder.subtotal || 0,
+    discountAmount: activeOrder.discount || 0,
+    packagingCharge: activeOrder.packagingCharge || 0,
+    gst: activeOrder.gst || activeOrder.tax || 0,
+    cgst: activeOrder.cgst || (activeOrder.gst || activeOrder.tax || 0) / 2,
+    sgst: activeOrder.sgst || (activeOrder.gst || activeOrder.tax || 0) / 2,
+    tipAmount: activeOrder.tip || 0,
+    totalPayable: activeOrder.totalPayable || activeOrder.grandTotal || 0,
+  };
 
   return (
     <>
       <TopAppBar variant="brand" />
 
       <main className="flex-1 pt-20 pb-24 max-w-[1280px] mx-auto w-full px-4 md:px-10">
-        <div className="mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-on-surface mb-2">Bill Summary</h2>
-          <p className="text-sm text-on-surface-variant">Review your selection before proceeding to secure payment.</p>
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-on-surface mb-1">Bill Summary</h2>
+            <p className="text-xs text-on-surface-variant">Review your selection before proceeding to secure payment.</p>
+          </div>
+          {/* Service Recovery Trigger */}
+          <button
+            onClick={() => navigate('/report-issue')}
+            className="px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs rounded-xl border border-rose-500/30 flex items-center gap-1.5 self-start sm:self-auto"
+          >
+            <AlertCircle className="w-4 h-4 text-rose-600" />
+            <span>Billing issue or discrepancy?</span>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -104,7 +125,7 @@ const BillScreen = () => {
                     </div>
                   </div>
                   <p className="text-base font-bold text-on-surface flex-shrink-0">
-                    {formatCurrency(item.price * item.quantity)}
+                    {formatInvoiceAmount((item.unitPrice || item.price) * item.quantity)}
                   </p>
                 </div>
               ))}
@@ -112,43 +133,11 @@ const BillScreen = () => {
           </div>
 
           {/* Right Column */}
-          <div className="md:col-span-5">
-            <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-lg border border-outline-variant/30 md:sticky md:top-24">
-              <h3 className="text-lg font-bold text-on-surface mb-6">Payment Details</h3>
-              <div className="space-y-3 border-b border-outline-variant/30 pb-4 text-sm">
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>Subtotal</span>
-                  <span>{formatCurrency(totals.subtotal)}</span>
-                </div>
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>Service Tax (5%)</span>
-                  <span>{formatCurrency(totals.tax)}</span>
-                </div>
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>VAT (8%)</span>
-                  <span>{formatCurrency(totals.vat)}</span>
-                </div>
-                {totals.tipAmount > 0 && (
-                  <div className="flex justify-between text-secondary font-medium">
-                    <span>Gratitude Tip</span>
-                    <span>+{formatCurrency(totals.tipAmount)}</span>
-                  </div>
-                )}
-                {totals.discountAmount > 0 && (
-                  <div className="flex justify-between text-error font-medium">
-                    <span>Promo Discount</span>
-                    <span>-{formatCurrency(totals.discountAmount)}</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex justify-between items-end mt-6 mb-8">
-                <div>
-                  <p className="text-xs text-on-surface-variant uppercase">Grand Total</p>
-                  <p className="text-3xl font-bold text-primary">{formatCurrency(totals.grandTotal)}</p>
-                </div>
-                <Icon name="receipt_long" className="text-outline-variant text-4xl" />
-              </div>
-              <div className="space-y-3">
+          <div className="md:col-span-5 space-y-4">
+            <div className="md:sticky md:top-24 space-y-4">
+              <BillingSummary totals={totals} showTipSelector={false} />
+
+              <div className="space-y-3 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-sm">
                 <button
                   onClick={() => navigate('/payment')}
                   className="w-full h-14 bg-primary text-on-primary rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-md"
@@ -164,7 +153,8 @@ const BillScreen = () => {
                   Pay at Counter
                 </button>
               </div>
-              <div className="mt-8 pt-6 border-t border-outline-variant/20 flex items-center gap-3 text-on-surface-variant/60">
+
+              <div className="pt-2 flex items-center gap-3 text-on-surface-variant/60">
                 <Icon name="verified_user" />
                 <p className="text-xs">Secure encrypted payment processing</p>
               </div>
@@ -182,7 +172,7 @@ const BillScreen = () => {
           </div>
           <p className="text-sm text-on-surface-variant leading-relaxed">
             Would you like to notify staff to come to Table {tableNumber} for cash/counter settlement of{' '}
-            <span className="font-bold text-on-surface">{formatCurrency(totals.grandTotal)}</span>?
+            <span className="font-bold text-on-surface">{formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}</span>?
           </p>
           <div className="space-y-2 pt-2">
             <button

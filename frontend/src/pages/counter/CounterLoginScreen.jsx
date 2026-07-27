@@ -4,10 +4,13 @@ import { motion } from 'framer-motion';
 import { User, Lock, Eye, EyeOff, LogIn, Store, ArrowLeft } from 'lucide-react';
 import { RESTAURANT_INFO } from '../../utils/mockData';
 
+const DEMO_EMPLOYEE_ID = 'counter01';
+const DEMO_PASSWORD = 'counter123';
+
 const CounterLoginScreen = () => {
   const navigate = useNavigate();
-  const [employeeId, setEmployeeId] = useState('');
-  const [password, setPassword] = useState('');
+  const [employeeId, setEmployeeId] = useState(DEMO_EMPLOYEE_ID);
+  const [password, setPassword] = useState(DEMO_PASSWORD);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 

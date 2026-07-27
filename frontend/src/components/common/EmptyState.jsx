@@ -5,7 +5,7 @@ import Icon from './Icon';
 const EmptyState = ({
   icon: IconComp,
   title = 'Your cart is empty',
-  description = 'Explore our authentic South Indian menu and add your favorite dishes to start ordering.',
+  description = 'Explore our regional menu of biryanis, curries and tandoor grills, and add your favorite dishes to start ordering.',
   actionLabel,
   onAction,
 }) => {

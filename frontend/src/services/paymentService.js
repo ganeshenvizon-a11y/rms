@@ -1,11 +1,14 @@
 import api, { mockApiDelay } from './api';
+import { formatInvoiceAmount, formatDateTime } from '../utils/formatters';
+import { restaurantConfig } from '../config/restaurantConfig';
+import { RESTAURANT_INFO } from '../utils/mockData';
 
 export const paymentService = {
   // Process online / cash payment
   async processPayment(paymentDetails) {
     try {
       // Production: return await api.post('/payments/process', paymentDetails);
-      const transactionId = `TXN-${Math.floor(100000 + Math.random() * 900000)}`;
+      const transactionId = `${restaurantConfig.invoiceRules.invoicePrefix || 'INV'}-TXN-${Math.floor(100000 + Math.random() * 900000)}`;
       return await mockApiDelay({
         success: true,
         transactionId,
@@ -22,21 +25,25 @@ export const paymentService = {
   // Download receipt / generate invoice text
   async downloadReceipt(orderId, transactionDetails) {
     try {
+      const formattedDate = formatDateTime(new Date());
+      const formattedAmount = formatInvoiceAmount(transactionDetails?.amount || 0);
+
       const receiptContent = `
 =========================================
-          DAKSHIN HERITAGE
-    Authentic South Indian Gastronomy
-       Indiranagar Suite & Garden
+          ${RESTAURANT_INFO.name.toUpperCase()}
+    ${RESTAURANT_INFO.tagline}
 =========================================
+Document Title: ${restaurantConfig.invoiceRules.documentTitle}
+GSTIN: ${restaurantConfig.invoiceRules.gstin} | FSSAI: ${restaurantConfig.invoiceRules.fssaiNumber}
 Order ID: #${orderId}
-Date: ${new Date().toLocaleString()}
+Date: ${formattedDate}
 Transaction Ref: ${transactionDetails?.transactionId || 'CASH-PAY'}
 Payment Method: ${transactionDetails?.method || 'Card/UPI'}
 
-Total Amount Paid: ₹${transactionDetails?.amount?.toFixed(2) || '0.00'}
+Total Amount Paid: ${formattedAmount}
 
-Nandri & Vanakkam!
-Thank you for dining with us at Dakshin Heritage.
+Dhanyavadamulu!
+Thank you for dining with us at ${RESTAURANT_INFO.name}.
 =========================================
       `;
       return await mockApiDelay({ receiptText: receiptContent, filename: `Receipt-${orderId}.txt` });

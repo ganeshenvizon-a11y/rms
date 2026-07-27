@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, BellOff, CalendarDays, UserCircle2 } from 'lucide-react';
+import { Search, Bell, BellOff, CalendarDays, UserCircle2, LayoutGrid } from 'lucide-react';
 import { useKitchenPrefs } from '../../context/KitchenPrefsContext';
 
 const KitchenTopBar = ({
@@ -74,6 +74,14 @@ const KitchenTopBar = ({
           ) : (
             <UserCircle2 className="w-8 h-8 text-primary" />
           )}
+        </button>
+        <button
+          onClick={() => navigate('/portal')}
+          className="ml-1 flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-on-primary font-bold text-xs hover:opacity-90 transition-all shadow-sm"
+          title="Switch App"
+        >
+          <LayoutGrid className="w-3.5 h-3.5" />
+          <span>App Hub</span>
         </button>
       </div>
     </header>

@@ -1,18 +1,64 @@
 export const ISSUE_CATEGORIES = [
-  { id: 'wrong_item', label: 'Wrong Item Received', icon: 'wrong_location' },
-  { id: 'missing_item', label: 'Missing Item', icon: 'event_busy' },
-  { id: 'food_quality', label: 'Food Quality Issue', icon: 'thumb_down' },
-  { id: 'food_cold', label: 'Food is Cold', icon: 'ac_unit' },
-  { id: 'order_slow', label: 'Order Taking Too Long', icon: 'hourglass_empty' },
-  { id: 'assistance', label: 'Need Assistance', icon: 'support_agent' },
-  { id: 'change_order', label: 'Change My Order', icon: 'edit_note' },
-  { id: 'other', label: 'Other', icon: 'more_horiz' },
+  {
+    id: 'WRONG_ITEM',
+    label: 'Wrong Item',
+    explanation: 'An item delivered does not match your order.',
+    icon: 'wrong_location'
+  },
+  {
+    id: 'MISSING_ITEM',
+    label: 'Missing Item',
+    explanation: 'An item shown in your order has not been delivered.',
+    icon: 'event_busy'
+  },
+  {
+    id: 'FOOD_COLD',
+    label: 'Food Is Cold',
+    explanation: 'Food delivered was not served hot or at the right temperature.',
+    icon: 'ac_unit'
+  },
+  {
+    id: 'QUALITY_ISSUE',
+    label: 'Quality Issue',
+    explanation: 'Taste, texture, or preparation did not meet expectations.',
+    icon: 'thumb_down'
+  },
+  {
+    id: 'ALLERGY_CONCERN',
+    label: 'Allergy Concern',
+    explanation: 'Urgent check for ingredient or allergen cross-contact concern.',
+    icon: 'warning'
+  },
+  {
+    id: 'EXCESSIVE_DELAY',
+    label: 'Excessive Delay',
+    explanation: 'Preparation or delivery has exceeded expected waiting time.',
+    icon: 'hourglass_empty'
+  },
+  {
+    id: 'BILLING_ISSUE',
+    label: 'Billing Issue',
+    explanation: 'Discrepancy in item prices, discounts, or total bill.',
+    icon: 'receipt_long'
+  },
+  {
+    id: 'MANAGER_ASSISTANCE',
+    label: 'Need Manager Assistance',
+    explanation: 'Speak directly to shift manager about your table.',
+    icon: 'support_agent'
+  },
+  {
+    id: 'OTHER',
+    label: 'Other',
+    explanation: 'Any other operational or dining query.',
+    icon: 'more_horiz'
+  }
 ];
 
 export const REPORT_STAGES = [
-  { id: 'submitted', title: 'Report Submitted' },
-  { id: 'staff_notified', title: 'Staff Notified' },
-  { id: 'staff_assigned', title: 'Staff Assigned' },
-  { id: 'resolving', title: 'Resolution In Progress' },
-  { id: 'resolved', title: 'Resolved' },
+  { id: 'REPORTED', title: 'Report Received' },
+  { id: 'OWNER_ASSIGNED', title: 'Staff Assigned' },
+  { id: 'ACTION_IN_PROGRESS', title: 'Resolution In Progress' },
+  { id: 'WAITING_FOR_CUSTOMER', title: 'Waiting for Confirmation' },
+  { id: 'RESOLVED', title: 'Resolved' },
 ];

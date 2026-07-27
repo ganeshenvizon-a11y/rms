@@ -1,89 +1,91 @@
 import { DISHES, CATEGORIES, RESTAURANT_INFO } from '../utils/mockData';
+import { dashboardMockData } from '../utils/managerMockData';
+import { restaurantConfig } from '../config/restaurantConfig';
+import { formatDateTime } from '../utils/formatters';
+
+export { dashboardMockData };
 
 // Storage Keys
-const EMPLOYEES_STORAGE_KEY = 'bella_vista_employees';
-const SETTINGS_STORAGE_KEY = 'bella_vista_manager_settings';
-const RESERVATIONS_STORAGE_KEY = 'bella_vista_reservations';
-const AUDIT_LOG_STORAGE_KEY = 'bella_vista_audit_logs';
+const EMPLOYEES_STORAGE_KEY = 'mangamma_employees';
+const SETTINGS_STORAGE_KEY = 'mangamma_manager_settings';
+const RESERVATIONS_STORAGE_KEY = 'mangamma_reservations';
+const AUDIT_LOG_STORAGE_KEY = 'mangamma_audit_logs';
 
 export const INITIAL_EMPLOYEES = [
   {
-    id: 'emp-101',
-    name: 'Sundaram Pillai',
-    role: 'General Manager',
-    email: 'sundaram.p@dakshin.in',
-    phone: '+91 98401 23456',
+    id: 'staff-1',
+    name: 'Rahul Sharma',
+    role: 'Waiter',
+    email: 'rahul.s@mangammaruchulu.in',
+    phone: '+91 98401 11223',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-    shift: 'Full Time (09:00 - 18:00)',
+    shift: 'Morning Shift (09:00 - 18:00)',
     status: 'Clocked In',
-    hourlyRate: 38.50,
-    joinDate: '2019-03-15',
-    department: 'Management'
+    salary: 18000,
+    salaryPeriod: 'month',
+    overtimeRate: 120,
+    joinDate: '2021-03-15',
+    department: 'Floor Service'
   },
   {
-    id: 'emp-102',
-    name: 'Chef Karthik Swaminathan',
-    role: 'Executive Head Chef',
-    email: 'karthik.chef@dakshin.in',
-    phone: '+91 98402 34567',
-    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=200&q=80',
-    shift: 'Morning Prep (08:00 - 16:30)',
-    status: 'Clocked In',
-    hourlyRate: 35.00,
-    joinDate: '2020-01-10',
-    department: 'Kitchen'
-  },
-  {
-    id: 'emp-103',
-    name: 'Ananya Nair',
-    role: 'Senior Server',
-    email: 'ananya.nair@dakshin.in',
-    phone: '+91 98403 45678',
+    id: 'staff-2',
+    name: 'Ananya Reddy',
+    role: 'Waiter',
+    email: 'ananya.r@mangammaruchulu.in',
+    phone: '+91 98402 22334',
     avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
-    shift: 'Evening Service (16:00 - 00:00)',
+    shift: 'Morning Shift (09:00 - 18:00)',
     status: 'Clocked In',
-    hourlyRate: 22.00,
-    joinDate: '2021-06-01',
+    salary: 18000,
+    salaryPeriod: 'month',
+    overtimeRate: 120,
+    joinDate: '2022-01-10',
     department: 'Floor Service'
   },
   {
-    id: 'emp-104',
-    name: 'Ramesh Kumar',
-    role: 'POS Cashier & Sommelier',
-    email: 'ramesh.k@dakshin.in',
-    phone: '+91 98404 56789',
+    id: 'staff-3',
+    name: 'Imran Khan',
+    role: 'Counter',
+    email: 'imran.k@mangammaruchulu.in',
+    phone: '+91 98403 33445',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    shift: 'Evening Service (15:30 - 23:30)',
+    shift: 'Shift A (08:30 - 17:30)',
     status: 'Clocked In',
-    hourlyRate: 24.50,
-    joinDate: '2021-11-20',
-    department: 'Counter & Bar'
+    salary: 22000,
+    salaryPeriod: 'month',
+    overtimeRate: 140,
+    joinDate: '2020-06-01',
+    department: 'Counter & Cash'
   },
   {
-    id: 'emp-105',
-    name: 'Chef Vignesh Iyer',
-    role: 'Sous Chef (Dosa & Tiffin)',
-    email: 'vignesh.i@dakshin.in',
-    phone: '+91 98405 67890',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
-    shift: 'Evening Shift (14:00 - 22:30)',
-    status: 'Off Duty',
-    hourlyRate: 28.00,
-    joinDate: '2022-04-12',
+    id: 'staff-4',
+    name: 'Sneha Patel',
+    role: 'Kitchen Staff',
+    email: 'sneha.p@mangammaruchulu.in',
+    phone: '+91 98404 44556',
+    avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=200&q=80',
+    shift: 'Mid Shift (10:00 - 19:00)',
+    status: 'Clocked In',
+    salary: 24000,
+    salaryPeriod: 'month',
+    overtimeRate: 150,
+    joinDate: '2023-04-12',
     department: 'Kitchen'
   },
   {
-    id: 'emp-106',
-    name: 'Priya Sharma',
-    role: 'Host & Lead Reservationist',
-    email: 'priya.s@dakshin.in',
-    phone: '+91 98406 78901',
+    id: 'staff-5',
+    name: 'Priya Nair',
+    role: 'Head Chef',
+    email: 'priya.n@mangammaruchulu.in',
+    phone: '+91 98405 55667',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
-    shift: 'Morning Shift (10:00 - 18:00)',
+    shift: 'Off Today',
     status: 'On Leave',
-    hourlyRate: 20.00,
-    joinDate: '2023-02-18',
-    department: 'Floor Service'
+    salary: 35000,
+    salaryPeriod: 'month',
+    overtimeRate: 200,
+    joinDate: '2022-08-18',
+    department: 'Kitchen'
   }
 ];
 
@@ -91,14 +93,32 @@ export const INITIAL_SETTINGS = {
   restaurantName: RESTAURANT_INFO.name,
   tagline: RESTAURANT_INFO.tagline,
   established: RESTAURANT_INFO.established,
-  address: "100 Feet Road, Indiranagar Suite & Garden, Bengaluru 560038",
+  address: RESTAURANT_INFO.address,
   phone: "+91 (80) 4123-8888",
-  email: "contact@dakshinheritage.in",
-  currency: "₹",
-  taxRate: 5.0, // 5% GST
-  vatRate: 8.0, // 8% VAT
-  serviceCharge: 10.0, // 10% Service Charge
-  tipSuggestions: [10, 15, 18, 20],
+  email: "contact@mangammaruchulu.in",
+  country: restaurantConfig.countryName,
+  countryCode: restaurantConfig.countryCode,
+  currency: restaurantConfig.currencySymbol,
+  currencyCode: restaurantConfig.currencyCode,
+  currencyLocale: restaurantConfig.currencyLocale,
+  timezone: restaurantConfig.timezone,
+  dateFormat: restaurantConfig.dateFormat,
+  timeFormat: restaurantConfig.timeFormat,
+  taxRate: restaurantConfig.taxStructure.totalRate, // 5% GST
+  cgstRate: restaurantConfig.taxStructure.cgstRate,
+  sgstRate: restaurantConfig.taxStructure.sgstRate,
+  vatRate: 0,
+  pricesIncludeTax: restaurantConfig.taxStructure.pricesIncludeTax,
+  serviceCharge: 0,
+  serviceChargeEnabled: restaurantConfig.billingPolicy.serviceChargeEnabled,
+  voluntaryTipEnabled: restaurantConfig.billingPolicy.voluntaryTipEnabled,
+  defaultTipPercentage: restaurantConfig.billingPolicy.defaultTipPercentage,
+  tipSuggestions: restaurantConfig.billingPolicy.tipOptions,
+  gstin: restaurantConfig.invoiceRules.gstin,
+  fssai: restaurantConfig.invoiceRules.fssaiNumber,
+  documentTitle: restaurantConfig.invoiceRules.documentTitle,
+  invoicePrefix: restaurantConfig.invoiceRules.invoicePrefix,
+  defaultSalaryPeriod: restaurantConfig.payrollDisplay.defaultSalaryPeriod,
   operatingHours: {
     monday: "07:30 AM - 10:30 PM",
     tuesday: "07:30 AM - 10:30 PM",
@@ -108,8 +128,8 @@ export const INITIAL_SETTINGS = {
     saturday: "07:00 AM - 11:30 PM",
     sunday: "07:00 AM - 10:30 PM"
   },
-  receiptHeader: "Nandri / Thank you for dining at Dakshin Heritage!",
-  receiptFooter: "Please visit us again! Authentic South Indian Culinary Gastronomy.",
+  receiptHeader: "Dhanyavadamulu / Thank you for dining at Mangamma Ruchulu!",
+  receiptFooter: "Please visit us again! A Journey of Tradition. A Legacy of Flavour.",
   autoPrintReceipt: true,
   lowStockAlertThreshold: 5,
   kitchenDelayAlertMinutes: 15,
@@ -127,7 +147,7 @@ export const INITIAL_RESERVATIONS = [
     tableNumber: '04',
     section: 'Main Dining Room',
     status: 'Confirmed',
-    notes: 'Family dinner. Requested Ghee Podi Dosa & Filter Coffee ready.'
+    notes: 'Family dinner. Requested Chicken Dum Biryani & Sweet Lassi ready.'
   },
   {
     id: 'res-302',
@@ -139,7 +159,7 @@ export const INITIAL_RESERVATIONS = [
     tableNumber: 'VIP-1',
     section: 'VIP Lounge',
     status: 'Confirmed',
-    notes: 'VIP Guests. Chettinad Feast menu preference.'
+    notes: 'VIP Guests. Andhra Feast menu preference.'
   },
   {
     id: 'res-303',
@@ -158,89 +178,52 @@ export const INITIAL_RESERVATIONS = [
 export const INITIAL_AUDIT_LOGS = [
   {
     id: 'log-1',
-    action: 'Price Update',
+    action: 'Daily Shift Reconciliation',
     user: 'Sundaram Pillai',
-    timestamp: '2026-07-24 11:45 AM',
-    details: 'Updated price of Ghee Roast Masala Dosa to ₹12.50',
-    type: 'menu'
+    timestamp: '27 Jul 2026, 5:54 PM',
+    details: 'Reconciled 186 completed orders totalling ₹50,708.00 gross sales.',
+    type: 'finance'
   },
   {
     id: 'log-2',
-    action: 'Cash Till Drawer Unlocked',
-    user: 'Ramesh Kumar',
-    timestamp: '2026-07-24 10:15 AM',
-    details: 'Manual till opening during morning float audit',
+    action: 'Cash Till Drawer Audit',
+    user: 'Imran Khan',
+    timestamp: '27 Jul 2026, 4:30 PM',
+    details: 'Verified cash drawer collection ₹7,688.00 against 31 transactions.',
     type: 'finance'
   },
   {
     id: 'log-3',
-    action: 'Staff Status Changed',
-    user: 'Sundaram Pillai',
-    timestamp: '2026-07-24 09:00 AM',
-    details: 'Clocked in Chef Karthik Swaminathan for Morning Shift',
+    action: 'Staff Shift Check-in',
+    user: 'Rahul Sharma',
+    timestamp: '27 Jul 2026, 9:00 AM',
+    details: 'Clocked in for floor waiter shift.',
     type: 'staff'
-  },
-  {
-    id: 'log-4',
-    action: 'Settings Saved',
-    user: 'Sundaram Pillai',
-    timestamp: '2026-07-23 18:30 PM',
-    details: 'Updated receipt footer text & Filter Coffee brewing alert threshold',
-    type: 'system'
   }
 ];
 
-// Analytics Mock Data
+// Analytics Mock Data matching dashboardMockData
 export const REPORTS_MOCK_DATA = {
   salesOverview: {
-    grossSales: 4850.75,
-    netRevenue: 4218.00,
-    totalOrders: 142,
-    avgTicket: 34.16,
-    taxCollected: 242.53,
-    vatCollected: 388.06,
-    discountsGiven: 120.00,
-    tipsCollected: 640.50
+    grossSales: dashboardMockData.grossSales,
+    netRevenue: dashboardMockData.netCollected,
+    totalOrders: dashboardMockData.completedOrders,
+    avgTicket: dashboardMockData.averageOrderValue,
+    taxCollected: Math.round(dashboardMockData.grossSales * 0.05),
+    vatCollected: 0,
+    discountsGiven: dashboardMockData.discounts,
+    tipsCollected: 0
   },
-  hourlyTraffic: [
-    { hour: '08 AM', orders: 18, sales: 420 },
-    { hour: '09 AM', orders: 32, sales: 880 },
-    { hour: '10 AM', orders: 28, sales: 740 },
-    { hour: '11 AM', orders: 15, sales: 510 },
-    { hour: '12 PM', orders: 30, sales: 980 },
-    { hour: '01 PM', orders: 42, sales: 1520 },
-    { hour: '02 PM', orders: 26, sales: 810 },
-    { hour: '05 PM', orders: 20, sales: 580 },
-    { hour: '06 PM', orders: 35, sales: 1190 },
-    { hour: '07 PM', orders: 48, sales: 1650 },
-    { hour: '08 PM', orders: 40, sales: 1420 },
-    { hour: '09 PM', orders: 22, sales: 780 },
-  ],
-  paymentSplit: [
-    { method: 'Credit / Debit Card', amount: 2910.45, percentage: 60, icon: 'CreditCard' },
-    { method: 'Cash', amount: 1212.68, percentage: 25, icon: 'Banknote' },
-    { method: 'UPI / Digital QR', amount: 727.62, percentage: 15, icon: 'QrCode' },
-  ],
+  hourlyTraffic: dashboardMockData.hourlySales.map(h => ({ hour: h.time, orders: h.orders, sales: h.amount })),
+  paymentSplit: dashboardMockData.paymentBreakdown,
   categoryPerformance: [
-    { name: 'Dosas & Tiffins', sales: 1820.00, count: 94, color: 'bg-amber-500' },
-    { name: 'Biryanis & Rice Specials', sales: 1480.50, count: 72, color: 'bg-rose-500' },
-    { name: 'Curries & Gravies', sales: 890.00, count: 42, color: 'bg-emerald-500' },
-    { name: 'Vadas & Appetizers', sales: 520.00, count: 58, color: 'bg-indigo-500' },
-    { name: 'Payasam & Sweets', sales: 340.25, count: 35, color: 'bg-purple-500' },
-    { name: 'Filter Coffee & Drinks', sales: 680.00, count: 110, color: 'bg-yellow-500' }
+    { name: 'Biryanis & Rice Specials', sales: 21760.00, count: 68, color: 'bg-rose-500' },
+    { name: 'Thalis & Curries', sales: 16768.00, count: 69, color: 'bg-amber-500' },
+    { name: 'Starters & Tandoor', sales: 7560.00, count: 54, color: 'bg-emerald-500' },
+    { name: 'Refreshing Drinks', sales: 4620.00, count: 77, color: 'bg-purple-500' }
   ],
-  topDishes: [
-    { name: 'Desi Ghee Roast Masala Dosa', category: 'Dosas', quantity: 56, revenue: 700.00, rating: 4.9 },
-    { name: 'Chettinad Seeraga Samba Chicken Biryani', category: 'Biryani', quantity: 42, revenue: 819.00, rating: 4.9 },
-    { name: 'Steamed Rice Idli & Medu Vada Platter', category: 'Starters', quantity: 48, revenue: 432.00, rating: 4.8 },
-    { name: 'Malabar Coconut Fish Curry (Meen Curry)', category: 'Curries', quantity: 30, revenue: 630.00, rating: 4.9 },
-    { name: 'Kumbakonam Degree Filter Kaapi', category: 'Beverages', quantity: 84, revenue: 378.00, rating: 4.9 }
-  ],
-  staffPerformance: [
-    { name: 'Ananya Nair', role: 'Senior Server', tablesServed: 32, totalSales: 1280.00, avgRating: 4.9, tips: 210.00 },
-    { name: 'Ramesh Kumar', role: 'POS Cashier', tablesServed: 38, totalSales: 1540.50, avgRating: 4.8, tips: 245.00 },
-    { name: 'Priya Sharma', role: 'Hostess', tablesServed: 24, totalSales: 920.00, avgRating: 4.9, tips: 140.00 }
-  ]
+  topDishes: dashboardMockData.popularItems,
+  staffPerformance: dashboardMockData.activeStaff
 };
 
 // Storage Access Helper Functions
@@ -314,7 +297,7 @@ export const addAuditLog = (action, details, type = 'system', user = 'Sundaram P
     id: `log-${Date.now()}`,
     action,
     user,
-    timestamp: new Date().toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+    timestamp: formatDateTime(new Date()),
     details,
     type
   };

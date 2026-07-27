@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { RESTAURANT_INFO } from '../../utils/mockData';
+import { formatInvoiceAmount, formatDateTime } from '../../utils/formatters';
 import {
   Receipt,
   Search,
@@ -123,21 +124,18 @@ const ReceiptsView = () => {
                       {rec.receiptNo}
                     </td>
                     <td className="py-3 px-3 text-stone-500">
-                      {new Date(rec.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      <span className="block text-[10px] text-stone-400">
-                        {new Date(rec.timestamp).toLocaleDateString()}
-                      </span>
+                      {formatDateTime(rec.timestamp)}
                     </td>
                     <td className="py-3 px-3 font-semibold text-stone-900">
                       Table #{rec.tableNumber}
                     </td>
                     <td className="py-3 px-3 text-stone-600">
-                      {rec.cashierName || 'Marco Rossi'}
+                      {rec.cashierName || 'Suresh Kumar'}
                     </td>
                     <td className="py-3 px-3 font-mono text-stone-700">
                       {rec.paymentMethod}
                     </td>
-                    <td className="py-3 px-3 text-right font-bold text-emerald-700 text-sm">₹{rec.grandTotal.toFixed(2)}</td>
+                    <td className="py-3 px-3 text-right font-bold text-emerald-700 text-sm">{formatInvoiceAmount(rec.grandTotal)}</td>
                     <td className="py-3 px-3 text-center">
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase font-mono ${
@@ -213,7 +211,7 @@ const ReceiptsView = () => {
                 </h2>
                 <p className="text-[10px] text-stone-600 font-sans">{RESTAURANT_INFO.tagline}</p>
                 <p className="text-[10px] text-stone-500">{RESTAURANT_INFO.location}</p>
-                <p className="text-[9px] text-stone-500">VAT ID: IT-89410924 | Tel: +39 055 2341</p>
+                <p className="text-[9px] text-stone-500">GSTIN: 29AAAAA0000A1Z5 | FSSAI: 11223344556677</p>
               </div>
 
               {/* Transaction Meta */}
@@ -224,7 +222,7 @@ const ReceiptsView = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>DATE/TIME:</span>
-                  <span>{new Date(selectedReceipt.timestamp).toLocaleString()}</span>
+                  <span>{formatDateTime(selectedReceipt.timestamp)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>TABLE: #{selectedReceipt.tableNumber}</span>
@@ -232,7 +230,7 @@ const ReceiptsView = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>CASHIER:</span>
-                  <span>{selectedReceipt.cashierName || 'Marco Rossi'}</span>
+                  <span>{selectedReceipt.cashierName || 'Suresh Kumar'}</span>
                 </div>
               </div>
 
@@ -246,7 +244,7 @@ const ReceiptsView = () => {
                 {selectedReceipt.items.map((it, idx) => (
                   <div key={idx} className="flex justify-between text-[11px]">
                     <span className="truncate max-w-[200px]">{it.quantity}x {it.name}</span>
-                    <span className="font-bold">₹{(it.total || it.price * it.quantity).toFixed(2)}</span>
+                    <span className="font-bold">{formatInvoiceAmount(it.total || it.price * it.quantity)}</span>
                   </div>
                 ))}
               </div>
@@ -255,36 +253,49 @@ const ReceiptsView = () => {
               <div className="space-y-1 text-[11px] text-stone-800 border-b border-stone-300 pb-2">
                 <div className="flex justify-between">
                   <span>SUBTOTAL:</span>
-                  <span>₹{selectedReceipt.subtotal.toFixed(2)}</span>
+                  <span>{formatInvoiceAmount(selectedReceipt.subtotal)}</span>
                 </div>
                 
-                {selectedReceipt.discount > 0 && (
-                  <div className="flex justify-between font-bold">
+                {(selectedReceipt.discount || selectedReceipt.discountAmount) > 0 && (
+                  <div className="flex justify-between font-bold text-emerald-700">
                     <span>DISCOUNT:</span>
-                    <span>-${selectedReceipt.discount.toFixed(2)}</span>
+                    <span>-{formatInvoiceAmount(selectedReceipt.discount || selectedReceipt.discountAmount)}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between text-stone-600 text-[10px]">
-                  <span>SERVICE TAX (5%):</span>
-                  <span>₹{selectedReceipt.tax.toFixed(2)}</span>
-                </div>
-
-                <div className="flex justify-between text-stone-600 text-[10px]">
-                  <span>VAT (8%):</span>
-                  <span>₹{selectedReceipt.vat.toFixed(2)}</span>
-                </div>
-
-                {selectedReceipt.tip > 0 && (
+                {(selectedReceipt.packagingCharge || 0) > 0 && (
                   <div className="flex justify-between">
-                    <span>GRATUITY:</span>
-                    <span>₹{selectedReceipt.tip.toFixed(2)}</span>
+                    <span>PACKAGING CHARGE:</span>
+                    <span>{formatInvoiceAmount(selectedReceipt.packagingCharge || 0)}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between font-bold text-sm text-stone-950 pt-1 border-t border-stone-400">
-                  <span>GRAND TOTAL:</span>
-                  <span>₹{selectedReceipt.grandTotal.toFixed(2)}</span>
+                <div className="flex justify-between text-stone-700">
+                  <span>GST @ 5%:</span>
+                  <span>{formatInvoiceAmount(selectedReceipt.gst || selectedReceipt.tax || 0)}</span>
+                </div>
+                <div className="pl-2 flex justify-between text-[10px] text-stone-500">
+                  <span>CGST @ 2.5%:</span>
+                  <span>{formatInvoiceAmount(selectedReceipt.cgst || (selectedReceipt.gst || selectedReceipt.tax || 0) / 2)}</span>
+                </div>
+                <div className="pl-2 flex justify-between text-[10px] text-stone-500">
+                  <span>SGST @ 2.5%:</span>
+                  <span>{formatInvoiceAmount(selectedReceipt.sgst || (selectedReceipt.gst || selectedReceipt.tax || 0) / 2)}</span>
+                </div>
+
+                <div className="flex justify-between font-bold border-t border-stone-200 pt-1">
+                  <span>TOTAL:</span>
+                  <span>{formatInvoiceAmount(selectedReceipt.total || (selectedReceipt.subtotal - (selectedReceipt.discount || 0) + (selectedReceipt.packagingCharge || 0) + (selectedReceipt.gst || selectedReceipt.tax || 0)))}</span>
+                </div>
+
+                <div className="flex justify-between text-stone-700">
+                  <span>OPTIONAL STAFF TIP:</span>
+                  <span>{formatInvoiceAmount(selectedReceipt.tip || 0)}</span>
+                </div>
+
+                <div className="flex justify-between font-bold text-sm text-stone-950 pt-1 border-t-2 border-stone-400 mt-1">
+                  <span>TOTAL PAYABLE:</span>
+                  <span>{formatInvoiceAmount(selectedReceipt.totalPayable || selectedReceipt.grandTotal || 0)}</span>
                 </div>
               </div>
 
@@ -297,13 +308,13 @@ const ReceiptsView = () => {
                 {selectedReceipt.tenderedAmount && (
                   <div className="flex justify-between">
                     <span>CASH TENDERED:</span>
-                    <span>₹{selectedReceipt.tenderedAmount.toFixed(2)}</span>
+                    <span>{formatInvoiceAmount(selectedReceipt.tenderedAmount)}</span>
                   </div>
                 )}
                 {selectedReceipt.changeGiven > 0 && (
                   <div className="flex justify-between font-bold">
                     <span>CHANGE RETURNED:</span>
-                    <span>₹{selectedReceipt.changeGiven.toFixed(2)}</span>
+                    <span>{formatInvoiceAmount(selectedReceipt.changeGiven)}</span>
                   </div>
                 )}
               </div>
@@ -314,7 +325,7 @@ const ReceiptsView = () => {
                   |||||| | ||||| |||| ||||||| |||
                 </div>
                 <p className="text-[10px] font-serif font-bold text-stone-800 uppercase">
-                  Grazie e Arrivederci!
+                  Thank you! Visit again!
                 </p>
               </div>
 

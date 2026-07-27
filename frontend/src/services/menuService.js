@@ -17,8 +17,9 @@ export const menuService = {
         const query = searchQuery.toLowerCase();
         filtered = filtered.filter(item => 
           item.name.toLowerCase().includes(query) ||
-          item.italianName.toLowerCase().includes(query) ||
-          item.description.toLowerCase().includes(query)
+          (item.italianName && item.italianName.toLowerCase().includes(query)) ||
+          (item.shortDescription && item.shortDescription.toLowerCase().includes(query)) ||
+          (item.description && item.description.toLowerCase().includes(query))
         );
       }
       return await mockApiDelay(filtered);

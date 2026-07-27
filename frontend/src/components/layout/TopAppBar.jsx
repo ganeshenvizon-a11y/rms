@@ -5,9 +5,7 @@ import { RESTAURANT_INFO } from '../../utils/mockData';
 import Icon from '../common/Icon';
 
 /**
- * Material-style top app bar. Two variants matching the reference screens:
- * - "brand": restaurant name + table badge (Menu, Cart, Bill, Payment, Tracking)
- * - "back": back button + optional title + optional right action (Food Details, Order Confirmation, Thank You)
+ * Material-style top app bar with Trust Profile and Saved Preferences secondary actions.
  */
 const TopAppBar = ({
   variant = 'brand',
@@ -16,6 +14,8 @@ const TopAppBar = ({
   rightIcon,
   onRightAction,
   transparent = false,
+  onOpenTrustProfile,
+  onOpenPreferences
 }) => {
   const navigate = useNavigate();
   const { tableNumber } = useTable();
@@ -34,46 +34,64 @@ const TopAppBar = ({
         >
           <Icon name="arrow_back" className="text-on-surface" />
         </button>
-        <span className="font-bold text-lg tracking-tight text-primary italic truncate max-w-[55%]">
+        <span className="font-bold text-lg tracking-tight text-primary italic truncate max-w-[45%]">
           {title || RESTAURANT_INFO.name}
         </span>
-        {rightIcon ? (
-          <button
-            onClick={onRightAction}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white active:scale-95 transition-all shadow-sm"
-          >
-            <Icon name={rightIcon} className="text-on-surface" />
-          </button>
-        ) : (
-          <span className="w-10 h-10" />
-        )}
+        <div className="flex items-center gap-2">
+          {onOpenTrustProfile && (
+            <button
+              onClick={onOpenTrustProfile}
+              className="px-2.5 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-xs font-semibold text-primary flex items-center gap-1 transition-colors"
+              title="About Our Kitchen"
+            >
+              <Icon name="info" className="text-sm" />
+              <span className="hidden sm:inline">About Kitchen</span>
+            </button>
+          )}
+          {rightIcon ? (
+            <button
+              onClick={onRightAction}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white active:scale-95 transition-all shadow-sm"
+            >
+              <Icon name={rightIcon} className="text-on-surface" />
+            </button>
+          ) : (
+            <span className="w-2" />
+          )}
+        </div>
       </header>
     );
   }
 
   return (
-    <header className="fixed top-0 left-0 w-full z-40 bg-surface/80 backdrop-blur-md shadow-sm flex items-center justify-between px-4 md:px-10 h-16">
+    <header
+      className="fixed top-0 left-0 w-full z-40 bg-surface/95 backdrop-blur-md border-b border-border flex items-center px-4 md:px-10 gap-2"
+      style={{ height: 'calc(56px + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)' }}
+    >
       <div
-        className="flex items-center gap-2 cursor-pointer"
+        className="flex items-center gap-2 cursor-pointer min-w-0 flex-1"
         onClick={() => navigate('/')}
       >
-        <Icon name="restaurant" className="text-primary" />
-        <h1 className="text-lg font-bold italic text-primary tracking-tight">
+        <Icon name="restaurant" className="text-primary shrink-0" />
+        <h1 className="text-[17px] leading-[22px] font-bold italic text-primary tracking-tight truncate min-w-0">
           {RESTAURANT_INFO.name}
         </h1>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-xs font-semibold">
+      <div className="flex items-center gap-2 shrink-0">
+        {onOpenTrustProfile && (
+          <button
+            onClick={onOpenTrustProfile}
+            className="w-9 h-9 shrink-0 rounded-full bg-surface-container hover:bg-surface-container-high text-primary flex items-center justify-center transition-colors"
+            aria-label="About Our Kitchen"
+            title="About Our Kitchen"
+          >
+            <Icon name="verified_user" className="text-lg" />
+          </button>
+        )}
+        <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20 min-w-[68px] text-center shrink-0">
           Table {tableNumber}
         </div>
-        <button
-          onClick={() => navigate('/portal')}
-          title="Staff Portal"
-          className="w-8 h-8 flex items-center justify-center rounded-full text-on-surface-variant/50 hover:text-primary hover:bg-surface-container transition-colors"
-        >
-          <Icon name="admin_panel_settings" className="text-lg" />
-        </button>
       </div>
     </header>
   );

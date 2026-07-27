@@ -4,13 +4,13 @@ import { useOrder } from '../../context/OrderContext';
 import { useTable } from '../../context/TableContext';
 import { useToast } from '../../context/ToastContext';
 import { paymentService } from '../../services/paymentService';
-import { formatCurrency } from '../../utils/formatters';
+import { formatInvoiceAmount } from '../../utils/formatters';
 import TopAppBar from '../../components/layout/TopAppBar';
 import EmptyState from '../../components/common/EmptyState';
 import Icon from '../../components/common/Icon';
 
 const PAYMENT_METHODS = [
-  { id: 'upi', name: 'UPI', subtitle: 'GPay, PhonePe, Paytm', icon: 'account_balance_wallet' },
+  { id: 'upi', name: 'UPI / QR Code', subtitle: 'GPay, PhonePe, Paytm', icon: 'account_balance_wallet' },
   { id: 'credit', name: 'Credit Card', subtitle: 'Visa, Mastercard, Amex', icon: 'credit_card' },
   { id: 'debit', name: 'Debit Card', subtitle: 'Instant Bank Settlement', icon: 'payments' },
   { id: 'cash', name: 'Cash at Counter', subtitle: 'Pay directly to our staff', icon: 'storefront' },
@@ -25,7 +25,7 @@ const PaymentScreen = () => {
   const [selectedMethod, setSelectedMethod] = useState('upi');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const grandTotal = activeOrder?.totals?.grandTotal || 0;
+  const grandTotal = activeOrder?.totals?.totalPayable || activeOrder?.totals?.grandTotal || activeOrder?.grandTotal || 0;
 
   const handleProcessPayment = async () => {
     setIsProcessing(true);
@@ -74,8 +74,8 @@ const PaymentScreen = () => {
         {/* Order Total Card */}
         <div className="bg-surface-container-lowest p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] mb-8 flex justify-between items-center border border-outline-variant/20">
           <div>
-            <p className="text-xs text-on-surface-variant uppercase tracking-wider">Total Amount</p>
-            <p className="text-2xl font-bold text-on-surface mt-1">{formatCurrency(grandTotal)}</p>
+            <p className="text-xs text-on-surface-variant uppercase tracking-wider font-bold">Total Payable</p>
+            <p className="text-3xl font-extrabold text-primary mt-1">{formatInvoiceAmount(grandTotal)}</p>
           </div>
           <div className="w-12 h-12 bg-primary-container/10 flex items-center justify-center rounded-full">
             <Icon name="receipt_long" className="text-primary" />
@@ -117,7 +117,7 @@ const PaymentScreen = () => {
         <div className="mt-8 flex flex-col items-center justify-center gap-1 opacity-60">
           <div className="flex items-center gap-1.5">
             <Icon name="lock" style={{ fontSize: 16 }} />
-            <p className="text-xs">Secure 256-bit SSL Encrypted Payment</p>
+            <p className="text-xs">Secure Encrypted Payment</p>
           </div>
         </div>
       </main>

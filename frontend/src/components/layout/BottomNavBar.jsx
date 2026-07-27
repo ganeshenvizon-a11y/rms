@@ -18,7 +18,10 @@ const BottomNavBar = () => {
   const { activeOrder } = useOrder();
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-surface shadow-[0px_-4px_20px_rgba(0,0,0,0.08)] rounded-t-xl">
+    <nav
+      className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-stretch bg-surface border-t border-border"
+      style={{ height: 'calc(64px + env(safe-area-inset-bottom))', paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
       {NAV_ITEMS.map((item) => {
         const isActive =
           location.pathname === item.path ||
@@ -30,12 +33,12 @@ const BottomNavBar = () => {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`relative flex flex-col items-center justify-center gap-0.5 py-1 px-3 transition-all active:scale-90 ${
+            className={`relative flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[44px] transition-all active:scale-90 ${
               isActive ? 'text-primary' : 'text-on-surface-variant'
             }`}
           >
             <span className="relative">
-              <Icon name={item.icon} filled={isActive} />
+              <Icon name={item.icon} filled={isActive} className="text-[22px]" />
               {cartBadge > 0 && (
                 <span className="absolute -top-1.5 -right-2 bg-secondary-container text-on-secondary-container text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {cartBadge}

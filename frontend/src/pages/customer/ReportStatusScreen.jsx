@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../../context/OrderContext';
 import { useTable } from '../../context/TableContext';
@@ -7,158 +7,153 @@ import { REPORT_STAGES } from '../../utils/issueCategories';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import Icon from '../../components/common/Icon';
 
-const CURRENT_STAGE_COPY = {
-  submitted: { badge: 'Report Received', title: 'Report Received', body: "We've logged your report and are getting a team member ready." },
-  staff_notified: { badge: 'Staff Notified', title: 'Staff Notified', body: 'Our restaurant staff has been alerted to your issue.' },
-  staff_assigned: { badge: 'Staff Reviewing', title: 'Review in Progress', body: "Our restaurant staff is reviewing your request. We'll be with you shortly." },
-  resolving: { badge: 'Resolving', title: 'Resolution In Progress', body: 'Our team is actively working to resolve your issue.' },
-  resolved: { badge: 'Resolved', title: 'Issue Resolved', body: 'Thanks for your patience — this issue has been marked resolved.' },
-};
-
 const ReportStatusScreen = () => {
   const navigate = useNavigate();
-  const { issueReport, advanceIssueReportStage, clearIssueReport } = useOrder();
+  const { activeOrder, issuesList, updateIssueWorkflow, confirmIssueResolution } = useOrder();
   const { tableNumber } = useTable();
   const { showToast } = useToast();
 
-  if (!issueReport) {
+  const [feedbackRating, setFeedbackRating] = useState(5);
+  const [feedbackComment, setFeedbackComment] = useState('');
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
+  // Pick active or most recent issue
+  const currentIssue = issuesList?.find(
+    (iss) => (iss.orderId === activeOrder?.orderId || iss.tableNumber === tableNumber)
+  ) || issuesList?.[0];
+
+  if (!currentIssue) {
     return (
       <>
-        <header className="sticky top-0 z-40 bg-surface shadow-sm flex items-center justify-between px-4 h-16">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant/50 transition-colors active:scale-95">
+        <header className="sticky top-0 z-40 bg-surface shadow-sm flex items-center justify-between px-4 h-16 border-b border-outline-variant/20">
+          <button onClick={() => navigate('/order-tracking')} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant/50">
             <Icon name="arrow_back" className="text-on-surface" />
           </button>
-          <h1 className="text-lg font-bold text-primary tracking-tight">Dakshin Premium</h1>
-          <div className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
+          <h1 className="text-lg font-bold text-primary italic">Service Recovery</h1>
+          <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
             Table {tableNumber}
           </div>
         </header>
-        <main className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-2">
+        <main className="flex-1 flex flex-col items-center justify-center px-4 text-center gap-3">
           <Icon name="fact_check" className="text-4xl text-on-surface-variant" />
-          <p className="text-on-surface font-semibold">No report to track yet</p>
-          <p className="text-sm text-on-surface-variant">Reports you submit will show up here.</p>
+          <p className="text-on-surface font-semibold text-base">No active issues recorded</p>
+          <p className="text-xs text-on-surface-variant max-w-xs">If something isn't right with your food, billing, or service, you can report it to staff anytime.</p>
+          <button
+            onClick={() => navigate('/report-issue')}
+            className="mt-2 px-5 py-2.5 bg-rose-600 text-white rounded-xl font-bold text-xs shadow"
+          >
+            Report an Issue
+          </button>
         </main>
         <BottomNavBar />
       </>
     );
   }
 
-  const stageCopy = CURRENT_STAGE_COPY[issueReport.status] || CURRENT_STAGE_COPY.submitted;
-  const reportedAt = new Date(issueReport.createdAt).toLocaleString('en-IN', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
-  const handleCancelReport = () => {
-    clearIssueReport();
-    showToast('Report cancelled', 'info');
-    navigate('/order-tracking');
+  const handleResolutionChoice = (isResolved) => {
+    if (isResolved) {
+      setShowFeedbackModal(true);
+    } else {
+      confirmIssueResolution(currentIssue.issueId, false);
+      showToast('Issue marked as NOT resolved. Staff notified to follow up at Table ' + tableNumber, 'warning');
+    }
   };
+
+  const handleSubmitFeedback = () => {
+    confirmIssueResolution(currentIssue.issueId, true, {
+      rating: feedbackRating,
+      comment: feedbackComment
+    });
+    showToast('Thank you for confirming resolution!', 'success');
+    setShowFeedbackModal(false);
+  };
+
+  const currentStageIdx = currentIssue.status === 'RESOLVED' || currentIssue.status === 'CLOSED'
+    ? 4
+    : currentIssue.status === 'WAITING_FOR_CUSTOMER'
+    ? 3
+    : currentIssue.status === 'ACTION_IN_PROGRESS'
+    ? 2
+    : currentIssue.status === 'OWNER_ASSIGNED'
+    ? 1
+    : 0;
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-surface shadow-sm flex items-center justify-between px-4 h-16">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant/50 transition-colors active:scale-95">
+      <header className="sticky top-0 z-40 bg-surface shadow-sm flex items-center justify-between px-4 h-16 border-b border-outline-variant/20">
+        <button onClick={() => navigate('/order-tracking')} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant/50">
           <Icon name="arrow_back" className="text-on-surface" />
         </button>
-        <h1 className="text-lg font-bold text-primary tracking-tight">Dakshin Premium</h1>
-        <div className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
+        <h1 className="text-lg font-bold text-primary italic">Issue Status & Recovery</h1>
+        <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
           Table {tableNumber}
         </div>
       </header>
 
-      <main className="flex-1 px-4 pt-6 pb-28 max-w-md mx-auto w-full">
-        <section className="mb-6 flex items-center justify-between">
+      <main className="flex-1 px-4 pt-6 pb-28 max-w-xl mx-auto w-full space-y-6">
+        <section className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-on-surface">Report Status</h2>
-            <p className="text-base text-on-surface-variant mt-1">Tracking your issue in real-time.</p>
+            <h2 className="text-2xl font-bold text-on-surface">Ticket #{currentIssue.issueId}</h2>
+            <p className="text-xs text-on-surface-variant mt-0.5">Category: <strong>{currentIssue.categoryLabel}</strong></p>
           </div>
-          {issueReport.stageIndex < 4 && (
-            <button
-              onClick={advanceIssueReportStage}
-              className="px-3 py-1 bg-secondary-container/40 text-on-secondary-container rounded-full text-[10px] font-bold whitespace-nowrap"
-            >
-              Advance Demo Stage &#8594;
-            </button>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+            currentIssue.status === 'RESOLVED' || currentIssue.status === 'CLOSED'
+              ? 'bg-emerald-500/10 text-emerald-700'
+              : 'bg-rose-500/10 text-rose-700'
+          }`}>
+            {currentIssue.statusLabel || currentIssue.status}
+          </span>
+        </section>
+
+        {/* Assigned Staff Owner Card */}
+        <section className="bg-surface-container-lowest rounded-2xl p-4 border border-outline-variant/20 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider">Assigned Staff Owner</span>
+            <span className="text-[11px] text-on-surface-variant">{currentIssue.acceptedAt ? `Accepted at ${currentIssue.acceptedAt}` : 'Recent'}</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center border border-primary/20">
+              <Icon name="support_agent" className="text-xl" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-on-surface">{currentIssue.assignedOwner || 'Staff reviewing request'}</p>
+              <p className="text-xs text-on-surface-variant">{currentIssue.assignedRole || 'Floor Staff'}</p>
+            </div>
+          </div>
+
+          {/* Selected Recovery Action */}
+          {currentIssue.recoveryAction && (
+            <div className="p-3 bg-primary/5 rounded-xl border border-primary/20 text-xs text-on-surface space-y-1">
+              <span className="font-bold text-primary block">Active Resolution Action:</span>
+              <p className="leading-relaxed">{currentIssue.recoveryAction}</p>
+            </div>
           )}
         </section>
 
-        {/* Issue Summary Card */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 mb-6 shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <span className="text-[11px] text-on-surface-variant block uppercase tracking-wider">Ticket ID</span>
-              <span className="font-semibold text-on-surface text-lg">#{issueReport.id}</span>
-            </div>
-            <div className="bg-primary text-on-primary px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1">
-              <Icon name="priority_high" className="text-sm" />
-              {issueReport.priority}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 border-t border-outline-variant/20 pt-4">
-            <div>
-              <span className="text-[11px] text-on-surface-variant block">Order</span>
-              <span className="text-sm font-semibold text-on-surface">#{issueReport.orderId || '—'}</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-on-surface-variant block">Category</span>
-              <span className="text-sm font-semibold text-on-surface">{issueReport.categoryLabel}</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-on-surface-variant block">Reported</span>
-              <span className="text-sm font-semibold text-on-surface">{reportedAt}</span>
-            </div>
-            <div>
-              <span className="text-[11px] text-on-surface-variant block">Table</span>
-              <span className="text-sm font-semibold text-on-surface">{issueReport.tableNumber}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Current Status */}
-        <section className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full mb-4 animate-pulse">
-            <Icon name="pending_actions" className="text-lg" />
-            <span className="uppercase tracking-widest text-[11px] font-bold">{stageCopy.badge}</span>
-          </div>
-          <h3 className="text-lg font-bold text-on-surface mb-1">{stageCopy.title}</h3>
-          <p className="text-base text-on-surface-variant">{stageCopy.body}</p>
-        </section>
-
-        {/* Status Timeline */}
-        <section className="mb-8">
-          <div className="space-y-6 relative">
+        {/* Status Workflow Progress */}
+        <section className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/20 space-y-4">
+          <h3 className="font-bold text-sm text-on-surface">Resolution Timeline</h3>
+          <div className="space-y-4 relative pl-2">
             {REPORT_STAGES.map((stage, idx) => {
-              const isCompleted = idx < issueReport.stageIndex;
-              const isCurrent = idx === issueReport.stageIndex;
-              const isLast = idx === REPORT_STAGES.length - 1;
+              const isCompleted = idx < currentStageIdx;
+              const isCurrent = idx === currentStageIdx;
 
               return (
-                <div key={stage.id} className="flex gap-4 relative">
-                  {!isLast && (
-                    <div
-                      className={`absolute left-[11px] top-6 bottom-[-24px] w-0.5 ${
-                        isCompleted ? 'bg-primary' : 'bg-surface-container-highest'
-                      }`}
-                    />
-                  )}
-                  {isCompleted || isCurrent ? (
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center z-10 flex-shrink-0 ${isCompleted ? 'bg-primary' : 'bg-surface border-2 border-primary'}`}>
-                      {isCompleted ? (
-                        <Icon name="check" className="text-on-primary text-base" />
-                      ) : (
-                        <div className="w-2.5 h-2.5 rounded-full bg-primary animate-ping" />
-                      )}
-                    </div>
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-surface-variant border-2 border-outline z-10 flex-shrink-0 opacity-40" />
-                  )}
-                  <div className={idx > issueReport.stageIndex ? 'opacity-40' : ''}>
-                    <p className={`text-sm font-semibold ${isCurrent ? 'text-primary' : 'text-on-surface'}`}>{stage.title}</p>
-                    <p className={`text-xs ${isCurrent ? 'text-primary' : 'text-on-surface-variant'}`}>
-                      {isCompleted ? 'Done' : isCurrent ? 'In progress' : 'Pending'}
+                <div key={stage.id} className="flex gap-3 items-start relative">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
+                    isCompleted
+                      ? 'bg-emerald-600 text-white'
+                      : isCurrent
+                      ? 'bg-primary text-on-primary ring-2 ring-primary/30'
+                      : 'bg-surface-container text-on-surface-variant/50'
+                  }`}>
+                    {isCompleted ? <Icon name="check" className="text-sm" /> : idx + 1}
+                  </div>
+                  <div>
+                    <p className={`text-xs font-bold ${isCurrent ? 'text-primary' : 'text-on-surface'}`}>{stage.title}</p>
+                    <p className="text-[11px] text-on-surface-variant">
+                      {isCompleted ? 'Completed' : isCurrent ? 'Active stage' : 'Pending step'}
                     </p>
                   </div>
                 </div>
@@ -167,46 +162,88 @@ const ReportStatusScreen = () => {
           </div>
         </section>
 
-        {/* Staff Information */}
-        <div className="bg-surface-container-lowest rounded-2xl p-4 mb-8 flex items-center justify-between shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary-fixed flex items-center justify-center">
-              <Icon name="support_agent" className="text-primary" />
+        {/* Customer Resolution Confirmation Box */}
+        {currentIssue.status !== 'RESOLVED' && currentIssue.status !== 'CLOSED' && (
+          <section className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-xs space-y-3 text-amber-950 dark:text-amber-200">
+            <h4 className="font-bold text-sm text-amber-900 dark:text-amber-200">Has this issue been resolved?</h4>
+            <p className="leading-relaxed">
+              Staff cannot close customer-facing complaints without your confirmation. Please confirm if the solution provided at your table is satisfactory.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
+              <button
+                onClick={() => handleResolutionChoice(true)}
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition-colors text-xs flex items-center justify-center gap-1.5"
+              >
+                <Icon name="check_circle" className="text-base" />
+                Yes, resolved
+              </button>
+              <button
+                onClick={() => handleResolutionChoice(false)}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow transition-colors text-xs flex items-center justify-center gap-1.5"
+              >
+                <Icon name="cancel" className="text-base" />
+                Not yet / Reopen
+              </button>
             </div>
-            <div>
-              <p className="text-sm font-semibold text-on-surface">Arjun Nair</p>
-              <p className="text-xs text-on-surface-variant">Head Waiter</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-on-surface-variant">Expected Response</p>
-            <p className="text-sm font-bold text-primary">Within 5 mins</p>
-          </div>
-        </div>
+          </section>
+        )}
 
-        {/* Customer Actions */}
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={() => showToast('Staff notified — someone will reach your table shortly.', 'success')}
-            className="w-full h-14 bg-primary text-on-primary rounded-xl font-semibold hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-          >
-            <Icon name="chat" />
-            Contact Staff
-          </button>
-          <button
-            onClick={() => navigate('/report-issue')}
-            className="w-full h-14 bg-surface border border-outline text-on-surface rounded-xl font-semibold hover:bg-surface-variant/20 active:scale-[0.98] transition-all"
-          >
-            Update Issue
-          </button>
-          <button
-            onClick={handleCancelReport}
-            className="w-full h-12 text-primary font-semibold hover:bg-primary/5 rounded-xl transition-all"
-          >
-            Cancel Report
-          </button>
-        </div>
+        {/* Timeline Audit Logs */}
+        {currentIssue.timeline?.length > 0 && (
+          <section className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/20 space-y-2 text-xs">
+            <h4 className="font-bold text-on-surface">Issue Audit History</h4>
+            <div className="space-y-1.5 text-[11px] text-on-surface-variant">
+              {currentIssue.timeline.map((item, idx) => (
+                <div key={idx} className="flex justify-between py-1 border-b border-outline-variant/10 last:border-0">
+                  <span>• {item.text}</span>
+                  <span className="font-mono text-on-surface-variant/70 shrink-0">{item.time}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
+
+      {/* Resolution Feedback Modal */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface border border-outline-variant/30 rounded-2xl p-6 max-w-md w-full space-y-4 text-on-surface shadow-2xl">
+            <div className="text-center space-y-1">
+              <h3 className="font-bold text-lg">How well was this issue handled?</h3>
+              <p className="text-xs text-on-surface-variant">Your feedback helps management review staff recovery performance.</p>
+            </div>
+
+            <div className="flex justify-center gap-2 py-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setFeedbackRating(star)}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform active:scale-95 ${
+                    star <= feedbackRating ? 'bg-amber-500/20 text-amber-500 font-bold' : 'bg-surface-container text-on-surface-variant/40'
+                  }`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              rows={2}
+              value={feedbackComment}
+              onChange={(e) => setFeedbackComment(e.target.value)}
+              placeholder="Optional notes on how staff resolved this issue..."
+              className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl p-3 text-xs outline-none focus:border-primary"
+            />
+
+            <button
+              onClick={handleSubmitFeedback}
+              className="w-full py-3 bg-primary text-on-primary font-bold text-xs rounded-xl shadow"
+            >
+              Submit Feedback & Complete Resolution
+            </button>
+          </div>
+        </div>
+      )}
 
       <BottomNavBar />
     </>

@@ -1,28 +1,35 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { menuService } from '../../services/menuService';
 import { useCart } from '../../context/CartContext';
+import { useOrder } from '../../context/OrderContext';
+import { useTable } from '../../context/TableContext';
 import { useToast } from '../../context/ToastContext';
-import { formatCurrency } from '../../utils/formatters';
-import TopAppBar from '../../components/layout/TopAppBar';
+import { formatMenuPrice } from '../../utils/formatters';
+import ResponsiveImage from '../../components/common/ResponsiveImage';
+import { FoodTypeBadge, SpiceLevelBadge, PrepTimeBadge, AvailabilityBadge, PriceTag } from '../../components/menu/DishBadges';
 import LoadingSkeleton from '../../components/common/LoadingSkeleton';
 import ErrorState from '../../components/common/ErrorState';
-import Icon from '../../components/common/Icon';
+import CustomizationModal from '../../components/menu/CustomizationModal';
+import RestaurantTrustProfileModal from '../../components/trust/RestaurantTrustProfileModal';
+import SignatureDishStoryModal from '../../components/retention/SignatureDishStoryModal';
+import { Sparkles, ChevronRight, Plus, BookOpen, ShieldAlert, AlertTriangle, ArrowLeft, Heart } from 'lucide-react';
 
 const FoodDetailsScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { tableNumber } = useTable();
+  const { kitchenLoad, addAssistanceRequest } = useOrder();
   const { showToast } = useToast();
 
   const [dish, setDish] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [quantity, setQuantity] = useState(1);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [specialInstruction, setSpecialInstruction] = useState('');
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [showStoryModal, setShowStoryModal] = useState(false);
+  const [isCustomizationOpen, setIsCustomizationOpen] = useState(false);
+  const [isTrustOpen, setIsTrustOpen] = useState(false);
+  const [isFavourite, setIsFavourite] = useState(false);
 
   useEffect(() => {
     const loadDish = async () => {
@@ -31,9 +38,6 @@ const FoodDetailsScreen = () => {
       try {
         const res = await menuService.getDishById(id);
         setDish(res.data);
-        setQuantity(1);
-        setSelectedOptions([]);
-        setSpecialInstruction('');
       } catch (err) {
         setError('Dish details could not be found.');
       } finally {
@@ -43,185 +47,273 @@ const FoodDetailsScreen = () => {
     loadDish();
   }, [id]);
 
-  const calculatedUnitPrice = useMemo(() => {
-    if (!dish) return 0;
-    const optionsExtra = selectedOptions.reduce((acc, opt) => acc + (opt.price || 0), 0);
-    return dish.price + optionsExtra;
-  }, [dish, selectedOptions]);
-
-  const totalCalculatedPrice = calculatedUnitPrice * quantity;
-
-  // Flatten all customization groups into a single row of toggle chips, matching the reference design
-  const flatOptions = useMemo(() => {
-    if (!dish?.customizations) return [];
-    return dish.customizations.flatMap((group) =>
-      group.options.map((option) => ({ ...option, groupName: group.name }))
-    );
-  }, [dish]);
-
-  const handleOptionToggle = (option) => {
-    setSelectedOptions((prev) => {
-      const exists = prev.some((opt) => opt.name === option.name);
-      if (exists) return prev.filter((opt) => opt.name !== option.name);
-      return [...prev, { groupName: option.groupName, name: option.name, price: option.price }];
-    });
-  };
-
-  const handleAddToCart = () => {
-    if (!dish) return;
-    addToCart(dish, selectedOptions, specialInstruction, quantity);
-    showToast(`Added ${quantity}x "${dish.name}" to cart`, 'success');
-    navigate('/menu');
-  };
-
   if (isLoading) return <LoadingSkeleton />;
   if (error || !dish) return <ErrorState message={error} onRetry={() => navigate('/menu')} />;
 
+  const isAvailable = dish.availabilityStatus === 'AVAILABLE' || dish.availabilityStatus === 'LIMITED_AVAILABILITY';
+  const isOrderable = dish.orderableInApp !== false;
+  const prepTimeMin = dish.preparationTimeMinutes || 15;
+  const isDelayedDish = prepTimeMin >= 30 || kitchenLoad?.status === 'BUSY' || kitchenLoad?.status === 'VERY_BUSY';
+
+  const handleAddToCartFromModal = (payload) => {
+    const { dish: d, quantity, formattedModifiers, allergyAlert, specialInstruction, selectedOptions, makeVegan, jainPreparation } = payload;
+    addToCart(d, formattedModifiers, specialInstruction, quantity, { selectedOptions, makeVegan, jainPreparation, allergyAlert });
+    showToast(`Added ${d.name} (x${quantity}) to cart`, 'success');
+    navigate('/menu');
+  };
+
+  const handleDirectAddToCart = () => {
+    addToCart(dish);
+    showToast(`Added "${dish.name}" to cart`, 'success');
+    navigate('/menu');
+  };
+
+  const handleAddPairing = (pairing) => {
+    const pairingDish = {
+      id: pairing.itemId || `pairing-${Date.now()}`,
+      name: pairing.name,
+      price: pairing.price,
+      image: pairing.image || dish.image,
+      customizationAvailable: false,
+    };
+    addToCart(pairingDish);
+    showToast(`Added pairing "${pairing.name}" to cart`, 'success');
+  };
+
   return (
     <>
-      <TopAppBar
-        variant="back"
-        transparent
-        rightIcon={isFavorite ? 'favorite' : 'favorite_border'}
-        onRightAction={() => setIsFavorite((f) => !f)}
-      />
+      <main className="flex-1 pb-40 max-w-3xl mx-auto w-full">
+        {/* 1. Image with 2. Back and 3. Favourite actions */}
+        <section className="relative w-full h-[42vh] sm:h-[46vh]">
+          <ResponsiveImage
+            src={dish.image}
+            alt={dish.name}
+            aspectRatio={undefined}
+            rounded="rounded-none"
+            fetchPriority="high"
+            className="w-full h-full"
+            overlay={<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />}
+          />
 
-      <main className="flex-1 pb-40">
-        {/* Hero Section */}
-        <section className="relative w-full h-[40vh] overflow-hidden">
-          <img src={dish.image} alt={dish.name} className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-
-          <div className="absolute top-20 left-4 flex gap-2">
-            <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-              <span className={`w-2.5 h-2.5 rounded-full border border-white ${dish.isVeg ? 'bg-green-600' : 'bg-red-600'}`} />
-              <span className={`text-[10px] font-bold uppercase tracking-wider ${dish.isVeg ? 'text-green-800' : 'text-red-800'}`}>
-                {dish.isVeg ? 'Veg' : 'Non-Veg'}
-              </span>
-            </div>
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+            <button
+              onClick={() => navigate(-1)}
+              aria-label="Go back"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white active:scale-95 transition-all shadow-sm"
+            >
+              <ArrowLeft className="w-5 h-5 text-ink" />
+            </button>
+            <button
+              onClick={() => setIsFavourite((v) => !v)}
+              aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
+              aria-pressed={isFavourite}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-white active:scale-95 transition-all shadow-sm"
+            >
+              <Heart className={`w-5 h-5 ${isFavourite ? 'fill-danger text-danger' : 'text-ink'}`} />
+            </button>
           </div>
-          <div className="absolute bottom-4 right-4">
-            <div className="bg-secondary-container/95 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-              <Icon name="star" className="text-sm" filled />
-              <span className="text-xs font-bold text-on-secondary-container">{dish.rating || 4.8}</span>
+
+          <div className="absolute bottom-4 left-4 right-4 text-white flex justify-between items-end z-10">
+            {/* 4. Dish name */}
+            <div>
+              <span className="text-xs bg-saffron-600 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                {dish.portionLabel || 'Regular'}
+              </span>
+              <h1 className="text-2xl sm:text-4xl font-black mt-1 leading-tight">{dish.name}</h1>
+            </div>
+            {/* 5. Price */}
+            <div className="text-2xl sm:text-3xl font-black text-saffron-100">
+              {dish.priceDisplay || formatMenuPrice(dish.price)}
             </div>
           </div>
         </section>
 
-        {/* Dish Info */}
-        <article className="px-4 pt-6 space-y-6">
-          <div className="space-y-2">
-            <div className="flex justify-between items-start gap-3">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-on-surface leading-tight">{dish.name}</h1>
-            </div>
-            {dish.italianName && (
-              <p className="text-sm italic text-on-surface-variant -mt-1">{dish.italianName}</p>
-            )}
-            <div className="text-2xl font-bold text-primary">{formatCurrency(dish.price)}</div>
-            <p className="text-on-surface-variant text-sm leading-relaxed">{dish.description}</p>
-            <div className="flex gap-4 pt-2">
-              <div className="flex items-center gap-1.5 text-on-surface-variant">
-                <Icon name="schedule" className="text-lg" />
-                <span className="text-sm font-medium">{dish.prepTime}</span>
-              </div>
-              {dish.calories && (
-                <div className="flex items-center gap-1.5 text-on-surface-variant">
-                  <Icon name="local_fire_department" className="text-lg" />
-                  <span className="text-sm font-medium">{dish.calories}</span>
-                </div>
-              )}
-            </div>
+        <article className="px-4 py-6 space-y-6 text-sm">
+          {/* 6. Dietary and spice indicators */}
+          <div className="flex flex-wrap items-center gap-2">
+            <FoodTypeBadge foodType={dish.foodType} />
+            <SpiceLevelBadge spiceLevel={dish.spiceLevel} />
+            {/* 7. Preparation estimate */}
+            <PrepTimeBadge minutes={prepTimeMin} className="px-3 py-1 rounded-full bg-surface-container border border-border" />
           </div>
 
-          {/* Ingredients */}
-          {dish.ingredients?.length > 0 && (
-            <section className="space-y-2">
-              <h2 className="text-xs font-bold text-on-surface-variant/70 uppercase tracking-wider">Key Ingredients</h2>
-              <div className="flex flex-wrap gap-1.5">
-                {dish.ingredients.map((ing) => (
-                  <span key={ing} className="px-3 py-1 bg-surface-container-low text-on-surface-variant text-xs font-medium rounded-full">
-                    {ing}
-                  </span>
-                ))}
+          {isDelayedDish && (
+            <div className="p-4 rounded-2xl bg-warning/10 border border-warning/30 text-ink space-y-1.5">
+              <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider text-warning">
+                <AlertTriangle className="w-4 h-4" />
+                <span>Longer preparation time</span>
               </div>
-            </section>
+              <p className="text-xs leading-relaxed text-text">
+                This item currently takes approximately <strong>{prepTimeMin}–{prepTimeMin + 5} minutes</strong> due to kitchen volume. Other items in your order may be ready earlier.
+              </p>
+            </div>
           )}
 
-          {/* Customizations */}
-          {flatOptions.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="text-lg font-bold text-on-surface">Customize Your Order</h2>
-              <div className="flex flex-wrap gap-2">
-                {flatOptions.map((option) => {
-                  const isChecked = selectedOptions.some((opt) => opt.name === option.name);
-                  return (
-                    <button
-                      key={option.name}
-                      onClick={() => handleOptionToggle(option)}
-                      className={`px-4 py-2 rounded-full border text-sm font-medium transition-all active:scale-95 ${
-                        isChecked
-                          ? 'bg-primary border-primary text-on-primary'
-                          : 'border-outline-variant bg-surface text-on-surface'
-                      }`}
-                    >
-                      {option.name}
-                      {option.price > 0 && ` (+₹{formatCurrency(option.price)})`}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          )}
+          {/* 8. Short practical description */}
+          <div className="bg-cream p-4 rounded-2xl border border-border">
+            <p className="text-text text-base font-medium leading-relaxed">{dish.shortDescription || dish.description}</p>
+          </div>
 
-          {/* Special Instructions */}
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold text-on-surface">Special Instructions</h2>
-            <textarea
-              rows={3}
-              value={specialInstruction}
-              onChange={(e) => setSpecialInstruction(e.target.value)}
-              placeholder="Add cooking instructions..."
-              className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-4 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-sm placeholder:text-on-surface-variant/50 resize-none"
-            />
-          </section>
+          {/* 9. Portion and serving information */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container border border-border text-xs">
+            <span className="font-semibold text-on-surface-variant">Portion</span>
+            <span className="font-bold text-ink">{dish.portionLabel || 'Regular'} · Serves {dish.serves || '1 person'}</span>
+          </div>
 
-          {/* Quantity Selector */}
-          <div className="flex justify-center pt-2">
-            <div className="flex items-center gap-8 bg-surface-container-low px-2 py-2 rounded-full shadow-sm">
-              <button
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-lowest shadow-sm hover:text-primary transition-colors active:scale-90"
-              >
-                <Icon name="remove" className="text-xl" />
-              </button>
-              <span className="font-bold text-xl min-w-[1.5ch] text-center">{quantity}</span>
-              <button
-                onClick={() => setQuantity((q) => q + 1)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-on-primary shadow-sm hover:opacity-90 transition-all active:scale-90"
-              >
-                <Icon name="add" className="text-xl" />
+          {/* 10. Allergens */}
+          <div className="bg-warning/10 border border-warning/30 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-ink flex items-center gap-2 text-xs uppercase tracking-wider">
+                <ShieldAlert className="w-4 h-4 text-warning" /> Allergens & Allergy Policy
+              </h3>
+              <button type="button" onClick={() => setIsTrustOpen(true)} className="text-[11px] font-bold text-maroon-800 underline">
+                Read Kitchen Policy
               </button>
             </div>
+            <p className="text-xs text-text"><strong>Gluten Status:</strong> {dish.glutenStatus || 'Gluten status unavailable'}</p>
+            <p className="text-xs text-text"><strong>Allergens Present:</strong> {dish.allergens?.length > 0 ? dish.allergens.join(', ') : 'None listed'}</p>
+            <div className="p-2.5 bg-surface-container-lowest rounded-xl text-xs text-text border border-border">
+              Allergy requests are reviewed by the kitchen before the order is accepted. Cross-contact may still be possible in a shared commercial kitchen.
+            </div>
+            <button
+              type="button"
+              onClick={() => addAssistanceRequest(tableNumber, 'Allergy assistance')}
+              className="text-xs font-bold text-maroon-800 underline flex items-center gap-1"
+            >
+              <span>Speak to staff about an allergy</span>
+            </button>
+          </div>
+
+          {/* 11. Availability */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container border border-border">
+            <span className="font-semibold text-on-surface-variant text-xs">Availability</span>
+            <span className={`font-bold text-xs ${isAvailable ? 'text-success' : 'text-danger'}`}>
+              {dish.availabilityStatus === 'AVAILABLE'
+                ? 'Available Now'
+                : dish.availabilityStatus === 'LIMITED_AVAILABILITY'
+                ? 'Limited Availability (Few portions left)'
+                : dish.availabilityStatus === 'SOLD_OUT'
+                ? 'Sold Out Today'
+                : 'Temporarily Unavailable'}
+            </span>
+          </div>
+
+          {!isOrderable && (
+            <div className="p-3 rounded-xl bg-information/10 border border-information/30 text-xs text-ink">
+              This item is priced at MRP and isn't orderable through the app — please ask your server.
+            </div>
+          )}
+
+          {/* 12. Customization: dietary options preview (actual customization happens via the sticky footer) */}
+          {(dish.jainAvailable || dish.veganAvailable) && (
+            <div className="bg-success/10 border border-success/30 rounded-2xl p-4 space-y-2 text-xs text-text">
+              <h3 className="font-bold text-success uppercase tracking-wider text-xs">Special Dietary Options</h3>
+              {dish.jainAvailable && <p>✓ <strong>Jain option available:</strong> Prepared without onion, garlic, and root vegetables upon request during customization.</p>}
+              {dish.veganAvailable && <p>✓ <strong>Vegan option available:</strong> Butter, ghee, and dairy toppings can be replaced or excluded.</p>}
+            </div>
+          )}
+
+          {dish.bestseller && dish.bestsellerReason && (
+            <div className="bg-saffron-100 border border-saffron-600/30 p-3.5 rounded-xl flex items-center gap-3">
+              <Sparkles className="w-5 h-5 text-maroon-800 flex-shrink-0" />
+              <div>
+                <span className="font-bold text-maroon-900 text-xs uppercase block">Mangamma Favourite</span>
+                <p className="text-xs text-maroon-900 font-medium">{dish.bestsellerReason}</p>
+              </div>
+            </div>
+          )}
+
+          {/* 13. Recommended pairings */}
+          {dish.recommendedPairings && dish.recommendedPairings.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <h3 className="font-bold text-ink text-base">Pairs well with</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {dish.recommendedPairings.map((pairing) => (
+                  <div key={pairing.itemId || pairing.name} className="flex items-center justify-between p-3 rounded-xl border border-border bg-surface-container-lowest shadow-sm">
+                    <div className="flex items-center gap-3">
+                      {pairing.image && <img src={pairing.image} alt={pairing.name} className="w-12 h-12 object-cover rounded-lg" />}
+                      <div>
+                        <h4 className="font-bold text-xs text-ink">{pairing.name}</h4>
+                        <span className="text-xs text-maroon-800 font-bold">{formatMenuPrice(pairing.price)}</span>
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => handleAddPairing(pairing)} className="px-3 py-1.5 rounded-lg bg-saffron-100 hover:bg-saffron-100/70 text-maroon-900 font-bold text-xs flex items-center gap-1">
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 14. Secondary "Story of this dish" */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => setShowStoryModal(true)}
+              className="w-full py-3 px-4 rounded-xl border border-border bg-cream hover:bg-sand text-maroon-900 font-bold text-xs flex items-center justify-between transition-colors shadow-sm"
+            >
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-maroon-800" />
+                <span>Story of this dish</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-maroon-800" />
+            </button>
           </div>
         </article>
       </main>
 
-      {/* Sticky Bottom Bar */}
-      <footer className="fixed bottom-0 w-full z-40 bg-surface-container-lowest/95 backdrop-blur-xl px-4 py-4 shadow-[0px_-4px_20px_rgba(0,0,0,0.06)]">
-        <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-on-surface-variant/60 uppercase tracking-[0.1em]">Total</span>
-            <span className="text-2xl font-black text-on-surface">{formatCurrency(totalCalculatedPrice)}</span>
+      {showStoryModal && <SignatureDishStoryModal isOpen={showStoryModal} onClose={() => setShowStoryModal(false)} dish={dish} />}
+
+      <RestaurantTrustProfileModal
+        isOpen={isTrustOpen}
+        onClose={() => setIsTrustOpen(false)}
+        onRequestAssistance={(type) => addAssistanceRequest(tableNumber, type)}
+      />
+
+      {/* 15. Sticky "Customize & Add" footer — hidden while the customization
+          sheet is open so it can't receive stray clicks/focus behind the modal */}
+      {!isCustomizationOpen && (
+        <footer
+          className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest border-t border-border px-4 pt-3 shadow-lg"
+          style={{ paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}
+        >
+          <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] text-muted uppercase font-bold tracking-wider block">Total Price</span>
+              <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-xl" />
+            </div>
+
+            {!isOrderable ? (
+              <button disabled className="flex-1 py-3 px-6 bg-surface-container-high text-muted font-bold rounded-xl text-sm cursor-not-allowed">
+                Ask Your Server
+              </button>
+            ) : dish.customizationAvailable ? (
+              <button
+                onClick={() => setIsCustomizationOpen(true)}
+                disabled={!isAvailable}
+                className="flex-1 py-3 px-6 bg-saffron-600 hover:bg-saffron-500 disabled:bg-surface-container-high disabled:text-muted text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
+              >
+                <span>Customize & Add</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={handleDirectAddToCart}
+                disabled={!isAvailable}
+                className="flex-1 py-3 px-6 bg-saffron-600 hover:bg-saffron-500 disabled:bg-surface-container-high disabled:text-muted text-white font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
+              >
+                <span>Add</span>
+              </button>
+            )}
           </div>
-          <button
-            onClick={handleAddToCart}
-            className="flex-1 h-14 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-95 transition-all active:scale-95 shadow-md"
-          >
-            <span>Add to Cart</span>
-            <Icon name="shopping_basket" className="text-lg" />
-          </button>
-        </div>
-      </footer>
+        </footer>
+      )}
+
+      {isCustomizationOpen && (
+        <CustomizationModal isOpen={isCustomizationOpen} onClose={() => setIsCustomizationOpen(false)} dish={dish} onAddToCart={handleAddToCartFromModal} />
+      )}
     </>
   );
 };

@@ -12,10 +12,13 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+const DEMO_EMPLOYEE_ID = 'waiter01';
+const DEMO_PASSWORD = 'waiter123';
+
 const WaiterLoginScreen = () => {
   const navigate = useNavigate();
-  const [employeeId, setEmployeeId] = useState('');
-  const [password, setPassword] = useState('');
+  const [employeeId, setEmployeeId] = useState(DEMO_EMPLOYEE_ID);
+  const [password, setPassword] = useState(DEMO_PASSWORD);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -41,7 +44,7 @@ const WaiterLoginScreen = () => {
         <div className="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center justify-center shadow-lg mb-3">
           <UtensilsCrossed className="w-7 h-7" />
         </div>
-        <h1 className="font-serif text-2xl font-bold text-primary tracking-tight">Dakshin Heritage</h1>
+        <h1 className="font-serif text-2xl font-bold text-primary tracking-tight">Mangamma Ruchulu</h1>
         <p className="text-[11px] text-on-surface-variant font-mono font-semibold uppercase tracking-widest mt-1">Staff Portal</p>
       </header>
 
@@ -130,7 +133,7 @@ const WaiterLoginScreen = () => {
           <span className="w-1 h-1 bg-outline-variant rounded-full" />
           <a href="#" onClick={(e) => e.preventDefault()} className="text-[11px] text-on-surface-variant hover:text-primary transition-colors">IT Status</a>
         </div>
-        <p className="text-[10px] text-outline tracking-wide text-center">System Version 4.2.1 • Dakshin Heritage Restaurant Group</p>
+        <p className="text-[10px] text-outline tracking-wide text-center">System Version 4.2.1 • Mangamma Ruchulu Restaurant Group</p>
       </footer>
     </div>
   );

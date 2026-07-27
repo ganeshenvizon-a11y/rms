@@ -8,9 +8,10 @@ import ManagerTablesView from '../../components/manager/ManagerTablesView';
 import ManagerSettingsView from '../../components/manager/ManagerSettingsView';
 import ManagerProfileView from '../../components/manager/ManagerProfileView';
 import ManagerNotificationsView from '../../components/manager/ManagerNotificationsView';
+import GuestFlowView from '../../components/manager/GuestFlowView';
 
 const ManagerMainScreen = () => {
-  // Tab state: 'dashboard' | 'menu' | 'employee' | 'reports' | 'tables' | 'settings' | 'profile'
+  // Tab state: 'dashboard' | 'menu' | 'employee' | 'reports' | 'tables' | 'settings' | 'profile' | 'guestflow'
   const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
@@ -45,6 +46,10 @@ const ManagerMainScreen = () => {
 
       {activeTab === 'notifications' && (
         <ManagerNotificationsView />
+      )}
+
+      {activeTab === 'guestflow' && (
+        <GuestFlowView />
       )}
     </ManagerLayout>
   );
