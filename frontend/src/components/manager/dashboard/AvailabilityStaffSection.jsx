@@ -9,7 +9,7 @@ const AvailabilityStaffSection = ({ outOfStockItems, employees, onManageAvailabi
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-      <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/25 space-y-3">
+      <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-card space-y-3">
         <div className="flex items-center gap-2">
           <PackageX className="w-4 h-4 text-on-surface-variant" />
           <h3 className="text-sm font-bold text-on-surface">Out-of-Stock Items</h3>
@@ -35,7 +35,7 @@ const AvailabilityStaffSection = ({ outOfStockItems, employees, onManageAvailabi
         <ContextualButton variant="tertiary" size="sm" onClick={onManageAvailability}>Manage Availability</ContextualButton>
       </div>
 
-      <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/25 space-y-3">
+      <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-card space-y-3">
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-on-surface-variant" />
           <h3 className="text-sm font-bold text-on-surface">Staff Availability</h3>

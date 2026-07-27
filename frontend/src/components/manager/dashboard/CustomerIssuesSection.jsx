@@ -14,8 +14,8 @@ const isResolved = (issue) => issue.status === 'RESOLVED' || issue.status === 'C
 const IssueRow = ({ issue, onTakeAction, onView }) => {
   const unowned = !issue.assignedOwner || issue.assignedOwner === 'Unassigned';
   return (
-    <div className={`rounded-xl border p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-      issue.priority === 'HIGH' ? 'bg-rose-500/6 border-rose-500/25' : 'bg-surface-container-low border-outline-variant/30'
+    <div className={`rounded-xl shadow-sm p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+      issue.priority === 'HIGH' ? 'bg-rose-500/6' : 'bg-surface-container-low'
     }`}>
       <button onClick={() => onView(issue)} className="min-w-0 flex-1 text-left space-y-1">
         <div className="flex flex-wrap items-center gap-2">
@@ -44,7 +44,7 @@ const IssueRow = ({ issue, onTakeAction, onView }) => {
 const ResolvedRow = ({ issue, onView }) => (
   <button
     onClick={() => onView(issue)}
-    className="w-full text-left rounded-xl border border-outline-variant/25 bg-surface-container-low/50 px-3.5 py-2.5 flex items-center justify-between gap-3"
+    className="w-full text-left rounded-xl shadow-sm bg-surface-container-low/50 px-3.5 py-2.5 flex items-center justify-between gap-3"
   >
     <div className="min-w-0 flex items-center gap-2 text-xs">
       <span className="font-mono font-bold text-on-surface-variant">#{issue.issueId}</span>
@@ -88,7 +88,7 @@ const CustomerIssuesSection = ({ issues, onApplyAction, onViewIssue }) => {
   };
 
   return (
-    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant/25">
+    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-card">
       <SectionHeading
         title="Customer Issues"
         subtitle={`${unresolved.length} unresolved${awaitingConfirmation > 0 ? ` · ${awaitingConfirmation} awaiting customer confirmation` : ''}`}
@@ -125,7 +125,7 @@ const CustomerIssuesSection = ({ issues, onApplyAction, onViewIssue }) => {
 
       {selectedIssue && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface border border-outline-variant/30 rounded-2xl p-6 max-w-md w-full space-y-4 text-on-surface shadow-2xl">
+          <div className="bg-surface rounded-2xl p-6 max-w-md w-full space-y-4 text-on-surface shadow-2xl">
             <div className="flex justify-between items-center border-b border-outline-variant/20 pb-3">
               <h3 className="font-bold text-base flex items-center gap-2 text-rose-700">
                 <Wrench className="w-5 h-5" />

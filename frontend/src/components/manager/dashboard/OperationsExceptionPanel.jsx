@@ -1,6 +1,6 @@
 import React from 'react';
 import { formatInvoiceAmount } from '../../../utils/formatters';
-import { StatusBadge, SectionHeading, ContextualButton } from './DashboardPrimitives';
+import { StatusBadge, ContextualButton, overdueLabel } from './DashboardPrimitives';
 
 const TABS = [
   { value: 'DELAYED', label: 'Delayed' },
@@ -19,10 +19,10 @@ const DelayedTab = ({ orders, onViewOrder }) => (
       {orders.map((o) => {
         const primaryStation = o.items?.[0]?.station?.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
         return (
-          <div key={o.orderId} className="rounded-xl bg-amber-500/8 border border-amber-500/25 p-3.5 space-y-2">
+          <div key={o.orderId} className="rounded-xl bg-amber-500/8 shadow-sm p-3.5 space-y-2">
             <div className="flex items-start justify-between gap-2">
               <span className="text-sm font-extrabold text-on-surface">Order #{o.orderId.replace('ORD-', '')} · Table {o.tableNumber}</span>
-              <StatusBadge tone="amber">{Math.max(0, o.elapsedMinutes - 20)} min overdue</StatusBadge>
+              <StatusBadge tone="amber">{overdueLabel(o)}</StatusBadge>
             </div>
             <div className="text-[11px] text-on-surface-variant space-y-0.5">
               <div>{o.kitchenStatus === 'IN_PROGRESS' ? 'Preparing' : o.kitchenStatus}{primaryStation ? ` · ${primaryStation}` : ''}</div>
@@ -42,7 +42,7 @@ const BillsTab = ({ bills, onViewBill }) => (
   bills.length === 0 ? <EmptyRow label="No bills waiting on payment." /> : (
     <div className="space-y-2.5">
       {bills.map((b) => (
-        <div key={b.billId} className="rounded-xl bg-surface-container-low border border-outline-variant/30 p-3.5 space-y-2">
+        <div key={b.billId} className="rounded-xl bg-surface-container-low shadow-sm p-3.5 space-y-2">
           <div className="flex items-start justify-between gap-2">
             <span className="text-sm font-extrabold text-on-surface">Bill #{b.billId.replace('BILL-', '')} · Table {b.tableNumber}</span>
             {b.waitingDurationMinutes > 20 && <StatusBadge tone="amber">{b.waitingDurationMinutes}m waiting</StatusBadge>}
@@ -63,7 +63,7 @@ const PaymentsTab = ({ bills, onViewBill }) => (
   bills.length === 0 ? <EmptyRow label="No payment mismatches." /> : (
     <div className="space-y-2.5">
       {bills.map((b) => (
-        <div key={b.billId} className="rounded-xl bg-rose-500/8 border border-rose-500/25 p-3.5 space-y-2">
+        <div key={b.billId} className="rounded-xl bg-rose-500/8 shadow-sm p-3.5 space-y-2">
           <span className="text-sm font-extrabold text-on-surface block">Bill #{b.billId.replace('BILL-', '')} · Table {b.tableNumber}</span>
           <div className="text-[11px] text-on-surface-variant space-y-0.5">
             <div>Invoice <strong className="text-on-surface font-mono">{formatInvoiceAmount(b.invoiceTotal)}</strong></div>
@@ -86,7 +86,7 @@ const IssuesTab = ({ issues, onViewIssue }) => (
         <button
           key={iss.issueId}
           onClick={() => onViewIssue(iss)}
-          className="w-full text-left rounded-xl bg-surface-container-low border border-outline-variant/30 hover:bg-surface-container p-3.5 space-y-1.5 transition-colors"
+          className="w-full text-left rounded-xl bg-surface-container-low shadow-sm hover:bg-surface-container hover:shadow-md p-3.5 space-y-1.5 transition-all"
         >
           <div className="flex items-start justify-between gap-2">
             <span className="text-xs font-extrabold text-on-surface">#{iss.issueId} · Table {iss.tableNumber}</span>
@@ -108,7 +108,7 @@ const OperationsExceptionPanel = ({ activeTab, onTabChange, delayedOrders, pendi
   };
 
   return (
-    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant/25 h-full flex flex-col">
+    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-card h-full flex flex-col">
       <h3 className="text-base font-bold text-on-surface mb-3">Exceptions</h3>
       <div className="flex flex-wrap gap-1.5 mb-4 border-b border-outline-variant/20 pb-4" role="tablist">
         {TABS.map((t) => (

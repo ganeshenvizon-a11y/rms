@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Eye } from 'lucide-react';
 import { formatInvoiceAmount } from '../../../utils/formatters';
-import { StatusBadge, SectionHeading } from './DashboardPrimitives';
+import { StatusBadge, SectionHeading, overdueLabel } from './DashboardPrimitives';
 
 const FILTERS = [
   { value: 'ALL', label: 'All' },
@@ -38,8 +38,8 @@ const STATUS_LABEL = {
 
 const LiveOrderRow = ({ order, isDelayed, onView }) => (
   <div
-    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border bg-surface-container-low hover:bg-surface-container transition-colors px-4 py-3.5 ${
-      isDelayed ? 'border-l-[3px] border-l-amber-500 border-y-outline-variant/30 border-r-outline-variant/30' : 'border-outline-variant/30'
+    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-surface-container-low hover:bg-surface-container hover:shadow-md shadow-sm transition-all px-4 py-3.5 ${
+      isDelayed ? 'border-l-[3px] border-l-amber-500' : ''
     }`}
   >
     <div className="min-w-0 space-y-1.5">
@@ -49,7 +49,7 @@ const LiveOrderRow = ({ order, isDelayed, onView }) => (
         <StatusBadge tone={STATUS_BADGE_TONE[order.orderStatus] || 'neutral'}>
           {STATUS_LABEL[order.orderStatus] || order.orderStatus}
         </StatusBadge>
-        {isDelayed && <StatusBadge tone="amber">{Math.max(0, order.elapsedMinutes - 20)} min overdue</StatusBadge>}
+        {isDelayed && <StatusBadge tone="amber">{overdueLabel(order)}</StatusBadge>}
       </div>
       <div className="text-xs text-on-surface-variant flex flex-wrap items-center gap-x-3 gap-y-1">
         <span>Placed <strong className="text-on-surface font-semibold">{order.placedAt}</strong></span>
@@ -62,7 +62,7 @@ const LiveOrderRow = ({ order, isDelayed, onView }) => (
       <span className="font-mono text-sm font-bold text-primary tabular-nums">{formatInvoiceAmount(order.total)}</span>
       <button
         onClick={() => onView(order)}
-        className="px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/40 text-xs font-bold text-primary hover:bg-primary hover:text-on-primary transition-all flex items-center gap-1.5 shrink-0"
+        className="px-3 py-1.5 rounded-lg bg-surface-container-lowest shadow-sm text-xs font-bold text-primary hover:bg-primary hover:text-on-primary transition-all flex items-center gap-1.5 shrink-0"
       >
         <Eye className="w-3.5 h-3.5" />
         <span>View</span>
@@ -81,7 +81,7 @@ const LiveOrdersPanel = ({ orders, delayedOrderIds, onViewOrder }) => {
   }, [orders, filter]);
 
   return (
-    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant/25 h-full">
+    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-card h-full">
       <SectionHeading
         title="Live Orders"
         subtitle="Kitchen and dining-floor transactions"

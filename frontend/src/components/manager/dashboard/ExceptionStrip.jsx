@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, AlertCircle, Clock, Receipt, PackageX, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 const TONE_STYLES = {
-  red: { wrap: 'bg-rose-500/8 border-rose-500/25', icon: 'text-rose-600', text: 'text-rose-900' },
-  amber: { wrap: 'bg-amber-500/8 border-amber-500/25', icon: 'text-amber-700', text: 'text-amber-900' },
-  neutral: { wrap: 'bg-surface-container-low border-outline-variant/40', icon: 'text-on-surface-variant', text: 'text-on-surface' },
+  red: { wrap: 'bg-rose-500/8', icon: 'text-rose-600', text: 'text-rose-900' },
+  amber: { wrap: 'bg-amber-500/8', icon: 'text-amber-700', text: 'text-amber-900' },
+  neutral: { wrap: 'bg-surface-container-low', icon: 'text-on-surface-variant', text: 'text-on-surface' },
 };
 
 /* "Needs Attention" — compact action-oriented chips, sorted by urgency.
@@ -15,7 +15,7 @@ const ExceptionStrip = ({ exceptions, onReview }) => {
 
   if (visible.length === 0) {
     return (
-      <div className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl bg-emerald-500/8 border border-emerald-500/25 text-emerald-800">
+      <div className="flex items-center gap-2.5 px-4 py-3.5 rounded-2xl bg-emerald-500/8 shadow-card text-emerald-800">
         <CheckCircle2 className="w-4 h-4 shrink-0" />
         <span className="text-xs font-bold">All clear — no active exceptions right now.</span>
       </div>
@@ -36,7 +36,7 @@ const ExceptionStrip = ({ exceptions, onReview }) => {
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => onReview(exc.key)}
-              className={`flex items-center gap-2.5 pl-3 pr-2 py-2 rounded-xl border min-h-[52px] transition-colors hover:brightness-95 ${style.wrap}`}
+              className={`flex items-center gap-2.5 pl-3 pr-2 py-2 rounded-xl shadow-card min-h-[52px] transition-shadow hover:shadow-md ${style.wrap}`}
             >
               <Icon className={`w-4 h-4 shrink-0 ${style.icon}`} />
               <span className={`text-xs font-bold ${style.text}`}>{exc.label}</span>
@@ -48,7 +48,5 @@ const ExceptionStrip = ({ exceptions, onReview }) => {
     </div>
   );
 };
-
-export const EXCEPTION_ICONS = { ShieldAlert, AlertCircle, Clock, Receipt, PackageX };
 
 export default ExceptionStrip;

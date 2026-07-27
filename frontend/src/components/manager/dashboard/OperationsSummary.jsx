@@ -15,7 +15,7 @@ const OperationsSummary = ({ metrics, onJump }) => {
   ];
 
   return (
-    <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/25">
+    <div className="bg-surface-container-lowest rounded-2xl shadow-card">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y divide-x-0 sm:divide-y-0 sm:divide-x divide-outline-variant/15">
         {items.map((item) => (
           <StatTile

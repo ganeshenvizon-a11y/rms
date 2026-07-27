@@ -31,7 +31,7 @@ const OperationsPageHeader = ({ kitchenLoadStatus, onKitchenLoadChange, lastUpda
         <button
           onClick={onRefresh}
           title="Refresh operational data"
-          className="h-10 px-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/40 text-xs font-bold text-on-surface flex items-center gap-2 transition-all active:scale-95"
+          className="h-10 px-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container shadow-sm text-xs font-bold text-on-surface flex items-center gap-2 transition-all active:scale-95"
         >
           <RefreshCw className="w-4 h-4 text-primary" />
           <span>Refresh</span>

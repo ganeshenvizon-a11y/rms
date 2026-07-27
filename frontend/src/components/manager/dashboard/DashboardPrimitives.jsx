@@ -17,6 +17,12 @@ const TONE_CLASSES = {
   blue: 'bg-blue-500/10 text-blue-700 border-blue-500/30',
 };
 
+/* An order can be flagged isDelayed before it actually exceeds the 20-minute prep
+   baseline (e.g. an ETA push-back just issued). Only show a minute count once that
+   baseline is actually exceeded — otherwise "0 min overdue" reads as a contradiction. */
+export const overdueLabel = (order) =>
+  order.elapsedMinutes > 20 ? `${order.elapsedMinutes - 20} min overdue` : 'Delayed';
+
 export const StatusBadge = ({ tone = 'neutral', children, className = '' }) => (
   <span
     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap ${TONE_CLASSES[tone] || TONE_CLASSES.neutral} ${className}`}

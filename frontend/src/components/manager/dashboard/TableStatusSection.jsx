@@ -38,7 +38,7 @@ const TableStatusCard = ({ table, onViewTable, onMarkAvailable, onReviewBill }) 
   }
 
   return (
-    <div className={`rounded-2xl border border-outline-variant/30 border-t-[3px] ${style.border} ${style.tint} p-3.5 flex flex-col justify-between gap-3 min-h-[136px]`}>
+    <div className={`rounded-2xl shadow-sm hover:shadow-md transition-shadow border-t-[3px] ${style.border} ${style.tint} p-3.5 flex flex-col justify-between gap-3 min-h-[136px]`}>
       <div>
         <div className="flex justify-between items-start gap-2">
           <span className="font-extrabold text-sm text-on-surface">Table {table.tableNumber}</span>
@@ -63,7 +63,7 @@ const TableStatusSection = ({ tables, onViewTable, onMarkAvailable, onReviewBill
   const occupiedCount = tables.filter((t) => t.status !== 'Available').length;
 
   return (
-    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant/25">
+    <div className="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl shadow-card">
       <SectionHeading
         title="Table Status"
         subtitle="Live dining-floor state and seating assignments"
