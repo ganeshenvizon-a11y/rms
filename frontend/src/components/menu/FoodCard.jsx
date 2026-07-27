@@ -121,12 +121,28 @@ const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
-      className={`bg-surface-container-lowest rounded-2xl border border-border shadow-card hover:shadow-soft transition-shadow p-3 flex gap-3 relative cursor-pointer ${
+      className={`bg-surface-container-lowest rounded-2xl border border-border shadow-card hover:shadow-soft transition-shadow p-3.5 flex gap-3.5 relative cursor-pointer ${
         !isAvailable ? 'opacity-75' : ''
       }`}
     >
-      {/* ── Left: info column ── */}
-      <div className="flex-1 flex flex-col gap-1.5 min-w-0 overflow-hidden">
+      {/* ── Left: dish image — stretches to the full height of the info
+          column (self-stretch) so it sits flush top-to-bottom with no dead
+          space, instead of floating as a small square in a taller card.
+          objectPosition is biased slightly above center: the category stock
+          photos are wide banana-leaf/thali spreads, and a dead-center crop
+          on a 1:1 frame tends to cut through the food itself. ── */}
+      <div className="w-[108px] sm:w-[128px] flex-shrink-0 rounded-xl overflow-hidden self-stretch">
+        <ResponsiveImage
+          src={dish.image}
+          alt={dish.name}
+          rounded="rounded-none"
+          objectPosition="center 35%"
+          className="w-full h-full"
+        />
+      </div>
+
+      {/* ── Right: info column ── */}
+      <div className="flex-1 flex flex-col gap-2 min-w-0 overflow-hidden py-0.5">
 
         {/* Tier 1 — Tags (single scrollable row, never wraps into 2 lines).
             Favourite uses the brand maroon accent (not the same saffron as
@@ -145,7 +161,7 @@ const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
         {/* Tier 2 — Name + description */}
         <div>
           <h3 className="font-bold text-ink text-[15px] leading-snug truncate">{dish.name}</h3>
-          <p className="text-muted text-[12px] leading-[1.4] line-clamp-2 mt-0.5">{dish.shortDescription}</p>
+          <p className="text-muted text-[12px] leading-[1.4] line-clamp-2 mt-1">{dish.shortDescription}</p>
         </div>
 
         {/* Tier 3 — Prep time (soft, subdued) */}
@@ -155,7 +171,7 @@ const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
         </div>
 
         {/* Tier 4 — Price + CTA, pinned to bottom via flex */}
-        <div className="flex items-center justify-between pt-2 border-t border-border mt-auto">
+        <div className="flex items-center justify-between pt-2.5 border-t border-border mt-auto">
           <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[15px]" />
           <button
             type="button"
@@ -176,21 +192,6 @@ const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
             )}
           </button>
         </div>
-      </div>
-
-      {/* ── Right: dish image — fixed square, properly clipped.
-          objectPosition is biased slightly above center: the category stock
-          photos are wide banana-leaf/thali spreads, and a dead-center crop
-          on a 1:1 frame tends to cut through the food itself. ── */}
-      <div className="w-[88px] h-[88px] sm:w-[100px] sm:h-[100px] flex-shrink-0 rounded-xl overflow-hidden self-center border border-border">
-        <ResponsiveImage
-          src={dish.image}
-          alt={dish.name}
-          aspectRatio="1 / 1"
-          rounded="rounded-none"
-          objectPosition="center 35%"
-          className="w-full h-full"
-        />
       </div>
     </div>
   );

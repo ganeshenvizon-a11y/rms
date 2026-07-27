@@ -17,7 +17,7 @@ export const FoodTypeBadge = ({ foodType, className = '' }) => {
   const meta = FOOD_TYPE_META[foodType] || FOOD_TYPE_META.VEGETARIAN;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 h-[22px] px-2 rounded-full border text-[11px] leading-none font-semibold ${meta.bgClass} ${meta.textClass} ${className}`}
+      className={`inline-flex items-center gap-1.5 h-[22px] px-2 rounded-full border text-[11px] leading-none font-semibold whitespace-nowrap flex-shrink-0 ${meta.bgClass} ${meta.textClass} ${className}`}
     >
       <span className={`w-2 h-2 rounded-full border border-current ${meta.dotClass}`} aria-hidden="true" />
       {meta.label}
@@ -37,7 +37,7 @@ export const SpiceLevelBadge = ({ spiceLevel, className = '' }) => {
   const meta = SPICE_META[spiceLevel] || SPICE_META.MEDIUM;
   return (
     <span
-      className={`inline-flex items-center gap-1 h-[22px] px-2 rounded-full border border-saffron-600/30 bg-saffron-100/60 text-maroon-900 text-[11px] leading-none font-semibold ${className}`}
+      className={`inline-flex items-center gap-1 h-[22px] px-2 rounded-full border border-saffron-600/30 bg-saffron-100/60 text-maroon-900 text-[11px] leading-none font-semibold whitespace-nowrap flex-shrink-0 ${className}`}
       title={meta.label}
     >
       <Flame className="w-3 h-3" aria-hidden="true" />
