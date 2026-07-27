@@ -1,48 +1,47 @@
 import React, { useState } from 'react';
 import KitchenHeader from '../../components/kitchen/KitchenHeader';
-import KitchenStatsBanner from '../../components/kitchen/KitchenStatsBanner';
 import KanbanBoard from '../../components/kitchen/KanbanBoard';
 
 const KitchenDashboardScreen = ({
-  orders,
+  orders = [],
   onUpdateStatus,
   onToggleItemDone,
   onToggleRush,
   defaultStation = 'All'
 }) => {
   const [selectedStation, setSelectedStation] = useState(defaultStation);
+  const [activeFilter, setActiveFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [densityMode, setDensityMode] = useState('comfortable');
 
   return (
-    <div className="p-8 space-y-8">
-      <section>
-        <div className="flex flex-wrap justify-between items-end gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-on-surface">Live Dashboard</h2>
-            <p className="text-sm text-on-surface-variant">Real-time kitchen order tickets across every station.</p>
-          </div>
-        </div>
+    <div className="flex flex-col h-full space-y-3 min-h-0 overflow-hidden">
+      {/* Sleek Operational Toolbar */}
+      <KitchenHeader
+        selectedStation={selectedStation}
+        setSelectedStation={setSelectedStation}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        densityMode={densityMode}
+        setDensityMode={setDensityMode}
+        orders={orders}
+      />
 
-        <KitchenStatsBanner orders={orders} />
-      </section>
-
-      <section className="space-y-4">
-        <KitchenHeader
-          selectedStation={selectedStation}
-          setSelectedStation={setSelectedStation}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        />
-
+      {/* 3-Column Live Operational Kanban Workspace */}
+      <div className="flex-1 min-h-0">
         <KanbanBoard
           orders={orders}
           onUpdateStatus={onUpdateStatus}
           onToggleItemDone={onToggleItemDone}
           onToggleRush={onToggleRush}
           filterStation={selectedStation}
+          activeFilter={activeFilter}
           searchQuery={searchQuery}
+          densityMode={densityMode}
         />
-      </section>
+      </div>
     </div>
   );
 };

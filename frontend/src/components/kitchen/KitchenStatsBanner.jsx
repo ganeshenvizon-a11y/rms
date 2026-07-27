@@ -1,7 +1,8 @@
 import React from 'react';
-import { Sparkles, CookingPot, CheckCircle2, ListChecks } from 'lucide-react';
+import { Clock, ShieldAlert, BellRing, Sparkles, CheckCircle2, CookingPot } from 'lucide-react';
 
 const isToday = (isoString) => {
+  if (!isoString) return false;
   const d = new Date(isoString);
   const now = new Date();
   return (
@@ -11,68 +12,41 @@ const isToday = (isoString) => {
   );
 };
 
-const KitchenStatsBanner = ({ orders = [] }) => {
-  const receivedCount = orders.filter((o) => o.status === 'received').length;
-  const preparingCount = orders.filter((o) => o.status === 'preparing').length;
-  const readyCount = orders.filter((o) => o.status === 'ready').length;
-  const completedTodayCount = orders.filter(
-    (o) => o.status === 'served' && isToday(o.createdAt)
+const KitchenStatsBanner = ({ orders = [], assistanceCount = 0 }) => {
+  const activeOrders = orders.filter((o) => o.status !== 'served');
+  const delayedCount = activeOrders.filter((o) => o.elapsedSeconds > 900 || o.isRush).length;
+  const allergyCount = activeOrders.filter(
+    (o) => o.specialNotes?.toLowerCase().includes('allergy') || o.items?.some((i) => i.allergyAlert)
   ).length;
 
-  const cards = [
-    {
-      label: 'New Orders',
-      value: receivedCount,
-      icon: Sparkles,
-      iconBg: 'bg-secondary-container/20',
-      iconColor: 'text-secondary',
-      valueColor: 'text-on-surface',
-    },
-    {
-      label: 'Preparing',
-      value: preparingCount,
-      icon: CookingPot,
-      iconBg: 'bg-primary-container/20',
-      iconColor: 'text-primary',
-      valueColor: 'text-primary',
-    },
-    {
-      label: 'Ready',
-      value: readyCount,
-      icon: CheckCircle2,
-      iconBg: 'bg-tertiary-container/20',
-      iconColor: 'text-tertiary',
-      valueColor: 'text-on-surface',
-    },
-    {
-      label: 'Completed Today',
-      value: completedTodayCount,
-      icon: ListChecks,
-      iconBg: 'bg-surface-container-high',
-      iconColor: 'text-on-surface-variant',
-      valueColor: 'text-on-surface',
-    },
-  ];
-
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card) => {
-        const CardIcon = card.icon;
-        return (
-          <div
-            key={card.label}
-            className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/20 flex items-center justify-between"
-          >
-            <div>
-              <p className="text-sm font-medium text-on-surface-variant">{card.label}</p>
-              <h3 className={`text-3xl font-bold mt-1 ${card.valueColor}`}>{card.value}</h3>
-            </div>
-            <div className={`w-12 h-12 rounded-xl ${card.iconBg} flex items-center justify-center`}>
-              <CardIcon className={`w-6 h-6 ${card.iconColor}`} />
-            </div>
-          </div>
-        );
-      })}
+    <div className="bg-white px-4 py-2 rounded-xl border border-[#E4DED8] flex flex-wrap items-center justify-between gap-4 text-xs shadow-2xs">
+      <div className="flex items-center gap-4 text-[#6C625C] font-medium">
+        <span>Active Work: <strong className="text-[#1E1B18] font-bold">{activeOrders.length}</strong></span>
+        <span>•</span>
+        {delayedCount > 0 ? (
+          <span className="text-[#C93650] font-bold flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5" /> {delayedCount} Delayed
+          </span>
+        ) : (
+          <span className="text-[#21875A] font-medium">0 Delayed</span>
+        )}
+        <span>•</span>
+        {allergyCount > 0 ? (
+          <span className="text-[#C93650] font-bold flex items-center gap-1">
+            <ShieldAlert className="w-3.5 h-3.5" /> {allergyCount} Allergy Alerts
+          </span>
+        ) : (
+          <span>0 Allergy Alerts</span>
+        )}
+      </div>
+
+      {assistanceCount > 0 && (
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFF4DD] text-[#D98B16] font-bold text-xs border border-[#D98B16]/30">
+          <BellRing className="w-3.5 h-3.5" />
+          <span>{assistanceCount} Pending Floor Request{assistanceCount === 1 ? '' : 's'}</span>
+        </div>
+      )}
     </div>
   );
 };

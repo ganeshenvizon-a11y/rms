@@ -342,7 +342,10 @@ const CartScreen = () => {
       )}
 
       {/* Mobile sticky footer — "N items · ₹total / Review Order" */}
-      <div className="md:hidden fixed bottom-20 left-0 w-full bg-surface-container-lowest p-4 flex flex-col gap-2 z-40 border-t border-border shadow-xl">
+      <div
+        className="md:hidden fixed left-0 w-full bg-surface-container-lowest p-4 flex flex-col gap-2 z-40 border-t border-border shadow-xl"
+        style={{ bottom: 'calc(90px + env(safe-area-inset-bottom))' }}
+      >
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
             <span className="text-[11px] text-muted">

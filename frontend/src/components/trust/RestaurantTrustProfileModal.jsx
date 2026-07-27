@@ -12,7 +12,7 @@ const RestaurantTrustProfileModal = ({ isOpen, onClose, onRequestAssistance }) =
   const profile = RESTAURANT_TRUST_PROFILE;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
       <div className="bg-surface border border-outline-variant/30 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden text-on-surface">
         {/* Modal Header */}
         <div className="px-6 py-4 bg-surface-container-high border-b border-outline-variant/20 flex items-center justify-between">

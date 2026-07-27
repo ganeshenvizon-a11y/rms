@@ -27,6 +27,7 @@ const CustomerLayout = ({ children }) => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
           className="flex-1 flex flex-col"
+          style={{ paddingBottom: 'calc(104px + env(safe-area-inset-bottom))' }}
         >
           {children}
         </motion.div>

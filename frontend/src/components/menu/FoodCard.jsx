@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import ResponsiveImage from '../common/ResponsiveImage';
-import { FoodTypeBadge, SpiceLevelBadge, PrepTimeBadge, AvailabilityBadge, PriceTag } from './DishBadges';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { FoodTypeBadge, SpiceLevelBadge, PriceTag } from './DishBadges';
+import { Sparkles, ChevronRight, Clock } from 'lucide-react';
+import RecommendedDishCard from './RecommendedDishCard';
 
 /**
- * Two visual variants sharing one implementation:
- *  - 'compact'  — horizontal list row (menu browsing, search results)
- *  - 'featured' — vertical card with a larger image (Mangamma Favourites, New Here)
+ * Standard dish card for the main food list.
+ * Modernized with a clean horizontal layout, 108px image, max 2 badges, line-clamped description,
+ * bold maroon price, and accessible orange action button.
  */
 const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
   };
 
   const actionLabel = !isOrderable
-    ? 'Ask your server'
+    ? 'Ask server'
     : !isAvailable
     ? (isSoldOut ? 'Sold Out' : 'Unavailable')
     : dish.customizationAvailable
@@ -51,144 +52,84 @@ const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
   const actionDisabled = !isAvailable || !isOrderable;
 
   if (variant === 'featured') {
-    return (
-      <div
-        onClick={handleCardClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
-        className={`bg-surface-container-lowest rounded-2xl border border-border shadow-card hover:shadow-soft transition-shadow cursor-pointer overflow-hidden flex flex-col ${
-          !isAvailable ? 'opacity-75' : ''
-        }`}
-      >
-        <ResponsiveImage
-          src={dish.image}
-          alt={dish.name}
-          aspectRatio="4 / 3"
-          rounded="rounded-none"
-          objectPosition="center 35%"
-          className="w-full"
-          overlay={
-            dish.bestseller && (
-              <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-maroon-800/90 text-white text-[11px] font-bold">
-                <Sparkles className="w-3 h-3" aria-hidden="true" />
-                Mangamma Favourite
-              </span>
-            )
-          }
-        />
-        <div className="p-3.5 flex flex-col gap-2 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <FoodTypeBadge foodType={dish.foodType} />
-            {dish.spiceLevel && <SpiceLevelBadge spiceLevel={dish.spiceLevel} />}
-          </div>
-          <div>
-            <h3 className="font-bold text-ink text-[15px] leading-snug">{dish.name}</h3>
-            <p className="text-muted text-xs line-clamp-2 mt-0.5">
-              {dish.newCustomerReason || dish.shortDescription}
-            </p>
-          </div>
-          <div className="flex items-center justify-between text-xs mt-auto pt-1">
-            <PrepTimeBadge minutes={dish.preparationTimeMinutes} />
-            <AvailabilityBadge status={dish.availabilityStatus} />
-          </div>
-          <div className="flex items-center justify-between pt-2 border-t border-border mt-1">
-            <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-base" />
-            <button
-              type="button"
-              onClick={handlePrimaryAction}
-              disabled={actionDisabled}
-              aria-label={actionAriaLabel}
-              className={`min-h-[42px] px-3.5 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${
-                actionDisabled
-                  ? 'bg-surface-container-high text-muted cursor-not-allowed'
-                  : 'bg-saffron-600 hover:bg-saffron-500 text-white active:scale-95'
-              }`}
-            >
-              <span className="hidden min-[380px]:inline">{actionLabel}</span>
-              <span className="min-[380px]:hidden">{actionShortLabel}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    return <RecommendedDishCard dish={dish} onCustomize={onCustomize} />;
   }
 
-  // compact (default) — horizontal row
   return (
     <div
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && handleCardClick()}
-      className={`bg-surface-container-lowest rounded-2xl border border-border shadow-card hover:shadow-soft transition-shadow p-3.5 flex gap-3.5 relative cursor-pointer ${
+      className={`bg-white rounded-[16px] border border-[#EADFD6] shadow-2xs hover:shadow-sm transition-all p-3 flex gap-3.5 relative cursor-pointer select-none group ${
         !isAvailable ? 'opacity-75' : ''
       }`}
     >
-      {/* ── Left: dish image — stretches to the full height of the info
-          column (self-stretch) so it sits flush top-to-bottom with no dead
-          space, instead of floating as a small square in a taller card.
-          objectPosition is biased slightly above center: the category stock
-          photos are wide banana-leaf/thali spreads, and a dead-center crop
-          on a 1:1 frame tends to cut through the food itself. ── */}
-      <div className="w-[108px] sm:w-[128px] flex-shrink-0 rounded-xl overflow-hidden self-stretch">
+      {/* Dish Image */}
+      <div className="w-[104px] sm:w-[112px] h-[104px] sm:h-[112px] flex-shrink-0 rounded-[13px] overflow-hidden bg-[#FFF7EE] self-center">
         <ResponsiveImage
           src={dish.image}
           alt={dish.name}
           rounded="rounded-none"
           objectPosition="center 35%"
-          className="w-full h-full"
+          className="w-full h-full group-hover:scale-105 transition-transform duration-300"
         />
       </div>
 
-      {/* ── Right: info column ── */}
-      <div className="flex-1 flex flex-col gap-2 min-w-0 overflow-hidden py-0.5">
-
-        {/* Tier 1 — Tags (single scrollable row, never wraps into 2 lines).
-            Favourite uses the brand maroon accent (not the same saffron as
-            Spice) so the three pills read as distinct signals, not one blur. */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-nowrap">
-          <FoodTypeBadge foodType={dish.foodType} />
-          {dish.spiceLevel && <SpiceLevelBadge spiceLevel={dish.spiceLevel} />}
-          {dish.bestseller && (
-            <span className="inline-flex items-center gap-1 h-[22px] px-2 rounded-full bg-maroon-800/10 text-maroon-800 border border-maroon-800/25 text-[11px] leading-none font-semibold flex-shrink-0">
-              <Sparkles className="w-3 h-3" aria-hidden="true" />
-              Favourite
-            </span>
-          )}
-        </div>
-
-        {/* Tier 2 — Name + description */}
+      {/* Info Column */}
+      <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
         <div>
-          <h3 className="font-bold text-ink text-[15px] leading-snug truncate">{dish.name}</h3>
-          <p className="text-muted text-[12px] leading-[1.4] line-clamp-2 mt-1">{dish.shortDescription}</p>
+          {/* Max 2 Visible Badges (Dietary & Spice) + Optional Favourite Sparkle */}
+          <div className="flex items-center justify-between gap-1 mb-1">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <FoodTypeBadge foodType={dish.foodType} />
+              {dish.spiceLevel && <SpiceLevelBadge spiceLevel={dish.spiceLevel} />}
+            </div>
+            {dish.bestseller && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#A30F3B] shrink-0" title="Mangamma Favourite">
+                <Sparkles className="w-3.5 h-3.5 text-[#A30F3B]" aria-hidden="true" />
+                <span className="hidden sm:inline">Favourite</span>
+              </span>
+            )}
+          </div>
+
+          {/* Dish Name */}
+          <h3 className="font-bold text-[#211917] text-[15px] leading-snug truncate">
+            {dish.name}
+          </h3>
+
+          {/* Line-clamped Description */}
+          <p className="text-[#6F5F58] text-[12.5px] leading-[1.35] line-clamp-2 mt-0.5">
+            {dish.shortDescription}
+          </p>
         </div>
 
-        {/* Tier 3 — Prep time (soft, subdued) */}
-        <div className="flex items-center gap-2">
-          <PrepTimeBadge minutes={dish.preparationTimeMinutes} />
-          <AvailabilityBadge status={dish.availabilityStatus} />
-        </div>
+        {/* Price & Action Row */}
+        <div className="flex items-center justify-between pt-2 border-t border-[#F0E7E0] mt-1.5">
+          <div className="flex items-center gap-2">
+            <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[16px] text-[#A30F3B] font-bold" />
+            <div className="flex items-center gap-1 text-[11px] text-[#95867E]">
+              <Clock className="w-3 h-3" />
+              <span>{dish.preparationTimeMinutes || 20}m</span>
+            </div>
+          </div>
 
-        {/* Tier 4 — Price + CTA, pinned to bottom via flex */}
-        <div className="flex items-center justify-between pt-2.5 border-t border-border mt-auto">
-          <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[15px]" />
           <button
             type="button"
             onClick={handlePrimaryAction}
             disabled={actionDisabled}
             aria-label={actionAriaLabel}
-            className={`h-9 px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
+            className={`h-[40px] px-3.5 rounded-[12px] text-[13px] font-bold transition-all flex items-center gap-1 whitespace-nowrap cursor-pointer ${
               actionDisabled
-                ? 'bg-surface-container-high text-muted cursor-not-allowed'
-                : 'bg-saffron-600 hover:bg-saffron-500 text-white active:scale-95 shadow-sm'
+                ? 'bg-[#FFF7EE] text-[#95867E] border border-[#EADFD6] cursor-not-allowed'
+                : 'bg-[#F47712] hover:bg-[#DB5F05] text-white active:scale-95 shadow-2xs'
             }`}
           >
-            <span className="hidden min-[380px]:inline">{actionLabel}</span>
-            <span className="min-[380px]:hidden">{actionShortLabel}</span>
+            <span className="hidden min-[360px]:inline">{actionLabel}</span>
+            <span className="min-[360px]:hidden">{actionShortLabel}</span>
             {isAvailable && isOrderable && dish.customizationAvailable && <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />}
             {isAvailable && isOrderable && !dish.customizationAvailable && quantityInCart > 0 && (
-              <span className="bg-maroon-900/70 text-white px-1.5 py-0.5 rounded-full text-[10px] ml-0.5">{quantityInCart}</span>
+              <span className="bg-[#7E0D2F] text-white px-1.5 py-0.2 rounded-full text-[10px] ml-0.5">{quantityInCart}</span>
             )}
           </button>
         </div>
