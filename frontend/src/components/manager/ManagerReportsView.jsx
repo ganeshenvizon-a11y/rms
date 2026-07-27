@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { REPORTS_MOCK_DATA, addAuditLog } from '../../services/managerService';
+import { formatInvoiceAmount } from '../../utils/formatters';
 import { useToast } from '../../context/ToastContext';
 import {
   Download,
@@ -25,9 +26,8 @@ const ManagerReportsView = () => {
   const baseOverview = REPORTS_MOCK_DATA.salesOverview;
 
   const grossSales = baseOverview.grossSales + liveReceiptsTotal;
-  const netRevenue = baseOverview.netRevenue + liveReceiptsTotal * 0.85;
+  const netRevenue = baseOverview.netRevenue + liveReceiptsTotal * 0.95;
   const taxCollected = baseOverview.taxCollected + liveReceiptsTotal * 0.05;
-  const vatCollected = baseOverview.vatCollected + liveReceiptsTotal * 0.08;
 
   const handleExportCSV = () => {
     addAuditLog('Report Exported', `Exported CSV sales report for period: ${dateRange}`, 'finance');
@@ -47,7 +47,7 @@ const ManagerReportsView = () => {
         <div>
           <h2 className="text-2xl font-bold text-on-surface">Reports &amp; Analytics</h2>
           <p className="text-xs text-on-surface-variant mt-1">
-            Revenue breakdown, tax collections, payment distribution, and staff productivity metrics.
+            Revenue breakdown, GST collections, payment distribution, and staff productivity metrics.
           </p>
         </div>
 
@@ -98,20 +98,20 @@ const ManagerReportsView = () => {
             <span>Gross Sales</span>
             <IndianRupee className="w-4 h-4 text-primary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">₹{grossSales.toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">{formatInvoiceAmount(grossSales)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">
-            Net Revenue: <strong className="text-on-surface">₹{netRevenue.toFixed(2)}</strong>
+            Net Revenue: <strong className="text-on-surface">{formatInvoiceAmount(netRevenue)}</strong>
           </div>
         </div>
 
         <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant shadow-sm">
           <div className="flex items-center justify-between text-xs text-on-surface-variant uppercase font-bold tracking-wider">
-            <span>Tax &amp; VAT Collected</span>
+            <span>GST (5%) Collected</span>
             <Receipt className="w-4 h-4 text-secondary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">₹{(taxCollected + vatCollected).toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">{formatInvoiceAmount(taxCollected)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">
-            5% Tax (₹{taxCollected.toFixed(2)}) • 8% VAT (₹{vatCollected.toFixed(2)})
+            CGST 2.5% ({formatInvoiceAmount(taxCollected / 2)}) • SGST 2.5% ({formatInvoiceAmount(taxCollected / 2)})
           </div>
         </div>
 
@@ -120,7 +120,7 @@ const ManagerReportsView = () => {
             <span>Discounts &amp; Comps</span>
             <Percent className="w-4 h-4 text-tertiary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">₹{baseOverview.discountsGiven.toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">{formatInvoiceAmount(baseOverview.discountsGiven)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">Promotions &amp; manager comps</div>
         </div>
 
@@ -129,7 +129,7 @@ const ManagerReportsView = () => {
             <span>Staff Tips Pool</span>
             <Award className="w-4 h-4 text-primary" />
           </div>
-          <div className="mt-2 text-2xl font-bold text-on-surface">₹{baseOverview.tipsCollected.toFixed(2)}</div>
+          <div className="mt-2 text-2xl font-bold text-on-surface">{formatInvoiceAmount(baseOverview.tipsCollected)}</div>
           <div className="text-[11px] text-on-surface-variant mt-1">Distributed to floor staff</div>
         </div>
       </div>
@@ -150,14 +150,14 @@ const ManagerReportsView = () => {
               <div key={i} className="p-3.5 rounded-xl bg-background border border-outline-variant/40 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-surface-container-lowest border border-outline-variant flex items-center justify-center">
-                    {pay.icon === 'CreditCard' ? <CreditCard className="w-4 h-4 text-primary" /> : pay.icon === 'Banknote' ? <Banknote className="w-4 h-4 text-secondary" /> : <QrCode className="w-4 h-4 text-tertiary" />}
+                    {pay.method === 'Card' ? <CreditCard className="w-4 h-4 text-primary" /> : pay.method === 'Cash' ? <Banknote className="w-4 h-4 text-secondary" /> : <QrCode className="w-4 h-4 text-tertiary" />}
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-on-surface">{pay.method}</h4>
                     <span className="text-[10px] text-on-surface-variant">{pay.percentage}% of total volume</span>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-on-surface">₹{pay.amount.toFixed(2)}</div>
+                <div className="text-sm font-bold text-on-surface">{formatInvoiceAmount(pay.amount)}</div>
               </div>
             ))}
           </div>
@@ -167,7 +167,7 @@ const ManagerReportsView = () => {
           <div className="flex items-center justify-between pb-3 border-b border-outline-variant/50">
             <h3 className="text-base font-bold text-on-surface flex items-center gap-2">
               <Users className="w-4 h-4 text-primary" />
-              Staff Performance &amp; Tips Leaderboard
+              Staff Performance &amp; Sales Leaderboard
             </h3>
             <span className="text-xs text-green-700 font-semibold">Active Shift</span>
           </div>
@@ -181,12 +181,12 @@ const ManagerReportsView = () => {
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-on-surface">{staff.name}</h4>
-                    <span className="text-[10px] text-on-surface-variant">{staff.role} • {staff.tablesServed} Tables</span>
+                    <span className="text-[10px] text-on-surface-variant">{staff.role} • {staff.ordersHandled || 40} Orders</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs font-bold text-on-surface">₹{staff.totalSales.toFixed(2)} sales</div>
-                  <div className="text-[10px] text-green-700 font-bold">+₹{staff.tips.toFixed(2)} tips</div>
+                  <div className="text-xs font-bold text-on-surface">{formatInvoiceAmount(staff.salesHandled || staff.sales || 0)} sales</div>
+                  <div className="text-[10px] text-on-surface-variant font-medium">AOV: {formatInvoiceAmount(staff.avgOrderValue || 275)}</div>
                 </div>
               </div>
             ))}
@@ -224,7 +224,7 @@ const ManagerReportsView = () => {
                       {cat.name}
                     </td>
                     <td className="py-3 px-3 text-center font-bold text-on-surface-variant">{cat.count} units</td>
-                    <td className="py-3 px-3 text-right font-bold text-primary">₹{cat.sales.toFixed(2)}</td>
+                    <td className="py-3 px-3 text-right font-bold text-primary">{formatInvoiceAmount(cat.sales)}</td>
                     <td className="py-3 px-3 text-right font-bold text-on-surface">{sharePercent}%</td>
                   </tr>
                 );

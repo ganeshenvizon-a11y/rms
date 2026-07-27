@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { useToast } from '../../context/ToastContext';
 import EmptyState from '../../components/common/EmptyState';
+import WaiterOrderOpsModal from '../../components/waiter/WaiterOrderOpsModal';
 import {
   Search,
   Utensils,
@@ -10,6 +11,10 @@ import {
   AlertCircle,
   History,
   ChevronDown,
+  Flame,
+  Split,
+  MoveRight,
+  MoreVertical
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -22,12 +27,17 @@ const FILTERS = [
 const minutesAgo = (isoDate) => Math.max(0, Math.floor((Date.now() - new Date(isoDate).getTime()) / (1000 * 60)));
 
 const WaiterReadyOrdersScreen = () => {
-  const { kitchenOrders, updateKitchenOrderStatus } = useOrder();
+  const { kitchenOrders, orders, updateKitchenOrderStatus } = useOrder();
   const { showToast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [showCompleted, setShowCompleted] = useState(false);
+
+  // Ops Modal state
+  const [opsModal, setOpsModal] = useState({ isOpen: false, modalType: null, targetOrder: null, targetItem: null });
+  const openOpsModal = (type, order, item = null) => setOpsModal({ isOpen: true, modalType: type, targetOrder: order, targetItem: item });
+  const closeOpsModal = () => setOpsModal({ isOpen: false, modalType: null, targetOrder: null, targetItem: null });
 
   const allReadyOrders = kitchenOrders.filter((o) => o.status === 'ready');
   const completedOrders = kitchenOrders.filter((o) => o.status === 'served');
@@ -49,6 +59,7 @@ const WaiterReadyOrdersScreen = () => {
   };
 
   return (
+    <>
     <div className="space-y-4 pb-6">
       {/* Search & Filter */}
       <div className="space-y-2.5">
@@ -166,14 +177,39 @@ const WaiterReadyOrdersScreen = () => {
                   </div>
                 )}
 
-                {/* Action Button */}
-                <button
-                  onClick={() => handleDeliverOrder(order.orderId, order.tableNumber)}
-                  className="w-full py-3 bg-primary hover:opacity-90 text-on-primary font-bold rounded-2xl text-xs tracking-wide shadow-md flex items-center justify-center gap-2 transition-all"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Deliver Order to Table #{order.tableNumber}</span>
-                </button>
+                {/* Action Buttons: Deliver + Order Ops */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDeliverOrder(order.orderId, order.tableNumber)}
+                    className="flex-1 py-3 bg-primary hover:opacity-90 text-on-primary font-bold rounded-2xl text-xs tracking-wide shadow-md flex items-center justify-center gap-2 transition-all"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Deliver to Table #{order.tableNumber}</span>
+                  </button>
+
+                  {/* Quick Op Buttons */}
+                  <button
+                    onClick={() => openOpsModal('REFIRE', order, order.items?.[0])}
+                    title="Re-fire"
+                    className="w-10 h-10 rounded-2xl bg-red-50 border border-red-200 text-red-700 flex items-center justify-center hover:bg-red-100 shrink-0"
+                  >
+                    <Flame className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => openOpsModal('SPLIT', order)}
+                    title="Split Order"
+                    className="w-10 h-10 rounded-2xl bg-surface-container border border-outline-variant/30 text-on-surface-variant flex items-center justify-center hover:bg-surface-container-high shrink-0"
+                  >
+                    <Split className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => openOpsModal('MOVE', order)}
+                    title="Move Table"
+                    className="w-10 h-10 rounded-2xl bg-surface-container border border-outline-variant/30 text-on-surface-variant flex items-center justify-center hover:bg-surface-container-high shrink-0"
+                  >
+                    <MoveRight className="w-4 h-4" />
+                  </button>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -218,6 +254,16 @@ const WaiterReadyOrdersScreen = () => {
         </div>
       )}
     </div>
+
+      {/* Order Ops Modal */}
+      <WaiterOrderOpsModal
+        isOpen={opsModal.isOpen}
+        onClose={closeOpsModal}
+        modalType={opsModal.modalType}
+        targetOrder={opsModal.targetOrder}
+        targetItem={opsModal.targetItem}
+      />
+    </>
   );
 };
 

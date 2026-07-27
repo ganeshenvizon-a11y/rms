@@ -1,34 +1,35 @@
 import React, { useState } from 'react';
 import { getStoredEmployees, setStoredEmployees, addAuditLog } from '../../services/managerService';
 import { useToast } from '../../context/ToastContext';
+import ActionConfirmationModal from '../common/ActionConfirmationModal';
 import {
   Users,
   UserCheck,
   Search,
   Plus,
   Edit2,
-  Trash2,
+  Archive,
   Mail,
   Phone,
-  X
+  X,
+  AlertTriangle,
+  MoreVertical,
+  CheckCircle2
 } from 'lucide-react';
 
 const ROLES = [
-  'General Manager',
-  'Executive Head Chef',
-  'Sous Chef',
-  'Senior Server',
-  'POS Cashier & Sommelier',
-  'Host & Reservationist',
-  'Bartender',
-  'Kitchen Porter / Dishwasher'
+  'Restaurant Manager',
+  'Shift Manager',
+  'Cashier',
+  'Counter Staff',
+  'Waiter',
+  'Captain',
+  'Head Chef',
+  'Kitchen Staff',
+  'Steward',
+  'Host',
+  'Cleaning Staff'
 ];
-
-const STATUS_DOT = {
-  'Clocked In': 'bg-green-500',
-  'Off Duty': 'bg-on-surface-variant/40',
-  'On Leave': 'bg-amber-500',
-};
 
 const ManagerEmployeeView = () => {
   const { showToast } = useToast();
@@ -40,16 +41,22 @@ const ManagerEmployeeView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
 
+  // Safe Action Confirmation Modal
+  const [confirmationModal, setConfirmationModal] = useState({
+    isOpen: false,
+    employee: null
+  });
+
   const [formData, setFormData] = useState({
     name: '',
-    role: 'Senior Server',
+    role: 'Waiter',
     email: '',
     phone: '',
     avatar: '',
-    shift: 'Evening Service (16:00 - 00:00)',
-    status: 'Clocked In',
-    hourlyRate: '22.00',
+    shift: 'Morning Shift (09:00 - 18:00)',
+    status: 'On Shift',
     department: 'Floor Service',
+    assignedSection: 'Main Dining Hall'
   });
 
   const saveEmployees = (updated) => {
@@ -60,10 +67,10 @@ const ManagerEmployeeView = () => {
   const handleToggleStatus = (empId) => {
     const updated = employees.map((e) => {
       if (e.id === empId) {
-        const newStatus = e.status === 'Clocked In' ? 'Off Duty' : 'Clocked In';
+        const newStatus = e.status === 'On Shift' ? 'Off Duty' : 'On Shift';
         addAuditLog('Staff Status Toggled', `Toggled ${e.name} status to ${newStatus}`, 'staff');
         showToast(`${e.name} is now ${newStatus}`, 'info');
-        return { ...e, status: newStatus };
+        return { ...e, status: newStatus, availability: newStatus };
       }
       return e;
     });
@@ -74,14 +81,14 @@ const ManagerEmployeeView = () => {
     setEditingEmployee(null);
     setFormData({
       name: '',
-      role: 'Senior Server',
+      role: 'Waiter',
       email: '',
       phone: '',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-      shift: 'Evening Service (16:00 - 00:00)',
-      status: 'Clocked In',
-      hourlyRate: '22.00',
+      shift: 'Morning Shift (09:00 - 18:00)',
+      status: 'On Shift',
       department: 'Floor Service',
+      assignedSection: 'Main Dining Hall'
     });
     setIsModalOpen(true);
   };
@@ -90,35 +97,51 @@ const ManagerEmployeeView = () => {
     setEditingEmployee(emp);
     setFormData({
       name: emp.name || '',
-      role: emp.role || 'Senior Server',
+      role: emp.role || 'Waiter',
       email: emp.email || '',
       phone: emp.phone || '',
       avatar: emp.avatar || '',
-      shift: emp.shift || 'Evening Service (16:00 - 00:00)',
-      status: emp.status || 'Clocked In',
-      hourlyRate: emp.hourlyRate ? emp.hourlyRate.toString() : '22.00',
+      shift: emp.shift || 'Morning Shift (09:00 - 18:00)',
+      status: emp.status || 'On Shift',
       department: emp.department || 'Floor Service',
+      assignedSection: emp.assignedSection || 'Main Dining Hall'
     });
     setIsModalOpen(true);
   };
 
-  const handleDeleteEmployee = (empId, empName) => {
-    if (window.confirm(`Are you sure you want to remove "${empName}" from the staff roster?`)) {
-      const updated = employees.filter((e) => e.id !== empId);
-      saveEmployees(updated);
-      addAuditLog('Employee Removed', `Removed ${empName} from employee roster`, 'staff');
-      showToast(`Removed "${empName}" from staff roster`, 'error');
+  const initiateArchiveEmployee = (emp) => {
+    // Check if employee has active assigned tables
+    if (emp.assignedTables && emp.assignedTables.length > 0) {
+      alert(`Reassign ${emp.assignedTables.length} active tables (${emp.assignedTables.join(', ')}) before archiving this employee.`);
+      return;
     }
+
+    setConfirmationModal({
+      isOpen: true,
+      employee: emp
+    });
+  };
+
+  const handleConfirmArchive = (modalData) => {
+    const emp = confirmationModal.employee;
+    if (!emp) return;
+
+    const updated = employees.filter((e) => e.id !== emp.id);
+    saveEmployees(updated);
+    addAuditLog(
+      'EMPLOYEE_ARCHIVED',
+      `Archived employee ${emp.name} (${emp.role}) - Reason: ${modalData.reason}`,
+      'staff'
+    );
+    showToast(`Archived employee "${emp.name}" successfully`, 'success');
   };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email) {
-      showToast('Please provide employee name and email', 'error');
+    if (!formData.name || !formData.phone) {
+      showToast('Please fill in employee name and phone number', 'error');
       return;
     }
-
-    const rateNum = parseFloat(formData.hourlyRate) || 20.0;
 
     if (editingEmployee) {
       const updated = employees.map((e) =>
@@ -132,230 +155,222 @@ const ManagerEmployeeView = () => {
               avatar: formData.avatar || e.avatar,
               shift: formData.shift,
               status: formData.status,
-              hourlyRate: rateNum,
+              availability: formData.status,
               department: formData.department,
+              assignedSection: formData.assignedSection
             }
           : e
       );
       saveEmployees(updated);
-      addAuditLog('Employee Updated', `Updated staff record for ${formData.name}`, 'staff');
-      showToast(`Updated record for ${formData.name}`, 'success');
+      addAuditLog('Employee Updated', `Updated staff member ${formData.name}`, 'staff');
+      showToast(`Updated employee "${formData.name}"`, 'success');
     } else {
       const newEmp = {
-        id: `emp-${Date.now()}`,
+        id: `staff-${Date.now()}`,
         name: formData.name,
         role: formData.role,
-        email: formData.email,
+        email: formData.email || `${formData.name.toLowerCase().replace(/\s+/g, '.')}@dakshin.in`,
         phone: formData.phone,
-        avatar: formData.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+        avatar: formData.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
         shift: formData.shift,
         status: formData.status,
-        hourlyRate: rateNum,
+        availability: formData.status,
         department: formData.department,
-        joinDate: new Date().toISOString().split('T')[0],
+        assignedSection: formData.assignedSection,
+        assignedTables: [],
+        joinDate: new Date().toISOString().split('T')[0]
       };
-      saveEmployees([newEmp, ...employees]);
-      addAuditLog('Employee Created', `Added ${formData.name} to staff roster as ${formData.role}`, 'staff');
-      showToast(`Added ${formData.name} to staff roster`, 'success');
+      const updated = [newEmp, ...employees];
+      saveEmployees(updated);
+      addAuditLog('Employee Added', `Added new staff member ${formData.name}`, 'staff');
+      showToast(`Added employee "${formData.name}"`, 'success');
     }
-
     setIsModalOpen(false);
   };
 
   const filteredEmployees = employees.filter((emp) => {
-    const query = searchQuery.toLowerCase();
-    const matchesSearch = !searchQuery || (
-      emp.name.toLowerCase().includes(query) ||
-      emp.role.toLowerCase().includes(query) ||
-      emp.email.toLowerCase().includes(query)
-    );
+    const matchesSearch =
+      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (emp.phone && emp.phone.includes(searchQuery));
     const matchesRole = roleFilter === 'all' || emp.role === roleFilter;
     const matchesStatus = statusFilter === 'all' || emp.status === statusFilter;
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const clockedInCount = employees.filter((e) => e.status === 'Clocked In').length;
-
   return (
-    <div className="space-y-6">
-
-      {/* Header & Stats */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="space-y-6 pb-12">
+      {/* Header & Add Button */}
+      <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">Employee Management</h2>
-          <p className="text-on-surface-variant text-sm mt-1">
-            You have {employees.length} team members on the roster this week.
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-on-surface">Employee Roster</h2>
+            <span className="bg-primary/10 text-primary text-xs font-bold px-2.5 py-0.5 rounded-full">
+              {employees.length} Staff Members
+            </span>
+          </div>
+          <p className="text-xs text-on-surface-variant mt-1">
+            Operational shift management, table assignments, and section roles
           </p>
         </div>
-        <div className="flex gap-3">
-          <div className="bg-surface-container-lowest p-3.5 rounded-xl border border-outline-variant flex items-center gap-2.5 shadow-sm">
-            <Users className="w-5 h-5 text-primary" />
-            <div>
-              <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Total Staff</p>
-              <p className="text-lg font-bold text-on-surface leading-tight">{employees.length}</p>
-            </div>
-          </div>
-          <div className="bg-surface-container-lowest p-3.5 rounded-xl border border-outline-variant flex items-center gap-2.5 shadow-sm">
-            <UserCheck className="w-5 h-5 text-secondary" />
-            <div>
-              <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">On Duty Now</p>
-              <p className="text-lg font-bold text-on-surface leading-tight">{clockedInCount}</p>
-            </div>
-          </div>
-        </div>
+
+        <button
+          onClick={handleOpenAddModal}
+          className="px-4 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary-container transition-all shadow-xs"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add New Employee</span>
+        </button>
       </div>
 
-      {/* Utility Bar */}
-      <div className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3 flex-1 min-w-[280px]">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-            <input
-              type="text"
-              placeholder="Search by name, role, or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none"
-            />
-          </div>
+      {/* Filter Toolbar */}
+      <div className="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/30 flex flex-col md:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 absolute left-3 top-3 text-on-surface-variant" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search employee by name, role or phone..."
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-container-lowest border border-outline-variant/40 text-xs font-semibold text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 overflow-x-auto">
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="bg-surface-container-low border-none rounded-xl py-2.5 px-4 text-sm text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none"
+            className="bg-surface-container-lowest border border-outline-variant/40 text-xs font-bold text-on-surface rounded-xl px-3 py-2 focus:outline-none"
           >
             <option value="all">All Roles</option>
             {ROLES.map((r) => (
               <option key={r} value={r}>{r}</option>
             ))}
           </select>
+
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-surface-container-low border-none rounded-xl py-2.5 px-4 text-sm text-on-surface-variant focus:ring-2 focus:ring-primary/20 outline-none"
+            className="bg-surface-container-lowest border border-outline-variant/40 text-xs font-bold text-on-surface rounded-xl px-3 py-2 focus:outline-none"
           >
             <option value="all">All Statuses</option>
-            <option value="Clocked In">Clocked In</option>
+            <option value="On Shift">On Shift</option>
             <option value="Off Duty">Off Duty</option>
             <option value="On Leave">On Leave</option>
           </select>
         </div>
-
-        <button
-          onClick={handleOpenAddModal}
-          className="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-md hover:brightness-110 transition-all active:scale-95"
-        >
-          <Plus className="w-4 h-4" />
-          Add Employee
-        </button>
       </div>
 
-      {/* Employee Table */}
-      <div className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-surface-container-low border-b border-outline-variant">
-                <th className="px-5 py-3 font-bold text-on-surface-variant uppercase text-[11px] tracking-widest">Employee</th>
-                <th className="px-5 py-3 font-bold text-on-surface-variant uppercase text-[11px] tracking-widest">Role</th>
-                <th className="px-5 py-3 font-bold text-on-surface-variant uppercase text-[11px] tracking-widest">Contact</th>
-                <th className="px-5 py-3 font-bold text-on-surface-variant uppercase text-[11px] tracking-widest">Status</th>
-                <th className="px-5 py-3 font-bold text-on-surface-variant uppercase text-[11px] tracking-widest">Shift / Rate</th>
-                <th className="px-5 py-3 font-bold text-on-surface-variant uppercase text-[11px] tracking-widest text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/30">
-              {filteredEmployees.map((emp) => (
-                <tr key={emp.id} className="hover:bg-surface-container-low transition-colors">
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <img src={emp.avatar} alt={emp.name} className="w-10 h-10 rounded-full object-cover border border-outline-variant shrink-0" />
-                      <div>
-                        <p className="text-sm font-semibold text-on-surface">{emp.name}</p>
-                        <p className="text-[11px] text-on-surface-variant">Joined {emp.joinDate || '2022-01-01'}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-full text-xs font-bold">{emp.role}</span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <p className="text-on-surface text-xs font-medium flex items-center gap-1"><Mail className="w-3 h-3 text-on-surface-variant" /> {emp.email}</p>
-                    <p className="text-on-surface-variant text-xs flex items-center gap-1 mt-0.5"><Phone className="w-3 h-3" /> {emp.phone}</p>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <button
-                      onClick={() => handleToggleStatus(emp.id)}
-                      className="flex items-center text-xs font-semibold text-on-surface hover:opacity-70 transition-opacity"
-                      title="Click to toggle clock-in status"
-                    >
-                      <span className={`w-2 h-2 rounded-full mr-2 ${STATUS_DOT[emp.status] || 'bg-on-surface-variant/40'}`} />
-                      {emp.status}
-                    </button>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <p className="text-xs text-on-surface">{emp.shift}</p>
-                    <p className="text-xs text-primary font-bold mt-0.5">₹{emp.hourlyRate?.toFixed(2)} / hr</p>
-                  </td>
-                  <td className="px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => handleOpenEditModal(emp)} className="p-2 rounded-lg hover:bg-primary/10 text-on-surface-variant hover:text-primary transition-colors" title="Edit Record">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => handleDeleteEmployee(emp.id, emp.name)} className="p-2 rounded-lg hover:bg-error-container/30 text-on-surface-variant hover:text-error transition-colors" title="Remove Employee">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* Staff Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {filteredEmployees.map((emp) => (
+          <div
+            key={emp.id}
+            className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow"
+          >
+            <div>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={emp.avatar}
+                    alt={emp.name}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-outline-variant/40"
+                  />
+                  <div>
+                    <h3 className="font-extrabold text-sm text-on-surface">{emp.name}</h3>
+                    <span className="inline-block text-xs font-bold text-primary">{emp.role}</span>
+                  </div>
+                </div>
 
-        {filteredEmployees.length === 0 && (
-          <div className="p-12 text-center text-on-surface-variant space-y-2">
-            <Users className="w-8 h-8 text-on-surface-variant/40 mx-auto" />
-            <p className="font-semibold text-on-surface">No staff members match the selected filters.</p>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleToggleStatus(emp.id)}
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold border transition-colors ${
+                      emp.status === 'On Shift'
+                        ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30'
+                        : 'bg-amber-500/10 text-amber-700 border-amber-500/30'
+                    }`}
+                  >
+                    {emp.status}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-3 mt-3 border-t border-outline-variant/20 space-y-1.5 text-xs text-on-surface-variant font-medium">
+                <div className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>{emp.phone || '+91 98400 00000'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="truncate">{emp.email}</span>
+                </div>
+                <div className="text-[11px] pt-1">
+                  Shift: <strong className="text-on-surface">{emp.shift}</strong>
+                </div>
+                {emp.assignedTables?.length > 0 ? (
+                  <div className="text-[11px]">
+                    Assigned Tables: <strong className="text-primary font-bold">{emp.assignedTables.join(', ')}</strong>
+                  </div>
+                ) : (
+                  <div className="text-[11px] text-on-surface-variant/60 italic">No active table assignments</div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Bar */}
+            <div className="pt-3 border-t border-outline-variant/20 flex items-center justify-between text-xs">
+              <button
+                onClick={() => handleOpenEditModal(emp)}
+                className="px-3 py-1.5 rounded-xl border border-outline-variant/40 hover:bg-surface-container font-bold text-on-surface flex items-center gap-1.5 transition-colors"
+              >
+                <Edit2 className="w-3.5 h-3.5 text-primary" />
+                <span>Edit</span>
+              </button>
+
+              <button
+                onClick={() => initiateArchiveEmployee(emp)}
+                className="px-3 py-1.5 rounded-xl border border-error/20 hover:bg-error-container/30 text-error font-bold flex items-center gap-1.5 transition-colors"
+              >
+                <Archive className="w-3.5 h-3.5" />
+                <span>Archive</span>
+              </button>
+            </div>
           </div>
-        )}
-
-        <div className="p-3 bg-surface-container-low flex justify-between items-center px-5 border-t border-outline-variant">
-          <span className="text-xs font-medium text-on-surface-variant">Showing {filteredEmployees.length} of {employees.length} employees</span>
-        </div>
+        ))}
       </div>
 
-      {/* Add / Edit Employee Modal */}
+      {/* Edit / Add Employee Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-2xl border border-outline-variant relative my-8">
-            <button onClick={() => setIsModalOpen(false)} className="absolute right-4 top-4 text-on-surface-variant hover:text-on-surface">
-              <X className="w-5 h-5" />
-            </button>
-
-            <h3 className="text-lg font-bold text-on-surface mb-1">
-              {editingEmployee ? `Edit Staff: ${editingEmployee.name}` : 'Register New Employee'}
-            </h3>
-            <p className="text-xs text-on-surface-variant mb-4">Enter employee credentials, role, shift and hourly rate.</p>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-outline-variant/20 pb-3">
+              <h3 className="font-extrabold text-base text-on-surface">
+                {editingEmployee ? `Edit Employee (${editingEmployee.name})` : 'Add New Employee'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)}><X className="w-5 h-5" /></button>
+            </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-on-surface mb-1">Full Name *</label>
+                <label className="block font-bold mb-1">Full Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. Priya Sharma"
-                  className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
+                  placeholder="e.g. Rahul Sharma"
+                  className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-semibold text-on-surface"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-on-surface mb-1">Role & Designation *</label>
+                <label className="block font-bold mb-1">Role *</label>
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
+                  className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-semibold text-on-surface"
                 >
                   {ROLES.map((r) => (
                     <option key={r} value={r}>{r}</option>
@@ -363,90 +378,84 @@ const ManagerEmployeeView = () => {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="staff@dakshin.in"
-                    className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">Phone Number</label>
-                  <input
-                    type="text"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+91 98765 43210"
-                    className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">Shift Schedule</label>
-                  <input
-                    type="text"
-                    value={formData.shift}
-                    onChange={(e) => setFormData({ ...formData, shift: e.target.value })}
-                    placeholder="Evening Service (16:00 - 00:00)"
-                    className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">Hourly Wage (₹)</label>
-                  <input
-                    type="number"
-                    step="0.50"
-                    value={formData.hourlyRate}
-                    onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
-                    placeholder="24.50"
-                    className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
-                  />
-                </div>
+              <div>
+                <label className="block font-bold mb-1">Phone Number *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+91 98401 11223"
+                  className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-semibold text-on-surface"
+                />
               </div>
 
               <div>
-                <label className="block font-semibold text-on-surface mb-1">Shift Status</label>
+                <label className="block font-bold mb-1">Shift</label>
+                <select
+                  value={formData.shift}
+                  onChange={(e) => setFormData({ ...formData, shift: e.target.value })}
+                  className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-semibold text-on-surface"
+                >
+                  <option value="Morning Shift (09:00 - 18:00)">Morning Shift (09:00 - 18:00)</option>
+                  <option value="Evening Shift (14:00 - 23:00)">Evening Shift (14:00 - 23:00)</option>
+                  <option value="Full Shift (08:30 - 17:30)">Full Shift (08:30 - 17:30)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
+                  className="w-full bg-surface-container-low border border-outline-variant/40 rounded-xl p-2.5 font-semibold text-on-surface"
                 >
-                  <option value="Clocked In">Clocked In (On Shift)</option>
+                  <option value="On Shift">On Shift</option>
                   <option value="Off Duty">Off Duty</option>
                   <option value="On Leave">On Leave</option>
                 </select>
               </div>
 
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">Avatar Image URL</label>
-                <input
-                  type="url"
-                  value={formData.avatar}
-                  onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-on-surface focus:outline-none focus:border-primary"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant/40">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-xl bg-surface-container text-on-surface font-semibold hover:bg-surface-container-high transition-colors">
+              <div className="pt-3 flex justify-end gap-2 border-t border-outline-variant/20">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-outline-variant/40 font-bold"
+                >
                   Cancel
                 </button>
-                <button type="submit" className="px-5 py-2 rounded-xl bg-primary hover:brightness-110 text-on-primary font-semibold shadow-md transition-colors">
-                  {editingEmployee ? 'Save Changes' : 'Register Staff'}
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-primary text-on-primary font-bold"
+                >
+                  Save Employee
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* Safe Action Confirmation Modal */}
+      <ActionConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={() => setConfirmationModal({ isOpen: false, employee: null })}
+        onConfirm={handleConfirmArchive}
+        title={`Archive Employee ${confirmationModal.employee?.name}?`}
+        affectedRecord={`${confirmationModal.employee?.name} (${confirmationModal.employee?.role})`}
+        consequenceExplanation="This staff member will be archived from active shifts and floor rosters, but preserved in historical activity logs and past order records."
+        requiredPermission="EMPLOYEE_ARCHIVE"
+        currentRole="MANAGER"
+        reasons={[
+          'End of employment contract',
+          'Transferred to sister branch',
+          'Extended medical leave',
+          'Role restructuring',
+          'Other'
+        ]}
+        confirmButtonText="Archive Employee"
+        confirmButtonVariant="danger"
+      />
     </div>
   );
 };

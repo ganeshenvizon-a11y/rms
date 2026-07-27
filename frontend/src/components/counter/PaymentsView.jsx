@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useOrder } from '../../context/OrderContext';
+import { formatInvoiceAmount, formatMenuPrice } from '../../utils/formatters';
 import {
   CreditCard,
   Banknote,
@@ -19,21 +20,19 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
   const { processCounterPayment, toggleRegisterDrawer, registerSession } = useOrder();
 
   const activeBill = billOrder || {
-    orderId: 'ORD-8045',
+    orderId: 'INV-8045',
     tableNumber: '05',
-    serverName: 'Elena Vance',
+    serverName: 'Ananya Reddy',
     guestCount: 2,
-    subtotal: 71.00,
-    tax: 3.55,
-    vat: 5.68,
+    subtotal: 410.00,
+    tax: 20.50,
+    vat: 0,
     discountAmount: 0,
-    serviceCharge: 3.55,
-    grandTotal: 83.78,
+    serviceCharge: 0,
+    grandTotal: 430.50,
     items: [
-      { name: 'Margherita DOC Woodfired Pizza', quantity: 1, price: 18.50 },
-      { name: 'Truffle & Wild Mushroom Risotto', quantity: 1, price: 24.00 },
-      { name: 'Chianti Classico DOCG (Glass)', quantity: 2, price: 14.50 },
-      { name: 'Authentic Venetian Tiramisù', quantity: 1, price: 11.50 }
+      { name: 'Ghee Roast Masala Dosa', quantity: 2, price: 140 },
+      { name: 'Filter Coffee', quantity: 2, price: 65 },
     ]
   };
 
@@ -72,7 +71,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
 
   const handleExecutePayment = () => {
     if (paymentMethod === 'cash' && numericTendered < totalPaymentDue) {
-      alert(`Tendered amount (₹{numericTendered.toFixed(2)}) is less than total due ($₹{totalPaymentDue.toFixed(2)})`);
+      alert(`Tendered amount (${formatInvoiceAmount(numericTendered)}) is less than total due (${formatInvoiceAmount(totalPaymentDue)})`);
       return;
     }
 
@@ -118,9 +117,9 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
       tenderedAmount: paymentMethod === 'cash' ? numericTendered : totalPaymentDue,
       changeGiven: paymentMethod === 'cash' ? changeGiven : 0,
       subtotal: activeBill.subtotal,
-      tax: activeBill.tax,
-      vat: activeBill.vat,
-      discount: activeBill.discountAmount,
+      tax: activeBill.tax || (activeBill.subtotal * 0.05),
+      vat: 0,
+      discount: activeBill.discountAmount || 0,
       tip: tipAmount,
       grandTotal: totalPaymentDue,
       items: activeBill.items || [],
@@ -154,40 +153,40 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
           <div className="space-y-2 font-mono text-xs text-stone-700 bg-stone-50 border border-stone-200 p-3 rounded-xl">
             <div className="flex justify-between">
               <span>Bill Subtotal:</span>
-              <span>₹{(activeBill.subtotal || 0).toFixed(2)}</span>
+              <span>{formatInvoiceAmount(activeBill.subtotal || 0)}</span>
             </div>
 
             {activeBill.discountAmount > 0 && (
               <div className="flex justify-between text-emerald-700 font-semibold">
                 <span>Discount Applied:</span>
-                <span>-₹{activeBill.discountAmount.toFixed(2)}</span>
+                <span>-{formatInvoiceAmount(activeBill.discountAmount)}</span>
               </div>
             )}
 
             <div className="flex justify-between text-stone-500">
-              <span>Service Tax & VAT:</span>
-              <span>₹{((activeBill.tax || 0) + (activeBill.vat || 0)).toFixed(2)}</span>
+              <span>GST @ 5%:</span>
+              <span>{formatInvoiceAmount(activeBill.tax || ((activeBill.subtotal || 0) * 0.05))}</span>
             </div>
 
             <div className="flex justify-between text-stone-500">
-              <span>Gratuity / Service:</span>
-              <span>₹{(activeBill.serviceCharge || 0).toFixed(2)}</span>
+              <span>Optional Staff Tip:</span>
+              <span>{formatInvoiceAmount(tipAmount)}</span>
             </div>
 
             <div className="border-t border-stone-200 pt-2 flex justify-between font-bold text-sm text-stone-900">
               <span>Bill Base Total:</span>
-              <span>₹{baseAmount.toFixed(2)}</span>
+              <span>{formatInvoiceAmount(baseAmount)}</span>
             </div>
           </div>
 
           {/* Tip / Staff Gratuity Selector */}
           <div className="bg-stone-50 border border-stone-200 p-3.5 rounded-xl space-y-2.5">
             <div className="flex justify-between items-center text-xs font-mono">
-              <span className="text-stone-800 font-semibold">Add Tip / Staff Gratuity</span>
-              <span className="text-amber-700 font-bold">₹{tipAmount.toFixed(2)}</span>
+              <span className="text-stone-800 font-semibold">Add Optional Staff Tip</span>
+              <span className="text-amber-700 font-bold">{formatInvoiceAmount(tipAmount)}</span>
             </div>
 
-            <div className="grid grid-cols-5 gap-1.5 font-mono text-xs">
+            <div className="grid grid-cols-5 gap-1.5 text-xs font-mono">
               {['0', '10', '15', '20', 'custom'].map((t) => (
                 <button
                   key={t}
@@ -218,7 +217,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
           <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-center justify-between">
             <div>
               <span className="text-xs text-amber-900 font-sans block">Total Amount to Charge:</span>
-              <span className="text-2xl font-bold font-mono text-amber-700">₹{totalPaymentDue.toFixed(2)}</span>
+              <span className="text-2xl font-bold font-mono text-amber-700">{formatInvoiceAmount(totalPaymentDue)}</span>
             </div>
 
             <div className="text-right text-[10px] text-stone-500 font-mono">
@@ -283,16 +282,16 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
                 <div className="grid grid-cols-4 gap-2 font-mono text-xs">
                   {[
                     Math.ceil(totalPaymentDue),
-                    Math.ceil(totalPaymentDue / 10) * 10,
-                    50,
-                    100
+                    Math.ceil(totalPaymentDue / 50) * 50,
+                    500,
+                    1000
                   ].map((amt, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleCashPreset(amt)}
                       className="py-2 bg-white hover:bg-amber-600 hover:text-white text-stone-800 border border-stone-200 font-bold rounded-lg transition-colors shadow-xs"
                     >
-                      ${amt}
+                      {formatMenuPrice(amt)}
                     </button>
                   ))}
                 </div>
@@ -314,7 +313,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
               <div className="bg-white border border-stone-200 p-3 rounded-xl flex items-center justify-between font-mono">
                 <span className="text-xs text-stone-600">Change Due to Guest:</span>
                 <span className={`text-lg font-bold ${changeGiven > 0 ? 'text-emerald-700' : 'text-stone-400'}`}>
-                  ${changeGiven.toFixed(2)}
+                  {formatInvoiceAmount(changeGiven)}
                 </span>
               </div>
             </div>
@@ -337,7 +336,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
                   Tap, Insert, or Swipe Card on POS Terminal
                 </p>
                 <p className="text-[10px] text-stone-500 font-mono">
-                  Accepts Visa, Mastercard, American Express, Apple Pay, Google Pay
+                  Accepts Visa, Mastercard, RuPay, UPI Tap, Apple Pay, Google Pay
                 </p>
               </div>
             </div>
@@ -366,7 +365,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
               </div>
 
               <p className="text-xs text-stone-700 font-mono">
-                Amount: <span className="text-amber-700 font-bold">₹{totalPaymentDue.toFixed(2)}</span>
+                Amount: <span className="text-amber-700 font-bold">{formatInvoiceAmount(totalPaymentDue)}</span>
               </p>
             </div>
           )}
@@ -392,7 +391,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
                   <label className="text-[10px] text-stone-500">Guest Last Name:</label>
                   <input
                     type="text"
-                    placeholder="e.g. Vance"
+                    placeholder="e.g. Reddy"
                     className="w-full bg-white border border-stone-300 rounded-lg px-2.5 py-1.5 text-stone-900 focus:outline-none focus:border-amber-500 mt-1"
                   />
                 </div>
@@ -414,7 +413,7 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
             ) : (
               <>
                 <CheckCircle className="w-4 h-4" />
-                <span>Process Payment (₹{totalPaymentDue.toFixed(2)})</span>
+                <span>Process Payment ({formatInvoiceAmount(totalPaymentDue)})</span>
               </>
             )}
           </button>
@@ -444,12 +443,12 @@ const PaymentsView = ({ billOrder, onPaymentComplete, onNavigateToReceipts }) =>
               </div>
               <div className="flex justify-between">
                 <span>Amount Paid:</span>
-                <span className="text-emerald-700 font-bold">₹{completedReceipt.grandTotal.toFixed(2)}</span>
+                <span className="text-emerald-700 font-bold">{formatInvoiceAmount(completedReceipt.grandTotal)}</span>
               </div>
               {completedReceipt.changeGiven > 0 && (
                 <div className="flex justify-between text-amber-800">
                   <span>Change Returned:</span>
-                  <span>₹{completedReceipt.changeGiven.toFixed(2)}</span>
+                  <span>{formatInvoiceAmount(completedReceipt.changeGiven)}</span>
                 </div>
               )}
             </div>

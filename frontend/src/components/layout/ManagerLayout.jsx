@@ -17,13 +17,15 @@ import {
   CalendarDays,
   CreditCard,
   ArrowLeftCircle,
-  RefreshCw
+  RefreshCw,
+  Users
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'menu', label: 'Menu & Categories', icon: BookOpen },
   { id: 'tables', label: 'Tables', icon: Grid },
+  { id: 'guestflow', label: 'Guest Flow', icon: Users },
   { id: 'employee', label: 'Employees', icon: Badge },
   { id: 'reports', label: 'Reports', icon: BarChart3 },
   { id: 'notifications', label: 'Notifications', icon: Bell },

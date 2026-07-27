@@ -22,7 +22,7 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
   // Local state for bill adjustments
   const [discountType, setDiscountType] = useState('none'); // 'none' | '5' | '10' | '15' | 'custom'
   const [customDiscount, setCustomDiscount] = useState('');
-  const [isServiceChargeAdded, setIsServiceChargeAdded] = useState(true);
+  const [isServiceChargeAdded, setIsServiceChargeAdded] = useState(false); // No tip by default
   const [splitCount, setSplitCount] = useState(2);
   const [isSplitModalOpen, setIsSplitModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -30,10 +30,10 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
 
   // Default demo check if no order is selected
   const defaultItems = [
-    { id: 'b-1', name: 'Margherita DOC Woodfired Pizza', quantity: 1, price: 18.50 },
-    { id: 'b-2', name: 'Truffle & Wild Mushroom Risotto', quantity: 1, price: 24.00 },
-    { id: 'b-3', name: 'Chianti Classico DOCG (Glass)', quantity: 2, price: 14.50 },
-    { id: 'b-4', name: 'Authentic Venetian Tiramisù', quantity: 1, price: 11.50 }
+    { id: 'b-1', name: 'Chettinad Seeraga Samba Chicken Biryani', quantity: 2, price: 320.00 },
+    { id: 'b-2', name: 'Special South Veg Thali', quantity: 1, price: 220.00 },
+    { id: 'b-3', name: 'Desi Ghee Roast Masala Dosa', quantity: 1, price: 140.00 },
+    { id: 'b-4', name: 'Kumbakonam Degree Filter Coffee', quantity: 2, price: 60.00 }
   ];
 
   const currentOrder = selectedBillOrder || {
@@ -57,7 +57,7 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
           id: it.id,
           name: it.name,
           quantity: it.quantity,
-          price: dish.price || 18.00
+          price: dish.price || 180.00
         };
       });
     }
@@ -85,11 +85,15 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
   else if (discountType === '15') discountAmount = subtotal * 0.15;
   else if (discountType === 'custom') discountAmount = parseFloat(customDiscount) || 0;
 
-  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
-  const tax = discountedSubtotal * RESTAURANT_INFO.taxRate; // 5%
-  const vat = discountedSubtotal * RESTAURANT_INFO.vatRate; // 8%
-  const serviceCharge = isServiceChargeAdded ? discountedSubtotal * 0.05 : 0; // 5% optional
-  const grandTotal = discountedSubtotal + tax + vat + serviceCharge;
+  const packagingCharge = 0;
+  const taxableAmount = Math.max(0, subtotal - discountAmount + packagingCharge);
+  const gst = taxableAmount * (RESTAURANT_INFO.taxRate || 0.05); // 5% GST
+  const cgst = gst / 2;
+  const sgst = gst / 2;
+  const total = taxableAmount + gst;
+  const tipAmount = isServiceChargeAdded ? subtotal * 0.05 : 0; // optional 5% staff tip
+  const totalPayable = total + tipAmount;
+  const grandTotal = totalPayable;
 
   const perPersonSplit = (grandTotal / (splitCount || 1)).toFixed(2);
 
@@ -339,13 +343,14 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
                   onChange={(e) => setIsServiceChargeAdded(e.target.checked)}
                   className="rounded border-stone-300 bg-white text-amber-600 focus:ring-amber-500"
                 />
-                Include 5% Optional Staff Gratuity
+                Include 5% Optional Staff Tip
               </label>
 
               <span className="text-xs font-mono text-stone-600">
-                ${serviceCharge.toFixed(2)}
+                ₹{tipAmount.toFixed(2)}
               </span>
             </div>
+            <p className="text-[10px] text-stone-500 italic mt-1">The staff tip is completely optional and is not a government tax or restaurant service charge.</p>
           </div>
 
           {/* Totals Summary */}
@@ -362,18 +367,41 @@ const BillingView = ({ onProceedToPayment, selectedBillOrder, setSelectedBillOrd
               </div>
             )}
 
-            <div className="flex justify-between text-stone-600">
-              <span>Service Tax (5%):</span>
-              <span>₹{tax.toFixed(2)}</span>
-            </div>
+            {packagingCharge > 0 && (
+              <div className="flex justify-between text-stone-600">
+                <span>Packaging Charge:</span>
+                <span>₹{packagingCharge.toFixed(2)}</span>
+              </div>
+            )}
 
             <div className="flex justify-between text-stone-600">
-              <span>VAT (8%):</span>
-              <span>₹{vat.toFixed(2)}</span>
+              <span>GST @ 5%:</span>
+              <span>₹{gst.toFixed(2)}</span>
+            </div>
+            <div className="pl-2 flex justify-between text-[10px] text-stone-500">
+              <span>CGST @ 2.5%:</span>
+              <span>₹{cgst.toFixed(2)}</span>
+            </div>
+            <div className="pl-2 flex justify-between text-[10px] text-stone-500">
+              <span>SGST @ 2.5%:</span>
+              <span>₹{sgst.toFixed(2)}</span>
             </div>
 
-            <div className="flex justify-between text-base font-bold text-stone-900 pt-2 border-t border-stone-200">
-              <span>Grand Total:</span>
+            <div className="flex justify-between text-stone-600 border-t border-stone-100 pt-1">
+              <span>Total:</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between text-stone-700">
+              <span>Optional Staff Tip:</span>
+              <span>₹{tipAmount.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between text-base font-bold text-stone-900 pt-2 border-t-2 border-stone-900 mt-1">
+              <span>Total Payable:</span>
+              <span className="text-amber-700 font-mono">₹{totalPayable.toFixed(2)}</span>
+            </div>
+          </div>
               <span className="text-amber-700 font-mono">₹{grandTotal.toFixed(2)}</span>
             </div>
           </div>

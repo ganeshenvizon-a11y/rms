@@ -67,7 +67,7 @@ const MODULE_CARDS = [
     title: 'Counter POS & Billing',
     path: '/counter/login',
     icon: CreditCard,
-    roleTitle: 'POS Cashier & Sommelier',
+    roleTitle: 'Counter Staff',
     tag: 'Staff Auth Required',
     color: 'from-emerald-600 to-teal-700',
     accentBorder: 'border-emerald-300',

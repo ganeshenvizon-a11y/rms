@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { useToast } from '../../context/ToastContext';
+import { formatInvoiceAmount } from '../../utils/formatters';
 import Modal from '../../components/common/Modal';
 import {
   Users,
@@ -199,7 +200,7 @@ const WaiterTablesScreen = () => {
                       {tbl.status === 'bill_requested' ? (
                         <>
                           <IndianRupee className="w-3.5 h-3.5 text-primary" />
-                          <span className="text-xs font-bold text-primary font-mono">₹{tbl.totalBill.toFixed(2)}</span>
+                          <span className="text-xs font-bold text-primary font-mono">{formatInvoiceAmount(tbl.totalBill)}</span>
                         </>
                       ) : tbl.status === 'seated' ? (
                         <>
@@ -263,7 +264,7 @@ const WaiterTablesScreen = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-xs font-bold text-primary uppercase tracking-widest">Order Summary</h3>
-                    <span className="text-xs font-bold text-on-surface">₹{activeModalTable.totalBill.toFixed(2)}</span>
+                    <span className="text-xs font-bold text-on-surface">{formatInvoiceAmount(activeModalTable.totalBill)}</span>
                   </div>
                   <div className="space-y-2 bg-surface-container-low rounded-2xl p-3">
                     {order.items.map((item) => (

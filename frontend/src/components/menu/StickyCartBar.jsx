@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import { formatCurrency } from '../../utils/formatters';
+import { formatInvoiceAmount } from '../../utils/formatters';
 import Icon from '../common/Icon';
 
 const StickyCartBar = () => {
@@ -27,7 +27,7 @@ const StickyCartBar = () => {
             <span className="text-[10px] uppercase font-bold opacity-70">
               {totals.itemCount} {totals.itemCount === 1 ? 'Item' : 'Items'} in Cart
             </span>
-            <span className="font-bold text-xl">{formatCurrency(totals.grandTotal)}</span>
+            <span className="font-bold text-xl">{formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}</span>
           </div>
         </div>
         <div className="flex items-center gap-2 bg-white text-primary px-5 py-3 rounded-xl font-bold">

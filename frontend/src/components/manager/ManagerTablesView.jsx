@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { getStoredReservations, setStoredReservations, addAuditLog } from '../../services/managerService';
+import { formatInvoiceAmount } from '../../utils/formatters';
 import { useToast } from '../../context/ToastContext';
 import {
   Grid,
@@ -59,7 +60,7 @@ const ManagerTablesView = () => {
   };
 
   const handleAssignWaiter = (tableNumber) => {
-    const waiterName = prompt(`Enter assigned server name for Table ${tableNumber}:`, 'Ananya Nair');
+    const waiterName = prompt(`Enter assigned server name for Table ${tableNumber}:`, 'Ananya Reddy');
     if (waiterName) {
       updateWaiterTableStatus(tableNumber, 'seated', { serverName: waiterName });
       addAuditLog('Table Staff Assigned', `Assigned ${waiterName} to Table ${tableNumber}`, 'staff');
@@ -231,7 +232,7 @@ const ManagerTablesView = () => {
                       {tbl.totalBill > 0 && (
                         <div className="flex items-center justify-between">
                           <span>Current Bill:</span>
-                          <span className="font-bold text-primary">₹{tbl.totalBill.toFixed(2)}</span>
+                          <span className="font-bold text-primary">{formatInvoiceAmount(tbl.totalBill)}</span>
                         </div>
                       )}
                     </div>

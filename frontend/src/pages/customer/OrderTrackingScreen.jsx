@@ -10,10 +10,12 @@ import OrderTimeline from '../../components/order/OrderTimeline';
 import Modal from '../../components/common/Modal';
 import EmptyState from '../../components/common/EmptyState';
 import Icon from '../../components/common/Icon';
+import RestaurantTrustProfileModal from '../../components/trust/RestaurantTrustProfileModal';
+import { AlertCircle, Clock, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react';
 
 const OrderTrackingScreen = () => {
   const navigate = useNavigate();
-  const { activeOrder, updateOrderStatus, issueReport } = useOrder();
+  const { activeOrder, updateOrderStatus, assistanceRequests, addAssistanceRequest, issuesList } = useOrder();
   const { tableNumber } = useTable();
   const { showToast } = useToast();
 
@@ -21,6 +23,17 @@ const OrderTrackingScreen = () => {
   const [remainingSeconds, setRemainingSeconds] = useState(14 * 60);
   const [isAssistanceModalOpen, setIsAssistanceModalOpen] = useState(false);
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
+  const [serveReadyFirst, setServeReadyFirst] = useState(false);
+  const [isTrustOpen, setIsTrustOpen] = useState(false);
+
+  // Check if active assistance request exists for table
+  const activeAssistance = assistanceRequests?.find(
+    (req) => req.tableNumber === tableNumber && req.status === 'pending'
+  );
+
+  const activeIssue = issuesList?.find(
+    (iss) => (iss.orderId === activeOrder?.orderId || iss.tableNumber === tableNumber) && iss.status !== 'CLOSED' && iss.status !== 'RESOLVED'
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -37,26 +50,15 @@ const OrderTrackingScreen = () => {
     showToast(`Order status updated to "${stageNames[nextIdx].toUpperCase()}"`, 'info');
   };
 
-  const handleRequestWaiter = async () => {
-    setIsCallingWaiter(true);
-    try {
-      await orderService.requestAssistance(tableNumber, 'Call Waiter');
-      showToast(`Staff notified! Waiter heading to Table ${tableNumber}.`, 'success');
-    } catch (err) {
-      showToast('Request failed. Please try again.', 'error');
-    } finally {
-      setIsCallingWaiter(false);
-    }
-  };
-
-  const handleCustomAssistance = async (type) => {
-    try {
-      await orderService.requestAssistance(tableNumber, type);
-      showToast(`Requested "${type}" for Table ${tableNumber}`, 'success');
+  const handleRequestAssistanceOption = (optionLabel) => {
+    if (activeAssistance) {
+      showToast('Assistance already requested. Rahul will respond shortly.', 'warning');
       setIsAssistanceModalOpen(false);
-    } catch (err) {
-      showToast('Failed to notify staff', 'error');
+      return;
     }
+    addAssistanceRequest(tableNumber, optionLabel);
+    showToast(`Requested "${optionLabel}" for Table ${tableNumber}`, 'success');
+    setIsAssistanceModalOpen(false);
   };
 
   if (!activeOrder) {
@@ -77,18 +79,25 @@ const OrderTrackingScreen = () => {
     );
   }
 
+  const items = activeOrder.items || [];
+  const readyItems = items.filter((it) => it.readinessStatus === 'READY');
+  const preparingItems = items.filter((it) => it.readinessStatus !== 'READY');
+
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
   const formattedTimer = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
   return (
     <>
-      <TopAppBar variant="brand" />
+      <TopAppBar
+        variant="brand"
+        onOpenTrustProfile={() => setIsTrustOpen(true)}
+      />
 
-      <main className="flex-1 pt-20 pb-28 max-w-2xl mx-auto w-full px-4">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-on-surface-variant">
-            Order #{activeOrder.orderId} &bull; Table {tableNumber}
+      <main className="flex-1 pt-20 pb-28 max-w-2xl mx-auto w-full px-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-bold text-on-surface-variant">
+            Order #{activeOrder.orderId || 'ORD-1048'} &bull; Table {tableNumber}
           </p>
           <button
             onClick={handleNextStage}
@@ -98,100 +107,205 @@ const OrderTrackingScreen = () => {
           </button>
         </div>
 
+        {/* Transparent ETA Change Notice */}
+        {activeOrder.etaChangeReason && (
+          <section className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-2 text-xs text-amber-950 dark:text-amber-200">
+            <div className="flex items-center justify-between">
+              <span className="font-bold flex items-center gap-1.5 text-amber-900">
+                <Clock className="w-4 h-4 text-amber-600" />
+                Updated Preparation Estimate
+              </span>
+              <span className="text-[10px] font-semibold text-amber-800">
+                Updated at {activeOrder.etaUpdatedAt || '7:31 PM'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between bg-white/70 dark:bg-black/30 p-2.5 rounded-xl border border-amber-300/40 font-mono">
+              <span className="line-through text-gray-500 text-xs">Previous: {activeOrder.previousEstimate || '7:38 PM'}</span>
+              <span className="font-bold text-amber-800 text-sm">New ETA: {activeOrder.estimatedReadyAt || '7:46 PM'}</span>
+            </div>
+            <p className="text-xs"><strong>Reason:</strong> {activeOrder.etaChangeReason}</p>
+          </section>
+        )}
+
         {/* Active Status Hero Card */}
-        <section className="relative overflow-hidden rounded-xl bg-surface-container-lowest shadow-[0px_4px_20px_rgba(0,0,0,0.06)]">
-          <div className="relative z-10 p-6 text-center">
-            <div className="inline-flex items-center justify-center p-4 bg-primary/10 text-primary rounded-full mb-4 animate-pulse-ring">
-              <Icon name="cooking" className="text-3xl" filled />
-            </div>
-            <h2 className="text-xl font-bold text-on-surface mb-2">Our chefs are preparing your meal.</h2>
-            <div className="flex flex-col items-center">
-              <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1">Estimated Arrival</p>
-              <span className="text-4xl font-bold text-primary">{formattedTimer}</span>
-            </div>
+        <section className="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-6 shadow-sm border border-outline-variant/20 text-center">
+          <div className="inline-flex items-center justify-center p-4 bg-primary/10 text-primary rounded-full mb-3 animate-pulse">
+            <Icon name="cooking" className="text-3xl" filled />
+          </div>
+          <h2 className="text-lg font-bold text-on-surface mb-1">Our kitchen is preparing your order</h2>
+          <p className="text-xs text-on-surface-variant mb-3">Preparation estimates reflect live kitchen volume.</p>
+          <div className="inline-block bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/10">
+            <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider block">Estimated Window</span>
+            <span className="text-2xl font-black text-primary">{activeOrder.estimatedReadyAt || '7:46 PM'} ({formattedTimer})</span>
           </div>
         </section>
 
+        {/* Partial-Order Item Readiness Section */}
+        <section className="bg-surface-container-lowest rounded-2xl p-4 border border-outline-variant/20 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-sm text-on-surface flex items-center gap-2">
+              <Icon name="checklist" className="text-primary text-base" />
+              Item Readiness Tracking
+            </h3>
+            <span className="text-xs font-semibold text-on-surface-variant">
+              {readyItems.length} of {items.length} Ready
+            </span>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            {items.map((item, idx) => {
+              const isReady = item.readinessStatus === 'READY';
+              return (
+                <div
+                  key={idx}
+                  className={`p-3 rounded-xl border flex items-center justify-between transition-colors ${
+                    isReady
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-200'
+                      : 'bg-surface-container-low border-outline-variant/10 text-on-surface'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    {isReady ? (
+                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                    ) : (
+                      <Clock className="w-4 h-4 text-amber-600 shrink-0 animate-spin" />
+                    )}
+                    <div>
+                      <span className="font-bold">{item.name} (x{item.quantity})</span>
+                      {item.note && <p className="text-[11px] opacity-80 italic">"{item.note}"</p>}
+                    </div>
+                  </div>
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${isReady ? 'bg-emerald-500/20 text-emerald-800' : 'bg-amber-500/20 text-amber-800'}`}>
+                    {isReady ? 'Ready' : 'Still Preparing'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {readyItems.length > 0 && preparingItems.length > 0 && (
+            <div className="pt-2 border-t border-outline-variant/10 flex items-center justify-between text-xs">
+              <span className="text-on-surface-variant font-medium">Have ready dishes served early?</span>
+              <label className="flex items-center gap-2 font-bold text-primary cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={serveReadyFirst}
+                  onChange={(e) => {
+                    setServeReadyFirst(e.target.checked);
+                    showToast(e.target.checked ? 'Notified waiter to serve ready items first' : 'Standard serving sequence restored', 'info');
+                  }}
+                  className="rounded text-primary focus:ring-primary"
+                />
+                Serve ready items first
+              </label>
+            </div>
+          )}
+        </section>
+
         {/* Progress Timeline */}
-        <div className="mt-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+        <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/20">
           <OrderTimeline currentStageIndex={currentStageIndex} />
         </div>
 
-        {/* Action Buttons */}
-        <section className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <button
-            onClick={() => setIsAssistanceModalOpen(true)}
-            className="h-14 rounded-xl border border-outline text-on-surface font-semibold hover:bg-surface-container transition-colors active:scale-95"
-          >
-            Need Assistance
-          </button>
-          <button
-            onClick={handleRequestWaiter}
-            disabled={isCallingWaiter}
-            className="h-14 rounded-xl bg-primary text-on-primary font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all disabled:opacity-60"
-          >
-            <Icon name="front_hand" />
-            {isCallingWaiter ? 'Notifying...' : 'Request Waiter'}
-          </button>
-        </section>
+        {/* Prominent Service Recovery Action: "Something isn't right" */}
+        <section className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-700 font-bold">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-rose-950 dark:text-rose-200 text-sm">Something isn’t right?</h4>
+                <p className="text-xs text-rose-900/80">Report missing items, cold food, delays, or billing questions.</p>
+              </div>
+            </div>
+          </div>
 
-        {/* Suggestion */}
-        <div className="mt-6 p-5 bg-secondary-container/10 rounded-xl flex items-center gap-4 border border-secondary-container/20">
-          <Icon name="lightbulb" className="text-secondary" filled />
-          <p className="text-sm text-on-surface">
-            Did you know? Our filter coffee is brewed with beans sourced directly from Kumbakonam estates.
-          </p>
-        </div>
-
-        {/* Post-service: report an issue with the order */}
-        {currentStageIndex === 3 && (
-          <section className="mt-6">
-            {issueReport ? (
+          {activeIssue ? (
+            <div className="p-3 bg-surface rounded-xl border border-rose-400/40 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-rose-800 flex items-center gap-1">
+                  <Icon name="pending_actions" className="text-sm" />
+                  Issue Ticket #{activeIssue.issueId}
+                </span>
+                <span className="bg-rose-500/20 text-rose-800 font-bold px-2 py-0.5 rounded-full text-[10px]">
+                  {activeIssue.statusLabel || activeIssue.status}
+                </span>
+              </div>
+              <p className="text-on-surface-variant font-medium">• Owner: <strong>{activeIssue.assignedOwner}</strong></p>
+              {activeIssue.recoveryAction && (
+                <p className="text-on-surface text-[11px] bg-rose-50 p-2 rounded-lg border border-rose-200">
+                  <strong>Action:</strong> {activeIssue.recoveryAction}
+                </p>
+              )}
               <button
                 onClick={() => navigate('/report-status')}
-                className="w-full p-5 bg-surface-container-lowest rounded-xl border border-outline-variant flex items-center justify-between shadow-sm hover:bg-surface-container/40 transition-colors active:scale-[0.98]"
+                className="w-full py-1.5 bg-rose-600 text-white rounded-lg font-bold text-xs shadow hover:bg-rose-700"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                    <Icon name="pending_actions" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-bold text-on-surface">Tracking Your Report</p>
-                    <p className="text-xs text-on-surface-variant">
-                      Ticket #{issueReport.id} &bull; {issueReport.categoryLabel}
-                    </p>
-                  </div>
-                </div>
-                <Icon name="chevron_right" className="text-on-surface-variant" />
+                View Issue Status & Confirm Resolution
               </button>
-            ) : (
-              <button
-                onClick={() => navigate('/report-issue')}
-                className="w-full h-14 rounded-xl border border-dashed border-outline-variant text-on-surface-variant font-semibold flex items-center justify-center gap-2 hover:bg-surface-container/40 hover:text-primary hover:border-primary/40 transition-colors active:scale-[0.98]"
-              >
-                <Icon name="report_problem" />
-                Report an Issue
-              </button>
-            )}
-          </section>
-        )}
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate('/report-issue')}
+              className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-2"
+            >
+              <Icon name="report_problem" className="text-base" />
+              <span>Report an Issue (Service Recovery)</span>
+            </button>
+          )}
+        </section>
+
+        {/* Waiter Assistance Actions */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            onClick={() => setIsAssistanceModalOpen(true)}
+            className="h-12 rounded-xl border border-outline text-on-surface font-bold text-xs hover:bg-surface-container flex items-center justify-center gap-2 transition-colors"
+          >
+            <Icon name="support_agent" className="text-primary text-base" />
+            <span>Request Waiter Assistance</span>
+          </button>
+          <button
+            onClick={() => handleRequestAssistanceOption('Call Waiter')}
+            disabled={!!activeAssistance}
+            className="h-12 rounded-xl bg-primary text-on-primary font-bold text-xs flex items-center justify-center gap-2 shadow hover:bg-primary/90 transition-colors disabled:opacity-60"
+          >
+            <Icon name="front_hand" className="text-base" />
+            <span>{activeAssistance ? 'Rahul Notified (On the way)' : 'Call Waiter to Table'}</span>
+          </button>
+        </section>
       </main>
 
       <BottomNavBar />
 
-      <Modal isOpen={isAssistanceModalOpen} onClose={() => setIsAssistanceModalOpen(false)} title="Table Assistance Requests" position="bottom">
-        <div className="space-y-3">
+      {/* Trust Profile Modal */}
+      <RestaurantTrustProfileModal
+        isOpen={isTrustOpen}
+        onClose={() => setIsTrustOpen(false)}
+        onRequestAssistance={(type) => addAssistanceRequest(tableNumber, type)}
+      />
+
+      {/* Waiter Assistance Modal */}
+      <Modal isOpen={isAssistanceModalOpen} onClose={() => setIsAssistanceModalOpen(false)} title="Request Waiter Assistance" position="bottom">
+        <div className="space-y-2">
+          {activeAssistance && (
+            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-900 font-medium mb-3">
+              Rahul Sharma has accepted your request. Expected response in a few minutes.
+            </div>
+          )}
           {[
-            'Request Water Pitcher / Ice',
-            'Request Extra Cutlery & Napkins',
-            'Request Extra Chutney / Sambar',
-            'Request Bill at Table',
-            'Clean Table Surface',
+            'Order update',
+            'Need water pitcher',
+            'Need extra cutlery',
+            'Check delayed item',
+            'Billing assistance',
+            'Allergy assistance',
+            'Speak to manager',
           ].map((req) => (
             <button
               key={req}
-              onClick={() => handleCustomAssistance(req)}
-              className="w-full text-left p-4 bg-surface-container-low hover:bg-primary/5 rounded-xl text-sm font-semibold text-on-surface transition-colors flex items-center justify-between"
+              onClick={() => handleRequestAssistanceOption(req)}
+              className="w-full text-left p-3.5 bg-surface-container-low hover:bg-primary/5 rounded-xl text-xs font-bold text-on-surface transition-colors flex items-center justify-between border border-outline-variant/10"
             >
               <span>{req}</span>
               <Icon name="chevron_right" className="text-on-surface-variant" />

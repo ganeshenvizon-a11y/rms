@@ -14,6 +14,31 @@ import {
   getStoredIssueReport,
   setStoredIssueReport,
   clearStoredIssueReport,
+  getStoredCustomerMemory,
+  setStoredCustomerMemory,
+  clearStoredCustomerMemory,
+  getStoredKitchenLoad,
+  setStoredKitchenLoad,
+  getStoredIssuesList,
+  setStoredIssuesList,
+  getStoredFeedbacksList,
+  setStoredFeedbacksList,
+  getStoredUgcSubmissions,
+  setStoredUgcSubmissions,
+  getStoredRemovalRequests,
+  setStoredRemovalRequests,
+  getStoredCustomerMembership,
+  setStoredCustomerMembership,
+  getStoredGuestFlow,
+  setStoredGuestFlow,
+  getStoredIngredients,
+  setStoredIngredients,
+  getStoredAuditLogs,
+  setStoredAuditLogs,
+  getStoredBillsList,
+  setStoredBillsList,
+  getStoredDishAvailability,
+  setStoredDishAvailability,
 } from '../utils/storage';
 import {
   INITIAL_KITCHEN_ORDERS,
@@ -29,8 +54,21 @@ import {
   setStoredReceipts,
   getStoredRegisterSession,
   setStoredRegisterSession,
-  INITIAL_RECEIPTS
+  INITIAL_RECEIPTS,
 } from '../services/counterService';
+import {
+  INITIAL_KITCHEN_LOAD,
+  INITIAL_PROTOTYPE_ISSUES,
+  INITIAL_PROTOTYPE_CUSTOMER_MEMORY,
+  INITIAL_PROTOTYPE_FEEDBACKS,
+  INITIAL_PROTOTYPE_UGC,
+  INITIAL_PROTOTYPE_REMOVAL_REQUESTS,
+  INITIAL_PROTOTYPE_CUSTOMER_MEMBERSHIP,
+  INITIAL_PROTOTYPE_ORDERS,
+  INITIAL_PROTOTYPE_BILLS,
+  INITIAL_INGREDIENTS,
+  INITIAL_PROTOTYPE_GUEST_FLOW,
+} from '../data/restaurantPrototypeData';
 
 const OrderContext = createContext();
 
@@ -43,7 +81,7 @@ const STAGE_MAP = {
 
 export const OrderProvider = ({ children }) => {
   const [activeOrder, setActiveOrder] = useState(() => getStoredOrder());
-  
+
   const [kitchenOrders, setKitchenOrders] = useState(() => {
     const stored = getStoredKitchenOrders();
     return stored && Array.isArray(stored) ? stored : INITIAL_KITCHEN_ORDERS;
@@ -68,6 +106,72 @@ export const OrderProvider = ({ children }) => {
   const [registerSession, setRegisterSession] = useState(() => getStoredRegisterSession());
   const [issueReport, setIssueReport] = useState(() => getStoredIssueReport());
 
+  // Consolidated System Systems
+  const [kitchenLoad, setKitchenLoad] = useState(() => {
+    const stored = getStoredKitchenLoad();
+    return stored || INITIAL_KITCHEN_LOAD;
+  });
+
+  const [customerMemory, setCustomerMemory] = useState(() => {
+    const stored = getStoredCustomerMemory();
+    return stored || INITIAL_PROTOTYPE_CUSTOMER_MEMORY;
+  });
+
+  const [issuesList, setIssuesList] = useState(() => {
+    const stored = getStoredIssuesList();
+    return stored && Array.isArray(stored) ? stored : INITIAL_PROTOTYPE_ISSUES;
+  });
+
+  // Retention & Privacy Connected Systems State
+  const [feedbacksList, setFeedbacksList] = useState(() => {
+    const stored = getStoredFeedbacksList();
+    return stored && Array.isArray(stored) ? stored : INITIAL_PROTOTYPE_FEEDBACKS;
+  });
+
+  const [ugcSubmissions, setUgcSubmissions] = useState(() => {
+    const stored = getStoredUgcSubmissions();
+    return stored && Array.isArray(stored) ? stored : INITIAL_PROTOTYPE_UGC;
+  });
+
+  const [removalRequests, setRemovalRequests] = useState(() => {
+    const stored = getStoredRemovalRequests();
+    return stored && Array.isArray(stored) ? stored : INITIAL_PROTOTYPE_REMOVAL_REQUESTS;
+  });
+
+  const [customerMembership, setCustomerMembership] = useState(() => {
+    const stored = getStoredCustomerMembership();
+    return stored || INITIAL_PROTOTYPE_CUSTOMER_MEMBERSHIP;
+  });
+
+  useEffect(() => {
+    setStoredFeedbacksList(feedbacksList);
+  }, [feedbacksList]);
+
+  useEffect(() => {
+    setStoredUgcSubmissions(ugcSubmissions);
+  }, [ugcSubmissions]);
+
+  useEffect(() => {
+    setStoredRemovalRequests(removalRequests);
+  }, [removalRequests]);
+
+  useEffect(() => {
+    setStoredCustomerMembership(customerMembership);
+  }, [customerMembership]);
+
+  useEffect(() => {
+    setStoredKitchenLoad(kitchenLoad);
+  }, [kitchenLoad]);
+
+  useEffect(() => {
+    if (customerMemory) setStoredCustomerMemory(customerMemory);
+    else clearStoredCustomerMemory();
+  }, [customerMemory]);
+
+  useEffect(() => {
+    setStoredIssuesList(issuesList);
+  }, [issuesList]);
+
   useEffect(() => {
     if (issueReport) {
       setStoredIssueReport(issueReport);
@@ -88,9 +192,606 @@ export const OrderProvider = ({ children }) => {
     }
   }, [activeOrder]);
 
+  // Connected Operational Prototype States
+  const [orders, setOrders] = useState(() => {
+    const stored = getStoredKitchenOrders();
+    return stored && Array.isArray(stored) && stored.length > 0 ? stored : INITIAL_PROTOTYPE_ORDERS;
+  });
+
+  const [guestFlow, setGuestFlow] = useState(() => {
+    const stored = getStoredGuestFlow();
+    return stored && Array.isArray(stored) ? stored : INITIAL_PROTOTYPE_GUEST_FLOW;
+  });
+
+  const [ingredients, setIngredients] = useState(() => {
+    const stored = getStoredIngredients();
+    return stored && Array.isArray(stored) ? stored : INITIAL_INGREDIENTS;
+  });
+
+  const [bills, setBills] = useState(() => {
+    const stored = getStoredBillsList();
+    return stored && Array.isArray(stored) ? stored : INITIAL_PROTOTYPE_BILLS;
+  });
+
+  const [auditLogs, setAuditLogs] = useState(() => {
+    const stored = getStoredAuditLogs();
+    return stored && Array.isArray(stored) ? stored : [
+      {
+        actionId: 'AUD-3001',
+        actionType: 'ORDER_ITEM_REJECTED',
+        entityId: 'ITEM-1048-02',
+        reason: 'Sold Out',
+        performedBy: 'Ananya Reddy',
+        performedAt: '27 Jul 2026, 7:42 PM',
+        note: 'Customer notified with Paneer Biryani alternative suggestion'
+      }
+    ];
+  });
+
+  const [dishAvailability, setDishAvailability] = useState(() => {
+    const stored = getStoredDishAvailability();
+    return stored || {
+      'dish-001': { availabilityStatus: 'AVAILABLE', availableQuantity: 12, dailyLimit: 40, soldQuantityToday: 28, availableAfter: null, linkedIngredients: ['ING-DOSA-BATTER'] },
+      'dish-002': { availabilityStatus: 'LOW_STOCK', availableQuantity: 4, dailyLimit: 30, soldQuantityToday: 26, availableAfter: null, linkedIngredients: ['ING-CHICKEN'] },
+      'dish-003': { availabilityStatus: 'AVAILABLE', availableQuantity: 15, dailyLimit: 35, soldQuantityToday: 20, availableAfter: null, linkedIngredients: ['ING-PANEER'] },
+      'dish-004': { availabilityStatus: 'AVAILABLE', availableQuantity: 20, dailyLimit: 50, soldQuantityToday: 30, availableAfter: null, linkedIngredients: [] },
+      'dish-007': { availabilityStatus: 'AVAILABLE_LATER', availableQuantity: 0, dailyLimit: 25, soldQuantityToday: 25, availableAfter: '7:30 PM', linkedIngredients: ['ING-COCONUT'] },
+      'dish-008': { availabilityStatus: 'AVAILABLE', availableQuantity: 50, dailyLimit: 100, soldQuantityToday: 50, availableAfter: null, linkedIngredients: [] },
+    };
+  });
+
+  const [isOffline, setIsOffline] = useState(false);
+  const [offlineQueue, setOfflineQueue] = useState([]);
+  const [customerAttentionNotice, setCustomerAttentionNotice] = useState(null);
+
   useEffect(() => {
-    setStoredKitchenOrders(kitchenOrders);
-  }, [kitchenOrders]);
+    setStoredKitchenOrders(orders);
+  }, [orders]);
+
+  useEffect(() => {
+    setStoredGuestFlow(guestFlow);
+  }, [guestFlow]);
+
+  useEffect(() => {
+    setStoredIngredients(ingredients);
+  }, [ingredients]);
+
+  useEffect(() => {
+    setStoredBillsList(bills);
+  }, [bills]);
+
+  useEffect(() => {
+    setStoredAuditLogs(auditLogs);
+  }, [auditLogs]);
+
+  useEffect(() => {
+    setStoredDishAvailability(dishAvailability);
+  }, [dishAvailability]);
+
+  // Operational Action Handlers
+  const logAuditEntry = (actionType, entityId, reason, performedBy = 'Staff', note = '') => {
+    const newAudit = {
+      actionId: `AUD-${Date.now()}`,
+      actionType,
+      entityId,
+      reason: reason || 'Operation performed',
+      performedBy,
+      performedAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      note
+    };
+    setAuditLogs(prev => [newAudit, ...prev]);
+  };
+
+  const acceptRejectOrderItem = (orderId, orderItemId, action, reason = '', replacementDish = null, newQty = null, staffName = 'Rahul Sharma') => {
+    setOrders(prevOrders => prevOrders.map(ord => {
+      if (ord.orderId !== orderId) return ord;
+      const updatedItems = ord.items.map(it => {
+        if (it.orderItemId === orderItemId || it.id === orderItemId) {
+          if (action === 'ACCEPT') {
+            return { ...it, status: 'ACCEPTED', readinessStatus: 'PREPARING' };
+          } else if (action === 'REJECT') {
+            return {
+              ...it,
+              status: 'REJECTED',
+              readinessStatus: 'REJECTED',
+              rejectionReason: reason,
+              suggestedReplacement: replacementDish
+            };
+          } else if (action === 'CHANGE_QTY' && newQty) {
+            return { ...it, quantity: newQty, total: (it.unitPrice || 0) * newQty };
+          }
+        }
+        return it;
+      });
+
+      const hasRejected = updatedItems.some(i => i.status === 'REJECTED');
+      const allRejected = updatedItems.every(i => i.status === 'REJECTED');
+      const orderStatus = allRejected ? 'CANCELLED' : (hasRejected ? 'PARTIALLY_ACCEPTED' : 'ACCEPTED');
+
+      return { ...ord, items: updatedItems, orderStatus };
+    }));
+
+    if (action === 'REJECT') {
+      const rejectedItem = orders.flatMap(o => o.items).find(i => i.orderItemId === orderItemId || i.id === orderItemId);
+      setCustomerAttentionNotice({
+        orderId,
+        orderItemId,
+        itemName: rejectedItem ? rejectedItem.name : 'Item',
+        reason,
+        suggestedReplacement: replacementDish
+      });
+      logAuditEntry('ORDER_ITEM_REJECTED', orderItemId, reason, staffName, `Replacement: ${replacementDish ? replacementDish.name : 'None'}`);
+    }
+  };
+
+  const updateCourseAction = (orderId, orderItemId, courseAction) => {
+    setOrders(prev => prev.map(ord => {
+      if (ord.orderId !== orderId) return ord;
+      const updatedItems = ord.items.map(it => {
+        if (it.orderItemId === orderItemId || it.id === orderItemId) {
+          const isHold = courseAction === 'HOLD';
+          return {
+            ...it,
+            courseAction,
+            status: isHold ? 'QUEUED' : 'PREPARING',
+            readinessStatus: isHold ? 'HOLD' : 'PREPARING'
+          };
+        }
+        return it;
+      });
+      return { ...ord, items: updatedItems };
+    }));
+  };
+
+  const updateItemDelay = (orderId, orderItemId, delayReason, updatedMinutes) => {
+    const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    setOrders(prev => prev.map(ord => {
+      if (ord.orderId !== orderId) return ord;
+      return {
+        ...ord,
+        isDelayed: true,
+        delayReason,
+        etaChangeReason: delayReason,
+        etaUpdatedAt: nowStr,
+        estimatedReadyAt: `${updatedMinutes} PM`
+      };
+    }));
+  };
+
+  const refireOrderItem = (orderId, orderItemId, refireData) => {
+    const { reason, quantity, staffName, customerExplanation, discardOriginalItem } = refireData;
+    setOrders(prev => prev.map(ord => {
+      if (ord.orderId !== orderId) return ord;
+      const origItem = ord.items.find(i => i.orderItemId === orderItemId || i.id === orderItemId);
+      if (!origItem) return ord;
+
+      const newItemId = `ITEM-REFIRE-${Date.now()}`;
+      const refiredItem = {
+        ...origItem,
+        orderItemId: newItemId,
+        id: newItemId,
+        quantity,
+        status: 'PREPARING',
+        readinessStatus: 'PREPARING',
+        isRefire: true,
+        refireReason: reason,
+        refireStaff: staffName,
+        refireCustomerExplanation: customerExplanation,
+        discardOriginalItem,
+        replacementForItemId: orderItemId
+      };
+
+      return {
+        ...ord,
+        items: [...ord.items, refiredItem]
+      };
+    }));
+
+    logAuditEntry('ORDER_ITEM_REFIRED', orderItemId, reason, staffName || 'Staff', customerExplanation);
+  };
+
+  const requestCancelOrder = (orderId, itemId, reason, prepStage = 'PREPARING', staffName = 'Staff') => {
+    setOrders(prev => prev.map(ord => {
+      if (ord.orderId !== orderId) return ord;
+      if (itemId) {
+        const updatedItems = ord.items.map(it => {
+          if (it.orderItemId === itemId || it.id === itemId) {
+            return { ...it, status: 'CANCELLED', readinessStatus: 'CANCELLED', cancellationReason: reason };
+          }
+          return it;
+        });
+        return { ...ord, items: updatedItems };
+      } else {
+        return { ...ord, orderStatus: 'CANCELLED', kitchenStatus: 'CANCELLED', cancellationReason: reason };
+      }
+    }));
+
+    logAuditEntry('ORDER_CANCELLED', orderId, reason, staffName);
+  };
+
+  const splitOrder = (originalOrderId, selectedItemIds) => {
+    let newOrder = null;
+    setOrders(prev => {
+      const orig = prev.find(o => o.orderId === originalOrderId);
+      if (!orig) return prev;
+
+      const itemsToKeep = orig.items.filter(i => !selectedItemIds.includes(i.orderItemId || i.id));
+      const itemsToMove = orig.items.filter(i => selectedItemIds.includes(i.orderItemId || i.id));
+
+      const newOrderId = `ORD-${Math.floor(1050 + Math.random() * 50)}`;
+      const newSubtotal = itemsToMove.reduce((sum, i) => sum + (i.total || (i.unitPrice * i.quantity)), 0);
+      const newTax = Math.round(newSubtotal * 0.05);
+
+      newOrder = {
+        ...orig,
+        orderId: newOrderId,
+        kitchenTicketId: `KOT-${newOrderId.split('-')[1]}`,
+        billId: `BILL-${newOrderId.split('-')[1]}`,
+        items: itemsToMove,
+        subtotal: newSubtotal,
+        tax: newTax,
+        total: newSubtotal + newTax
+      };
+
+      const updatedOrigSubtotal = itemsToKeep.reduce((sum, i) => sum + (i.total || (i.unitPrice * i.quantity)), 0);
+      const updatedOrigTax = Math.round(updatedOrigSubtotal * 0.05);
+      const updatedOrig = {
+        ...orig,
+        items: itemsToKeep,
+        subtotal: updatedOrigSubtotal,
+        tax: updatedOrigTax,
+        total: updatedOrigSubtotal + updatedOrigTax
+      };
+
+      return [...prev.map(o => o.orderId === originalOrderId ? updatedOrig : o), newOrder];
+    });
+
+    logAuditEntry('ORDER_SPLIT', originalOrderId, `Moved ${selectedItemIds.length} items to new split order`, 'Staff');
+    return newOrder;
+  };
+
+  const mergeOrders = (sourceOrderId, destinationOrderId, staffName = 'Staff') => {
+    setOrders(prev => {
+      const src = prev.find(o => o.orderId === sourceOrderId);
+      const dest = prev.find(o => o.orderId === destinationOrderId);
+      if (!src || !dest) return prev;
+
+      const mergedItems = [...dest.items, ...src.items];
+      const subtotal = mergedItems.reduce((sum, i) => sum + (i.total || (i.unitPrice * i.quantity)), 0);
+      const tax = Math.round(subtotal * 0.05);
+
+      const updatedDest = {
+        ...dest,
+        items: mergedItems,
+        subtotal,
+        tax,
+        total: subtotal + tax
+      };
+
+      return prev.filter(o => o.orderId !== sourceOrderId).map(o => o.orderId === destinationOrderId ? updatedDest : o);
+    });
+
+    logAuditEntry('ORDERS_MERGED', sourceOrderId, `Merged into ${destinationOrderId}`, staffName);
+  };
+
+  const moveOrderTable = (orderId, fromTableId, toTableId, staffName = 'Staff') => {
+    const destTableNo = toTableId.replace('TABLE-', '');
+    setOrders(prev => prev.map(ord => {
+      if (ord.orderId !== orderId) return ord;
+      return {
+        ...ord,
+        tableId: toTableId,
+        tableNumber: destTableNo
+      };
+    }));
+
+    setWaiterTables(prev => prev.map(tbl => {
+      if (tbl.tableId === fromTableId) {
+        return { ...tbl, status: 'Available', currentOrderId: null };
+      }
+      if (tbl.tableId === toTableId) {
+        return { ...tbl, status: 'Dining', currentOrderId: orderId };
+      }
+      return tbl;
+    }));
+
+    logAuditEntry('MOVE_ORDER', orderId, `Moved from ${fromTableId} to ${toTableId}`, staffName);
+  };
+
+  const checkDuplicateOrder = (tableId, cartItems) => {
+    const match = orders.find(o => o.tableId === tableId && o.orderStatus !== 'COMPLETED' && o.orderStatus !== 'CANCELLED');
+    if (!match) return null;
+
+    const matchNames = match.items.map(i => i.name).sort().join(',');
+    const cartNames = cartItems.map(i => i.name).sort().join(',');
+
+    if (matchNames === cartNames) {
+      return {
+        isDuplicate: true,
+        existingOrderId: match.orderId,
+        existingTotal: match.total
+      };
+    }
+    return null;
+  };
+
+  const queueOfflineOrder = (orderData) => {
+    const localId = `LOCAL-${Math.floor(100 + Math.random() * 900)}`;
+    const queuedObj = {
+      localQueueId: localId,
+      tableId: orderData.tableId || 'TABLE-08',
+      createdTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+      status: 'Waiting to Sync',
+      orderData
+    };
+    setOfflineQueue(prev => [...prev, queuedObj]);
+    return queuedObj;
+  };
+
+  const syncOfflineQueue = () => {
+    setOfflineQueue(prev => prev.map(item => ({ ...item, status: 'Synced' })));
+    setTimeout(() => setOfflineQueue([]), 3000);
+  };
+
+  const updateDishAvailability = (dishId, status, extraData = {}, staffName = 'Manager') => {
+    setDishAvailability(prev => ({
+      ...prev,
+      [dishId]: {
+        ...prev[dishId],
+        availabilityStatus: status,
+        ...extraData,
+        lastUpdatedAt: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        updatedBy: staffName
+      }
+    }));
+
+    logAuditEntry('OVERRIDE_AVAILABILITY', dishId, `Status updated to ${status}`, staffName);
+  };
+
+  const toggleIngredientAvailability = (ingredientId, status = null, staffName = 'Manager') => {
+    setIngredients(prev => prev.map(ing => {
+      if (ing.ingredientId !== ingredientId) return ing;
+      const targetStatus = status || (ing.status === 'AVAILABLE' ? 'UNAVAILABLE' : 'AVAILABLE');
+      const isUnavail = targetStatus === 'UNAVAILABLE';
+
+      ing.affectedItems.forEach(dishId => {
+        updateDishAvailability(dishId, isUnavail ? 'UNAVAILABLE_DUE_TO_INGREDIENT' : 'AVAILABLE', {
+          linkedIngredients: [ingredientId]
+        }, staffName);
+      });
+
+      return { ...ing, status: targetStatus };
+    }));
+
+    logAuditEntry('INGREDIENT_AVAILABILITY_CHANGED', ingredientId, `Status: ${status}`, staffName);
+  };
+
+  const splitBillEqually = (billId, numberOfGuests) => {
+    setBills(prev => prev.map(b => {
+      if (b.billId !== billId) return b;
+
+      const total = b.invoiceTotal || b.amount;
+      const baseShare = Math.floor((total / numberOfGuests) * 100) / 100;
+      const remainderCents = Math.round((total - baseShare * numberOfGuests) * 100);
+
+      const guestSplits = [];
+      for (let i = 0; i < numberOfGuests; i++) {
+        const share = i === 0 ? Math.round((baseShare + remainderCents / 100) * 100) / 100 : baseShare;
+        guestSplits.push({
+          guestLabel: `Guest ${i + 1}`,
+          amount: share,
+          paid: false
+        });
+      }
+
+      return {
+        ...b,
+        splitMode: 'EQUAL',
+        splitDetails: { numberOfGuests, guestSplits }
+      };
+    }));
+  };
+
+  const splitBillByItem = (billId, guestAssignments) => {
+    setBills(prev => prev.map(b => {
+      if (b.billId !== billId) return b;
+      return {
+        ...b,
+        splitMode: 'BY_ITEM',
+        splitDetails: { guestAssignments }
+      };
+    }));
+  };
+
+  const recordPayment = (billId, paymentMethod, amount, payerName = 'Guest') => {
+    setBills(prev => prev.map(b => {
+      if (b.billId !== billId) return b;
+      const newPaidAmount = (b.paidAmount || 0) + Number(amount);
+      const total = b.invoiceTotal || b.amount;
+      const balanceDue = Math.max(0, Math.round((total - newPaidAmount) * 100) / 100);
+
+      let paymentStatus = 'UNPAID';
+      if (balanceDue === 0) paymentStatus = 'PAID';
+      else if (newPaidAmount > 0) paymentStatus = 'PARTIALLY_PAID';
+
+      const reconciliationStatus = balanceDue === 0 ? 'RECONCILED' : 'PARTIALLY_PAID';
+      const newRecord = {
+        paymentId: `PAY-${Date.now()}`,
+        method: paymentMethod,
+        amount: Number(amount),
+        payerName,
+        paidAt: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      return {
+        ...b,
+        paidAmount: newPaidAmount,
+        balanceDue,
+        paymentStatus,
+        status: balanceDue === 0 ? 'PAID' : 'PENDING_PAYMENT',
+        reconciliationStatus,
+        reconciliationDifference: balanceDue,
+        paymentRecords: [...(b.paymentRecords || []), newRecord]
+      };
+    }));
+  };
+
+  const processRefund = (billId, paymentId, amount, reason, refundMethod = 'ORIGINAL_PAYMENT', staffName = 'Manager') => {
+    setBills(prev => prev.map(b => {
+      if (b.billId !== billId) return b;
+      const refundRecord = {
+        refundId: `REF-${Date.now()}`,
+        paymentId,
+        amount: Number(amount),
+        reason,
+        refundMethod,
+        status: 'COMPLETED',
+        requestedAt: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        approvedBy: staffName
+      };
+
+      return {
+        ...b,
+        reconciliationStatus: 'REFUND_PENDING',
+        refundRecords: [...(b.refundRecords || []), refundRecord]
+      };
+    }));
+
+    logAuditEntry('REFUND', billId, reason, staffName, `Amount: ₹${amount}`);
+  };
+
+  const voidBill = (billId, reason, staffName = 'Manager') => {
+    const targetBill = bills.find(b => b.billId === billId);
+    if (targetBill && (targetBill.paidAmount > 0 || (targetBill.paymentRecords && targetBill.paymentRecords.length > 0))) {
+      return { success: false, message: 'This bill has recorded payments. Refund or reverse the payment before voiding the bill.' };
+    }
+
+    setBills(prev => prev.map(b => {
+      if (b.billId !== billId) return b;
+      return { ...b, isVoided: true, voidReason: reason, voidApprovedBy: staffName, status: 'VOIDED' };
+    }));
+
+    logAuditEntry('VOID_BILL', billId, reason, staffName);
+    return { success: true };
+  };
+
+  const applyDiscount = (billId, discountType, value, reason, staffName = 'Waiter', managerApproved = true) => {
+    setBills(prev => prev.map(b => {
+      if (b.billId !== billId) return b;
+
+      let discountAmount = 0;
+      if (discountType === 'PERCENT') {
+        discountAmount = Math.round((b.subtotal * (value / 100)) * 100) / 100;
+      } else {
+        discountAmount = Number(value);
+      }
+
+      const newSubtotalAfterDisc = Math.max(0, b.subtotal - discountAmount);
+      const gst = Math.round(newSubtotalAfterDisc * 0.05 * 100) / 100;
+      const invoiceTotal = newSubtotalAfterDisc + (b.packagingCharge || 0) + gst;
+
+      return {
+        ...b,
+        discount: discountAmount,
+        discountReason: reason,
+        discountApprovedBy: managerApproved ? staffName : null,
+        gst,
+        invoiceTotal,
+        amount: invoiceTotal,
+        balanceDue: invoiceTotal - (b.paidAmount || 0)
+      };
+    }));
+
+    logAuditEntry('APPLY_DISCOUNT', billId, reason, staffName, `Value: ${value}`);
+  };
+
+  const markItemComplimentary = (billId, itemId, reason, approvedBy = 'Manager') => {
+    setBills(prev => prev.map(b => {
+      if (b.billId !== billId) return b;
+      const compRecord = { itemId, reason, approvedBy };
+      return {
+        ...b,
+        compItems: [...(b.compItems || []), compRecord]
+      };
+    }));
+
+    logAuditEntry('COMPLIMENTARY_ITEM', billId, reason, approvedBy);
+  };
+
+  const addReservation = (resData) => {
+    const newRes = {
+      guestFlowId: `GF-${Math.floor(200 + Math.random() * 800)}`,
+      guestType: 'RESERVATION',
+      status: 'CONFIRMED',
+      expectedWaitMinutes: '0 minutes',
+      estimateUpdatedAt: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+      ...resData
+    };
+
+    const duplicate = guestFlow.find(g => g.guestName.toLowerCase() === resData.guestName.toLowerCase() && g.status !== 'CANCELLED' && g.status !== 'COMPLETED');
+    setGuestFlow(prev => [newRes, ...prev]);
+    return { newRes, duplicateWarning: duplicate || null };
+  };
+
+  const addWalkInGuest = (walkInData) => {
+    const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    const waitingCount = guestFlow.filter(g => g.status === 'WAITING' || g.status === 'ADDED_TO_QUEUE').length;
+    const estimatedMins = `${15 + waitingCount * 5}–${25 + waitingCount * 5} minutes`;
+
+    const newWalkIn = {
+      guestFlowId: `GF-${Math.floor(200 + Math.random() * 800)}`,
+      guestType: 'WALK_IN',
+      status: 'WAITING',
+      arrivalTime: nowStr,
+      expectedWaitMinutes: estimatedMins,
+      estimateUpdatedAt: nowStr,
+      ...walkInData
+    };
+
+    const duplicate = guestFlow.find(g => g.guestName.toLowerCase() === walkInData.guestName.toLowerCase() && g.status !== 'CANCELLED' && g.status !== 'COMPLETED');
+    setGuestFlow(prev => [...prev, newWalkIn]);
+    return { newWalkIn, duplicateWarning: duplicate || null };
+  };
+
+  const markGuestArrived = (guestFlowId) => {
+    const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    setGuestFlow(prev => prev.map(g => {
+      if (g.guestFlowId !== guestFlowId) return g;
+      return { ...g, status: 'ARRIVED', arrivalTime: nowStr };
+    }));
+  };
+
+  const assignTableToGuest = (guestFlowId, tableId, overrideReason = null) => {
+    setGuestFlow(prev => prev.map(g => {
+      if (g.guestFlowId !== guestFlowId) return g;
+      return { ...g, assignedTableId: tableId, status: 'SEATED', overrideReason };
+    }));
+
+    const tableNo = tableId.replace('TABLE-', '');
+    setWaiterTables(prev => prev.map(t => {
+      if (t.tableId === tableId || t.tableNumber === tableNo) {
+        return { ...t, status: 'Dining' };
+      }
+      return t;
+    }));
+  };
+
+  const groupTablesForGuest = (guestFlowId, tableIds) => {
+    setGuestFlow(prev => prev.map(g => {
+      if (g.guestFlowId !== guestFlowId) return g;
+      return { ...g, groupedTableIds: tableIds };
+    }));
+  };
+
+  const markGuestNoShow = (guestFlowId, note = '', staffName = 'Host') => {
+    setGuestFlow(prev => prev.map(g => {
+      if (g.guestFlowId !== guestFlowId) return g;
+      return { ...g, status: 'NO_SHOW', internalNote: note };
+    }));
+
+    logAuditEntry('MARK_NO_SHOW', guestFlowId, note, staffName);
+  };
+
 
   useEffect(() => {
     setStoredAssistanceRequests(assistanceRequests);
@@ -104,6 +805,149 @@ export const OrderProvider = ({ children }) => {
     setStoredBillRequests(billRequests);
   }, [billRequests]);
 
+  // Kitchen load management
+  const updateKitchenLoadStatus = (newStatus) => {
+    let customerMessage = 'Kitchen running normally';
+    if (newStatus === 'BUSY') customerMessage = 'Kitchen is currently busy. Longer preparation times are expected.';
+    else if (newStatus === 'VERY_BUSY') customerMessage = 'Kitchen load is high. Extended prep times across all items.';
+    else if (newStatus === 'PAUSED') customerMessage = 'New food orders are temporarily paused by kitchen.';
+
+    setKitchenLoad((prev) => ({
+      ...prev,
+      status: newStatus,
+      customerMessage,
+      lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }));
+  };
+
+  // Customer memory handlers
+  const saveCustomerMemory = (memoryData) => {
+    setCustomerMemory(memoryData);
+  };
+
+  const forgetCustomerMemory = () => {
+    setCustomerMemory(null);
+    clearStoredCustomerMemory();
+  };
+
+  // Customer submitting issue with specific category & affected item
+  const submitIssue = (data) => {
+    const newIssueId = `ISSUE-${Math.floor(200 + Math.random() * 800)}`;
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const newIssue = {
+      issueId: newIssueId,
+      orderId: data.orderId || activeOrder?.orderId || 'ORD-1048',
+      tableId: data.tableId || 'TABLE-08',
+      tableNumber: data.tableNumber || '08',
+      category: data.category,
+      categoryLabel: data.categoryLabel || data.category,
+      affectedItemId: data.affectedItemId || null,
+      affectedItemName: data.affectedItemName || 'General Order',
+      description: data.description || '',
+      priority: data.category === 'ALLERGY_CONCERN' || data.category === 'BILLING_ISSUE' ? 'HIGH' : 'MEDIUM',
+      status: 'REPORTED', // REPORTED, ACKNOWLEDGED, OWNER_ASSIGNED, ACTION_IN_PROGRESS, WAITING_FOR_CUSTOMER, RESOLVED, REOPENED, CLOSED
+      statusLabel: 'Report received',
+      reportedAt: timeNow,
+      assignedOwner: 'Unassigned',
+      assignedRole: null,
+      recoveryAction: null,
+      customerConfirmed: false,
+      resolutionFeedback: null,
+      timeline: [
+        { time: timeNow, text: `Issue reported by customer (${data.categoryLabel || data.category})` }
+      ]
+    };
+
+    setIssuesList((prev) => [newIssue, ...prev]);
+    playKitchenChime();
+    return newIssue;
+  };
+
+  // Staff updating issue status & taking ownership
+  const updateIssueWorkflow = (issueId, updates) => {
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setIssuesList((prev) =>
+      prev.map((iss) => {
+        if (iss.issueId === issueId) {
+          const newTimeline = [...iss.timeline];
+          if (updates.assignedOwner && updates.assignedOwner !== iss.assignedOwner) {
+            newTimeline.push({ time: timeNow, text: `Assigned to ${updates.assignedOwner}` });
+          }
+          if (updates.recoveryAction && updates.recoveryAction !== iss.recoveryAction) {
+            newTimeline.push({ time: timeNow, text: `Action set: ${updates.recoveryAction}` });
+          }
+          if (updates.status && updates.status !== iss.status) {
+            newTimeline.push({ time: timeNow, text: `Status changed to ${updates.status}` });
+          }
+
+          return {
+            ...iss,
+            ...updates,
+            timeline: newTimeline
+          };
+        }
+        return iss;
+      })
+    );
+  };
+
+  // Customer confirming issue resolution
+  const confirmIssueResolution = (issueId, isResolved, feedback = null) => {
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setIssuesList((prev) =>
+      prev.map((iss) => {
+        if (iss.issueId === issueId) {
+          const status = isResolved ? 'RESOLVED' : 'REOPENED';
+          const statusLabel = isResolved ? 'Resolved' : 'Reopened by customer';
+          const newTimeline = [
+            ...iss.timeline,
+            { time: timeNow, text: isResolved ? 'Customer confirmed resolution' : 'Customer marked issue as not resolved (Reopened)' }
+          ];
+
+          return {
+            ...iss,
+            status,
+            statusLabel,
+            customerConfirmed: isResolved,
+            resolutionFeedback: feedback,
+            timeline: newTimeline
+          };
+        }
+        return iss;
+      })
+    );
+  };
+
+  // Update Item Readiness Status in Active Order / Kitchen Order
+  const updateOrderItemReadiness = (orderId, itemId, newReadiness) => {
+    if (activeOrder && activeOrder.orderId === orderId) {
+      const updatedItems = (activeOrder.items || []).map((it) =>
+        it.id === itemId || it.dishId === itemId ? { ...it, readinessStatus: newReadiness } : it
+      );
+      const updatedOrder = { ...activeOrder, items: updatedItems };
+      setActiveOrder(updatedOrder);
+      setStoredOrder(updatedOrder);
+    }
+  };
+
+  // ETA updates with previous estimate and clear reason
+  const updateOrderETA = (orderId, newETA, reason) => {
+    const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (activeOrder && activeOrder.orderId === orderId) {
+      const updated = {
+        ...activeOrder,
+        previousEstimate: activeOrder.estimatedReadyAt || activeOrder.previousEstimate || '7:38 PM',
+        estimatedReadyAt: newETA,
+        etaChangeReason: reason,
+        etaUpdatedAt: timeNow,
+        isDelayed: true
+      };
+      setActiveOrder(updated);
+      setStoredOrder(updated);
+    }
+  };
+
   // Handle customer placing a new order -> add to active order & push to kitchen KDS
   const placeOrder = (orderData) => {
     const fullOrder = {
@@ -112,8 +956,13 @@ export const OrderProvider = ({ children }) => {
       stageIndex: 0, // 0: Received, 1: Preparing, 2: Ready, 3: Served
       createdAt: new Date().toISOString(),
       isPaid: false,
+      items: (orderData.items || []).map((it, idx) => ({
+        ...it,
+        id: it.id || `item-${Date.now()}-${idx}`,
+        readinessStatus: 'PREPARING'
+      }))
     };
-    
+
     setActiveOrder(fullOrder);
     setStoredOrder(fullOrder);
 
@@ -152,7 +1001,7 @@ export const OrderProvider = ({ children }) => {
     };
 
     setKitchenOrders((prev) => [newKitchenOrder, ...prev]);
-    
+
     // Update waiter floor plan table status to 'cooking'
     updateWaiterTableStatus(orderData.tableNumber || '05', 'cooking', {
       activeOrderId: newKitchenOrder.orderId,
@@ -248,8 +1097,7 @@ export const OrderProvider = ({ children }) => {
           const updatedItems = ko.items.map((it) =>
             it.id === itemId ? { ...it, isDone: !it.isDone } : it
           );
-          
-          // Auto advance to 'preparing' if cook starts ticking items in a 'received' order
+
           let nextStatus = ko.status;
           if (ko.status === 'received' && updatedItems.some((it) => it.isDone)) {
             nextStatus = 'preparing';
@@ -278,11 +1126,12 @@ export const OrderProvider = ({ children }) => {
       tableNumber,
       requestType,
       status: 'pending',
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
     setAssistanceRequests((prev) => [newReq, ...prev]);
     updateWaiterTableStatus(tableNumber, 'call_waiter');
     playKitchenChime();
+    return newReq;
   };
 
   const resolveAssistanceRequest = (requestId) => {
@@ -310,11 +1159,15 @@ export const OrderProvider = ({ children }) => {
       tableNumber,
       guestCount: billData.guestCount || 2,
       serverName: billData.serverName || 'Elena Vance',
-      subtotal: billData.subtotal || 42.00,
-      tax: billData.tax || 2.10,
-      vat: billData.vat || 3.36,
-      grandTotal: billData.grandTotal || 47.46,
-      paymentMethod: billData.paymentMethod || 'Credit Card / Contactless',
+      subtotal: billData.subtotal || 420.00,
+      packagingCharge: billData.packagingCharge || 0,
+      tax: billData.tax || billData.gst || 21.00,
+      gst: billData.gst || billData.tax || 21.00,
+      cgst: billData.cgst || 10.50,
+      sgst: billData.sgst || 10.50,
+      vat: 0,
+      grandTotal: billData.grandTotal || billData.totalPayable || 441.00,
+      paymentMethod: billData.paymentMethod || 'UPI / Card',
       splitRequested: billData.splitRequested || false,
       requestedAt: new Date().toISOString(),
       status: 'pending',
@@ -327,7 +1180,6 @@ export const OrderProvider = ({ children }) => {
     setBillRequests((prev) =>
       prev.map((b) => (b.id === billId ? { ...b, status: 'settled' } : b))
     );
-    // Mark table available after settlement
     updateWaiterTableStatus(tableNumber, 'available', {
       guestCount: 0,
       activeOrderId: null,
@@ -339,7 +1191,7 @@ export const OrderProvider = ({ children }) => {
   const processCounterPayment = (paymentData) => {
     const newReceiptNo = `REC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const timestamp = new Date().toISOString();
-    
+
     const newReceipt = {
       receiptNo: newReceiptNo,
       orderId: paymentData.orderId || `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -353,18 +1205,21 @@ export const OrderProvider = ({ children }) => {
       tenderedAmount: paymentData.tenderedAmount,
       changeGiven: paymentData.changeGiven,
       subtotal: paymentData.subtotal || 0,
-      tax: paymentData.tax || 0,
-      vat: paymentData.vat || 0,
+      packagingCharge: paymentData.packagingCharge || 0,
+      tax: paymentData.tax || paymentData.gst || 0,
+      gst: paymentData.gst || paymentData.tax || 0,
+      cgst: paymentData.cgst || ((paymentData.gst || paymentData.tax || 0) / 2),
+      sgst: paymentData.sgst || ((paymentData.gst || paymentData.tax || 0) / 2),
+      vat: 0,
       discount: paymentData.discount || 0,
       tip: paymentData.tip || 0,
-      grandTotal: paymentData.grandTotal || 0,
+      grandTotal: paymentData.grandTotal || paymentData.totalPayable || 0,
       status: "paid",
       items: paymentData.items || []
     };
 
     setReceipts((prev) => [newReceipt, ...prev]);
 
-    // Update cash register sales balance
     setRegisterSession((prev) => {
       let cashInc = 0;
       let cardInc = 0;
@@ -381,7 +1236,6 @@ export const OrderProvider = ({ children }) => {
       };
     });
 
-    // If bill request existed for this table/order, mark settled
     if (paymentData.billId) {
       settleBillRequest(paymentData.billId, paymentData.tableNumber);
     } else if (paymentData.tableNumber && paymentData.tableNumber !== "Quick Counter") {
@@ -415,6 +1269,8 @@ export const OrderProvider = ({ children }) => {
     setWaiterTables(INITIAL_WAITER_TABLES);
     setBillRequests(INITIAL_BILL_REQUESTS);
     setReceipts(INITIAL_RECEIPTS);
+    setKitchenLoad(INITIAL_KITCHEN_LOAD);
+    setIssuesList(INITIAL_PROTOTYPE_ISSUES);
   };
 
   const markAsPaid = (transactionData) => {
@@ -433,7 +1289,7 @@ export const OrderProvider = ({ children }) => {
     clearStoredOrder();
   };
 
-  // Customer submitting an issue report (post-service reporting flow)
+  // Legacy single issue report compatibility
   const submitIssueReport = (reportData) => {
     const newReport = {
       id: `ISS-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -467,6 +1323,82 @@ export const OrderProvider = ({ children }) => {
     clearStoredIssueReport();
   };
 
+  // Diagnostic Feedback Handlers
+  const addDiagnosticFeedback = (newFeedback) => {
+    const feedbackRecord = {
+      feedbackId: `FDB-${Math.floor(1000 + Math.random() * 9000)}`,
+      submittedAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      status: 'New',
+      ...newFeedback
+    };
+    setFeedbacksList(prev => [feedbackRecord, ...prev]);
+    return feedbackRecord;
+  };
+
+  const updateFeedbackStatus = (feedbackId, newStatus, managerNote = '') => {
+    setFeedbacksList(prev =>
+      prev.map(f =>
+        f.feedbackId === feedbackId
+          ? { ...f, status: newStatus, managerNotes: managerNote || f.managerNotes }
+          : f
+      )
+    );
+  };
+
+  // Customer UGC & Privacy Handlers
+  const addUgcSubmission = (submission) => {
+    const newSubmission = {
+      participationId: `UGC-${Math.floor(1000 + Math.random() * 9000)}`,
+      permissionGrantedAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      permissionVersion: 'UGC-CONSENT-V1',
+      status: 'SUBMITTED',
+      ...submission
+    };
+    setUgcSubmissions(prev => [newSubmission, ...prev]);
+    return newSubmission;
+  };
+
+  const updateUgcPermission = (participationId, newPermissions) => {
+    setUgcSubmissions(prev =>
+      prev.map(u =>
+        u.participationId === participationId
+          ? {
+              ...u,
+              permissions: { ...u.permissions, ...newPermissions },
+              permissionGrantedAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+            }
+          : u
+      )
+    );
+  };
+
+  // Content Removal Handlers
+  const addRemovalRequest = (requestData) => {
+    const newRequest = {
+      requestId: `REM-${Math.floor(100 + Math.random() * 900)}`,
+      submittedAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      status: 'Submitted',
+      ...requestData
+    };
+    setRemovalRequests(prev => [newRequest, ...prev]);
+    return newRequest;
+  };
+
+  const updateRemovalRequestStatus = (requestId, newStatus, resolutionNote = '') => {
+    setRemovalRequests(prev =>
+      prev.map(r =>
+        r.requestId === requestId
+          ? { ...r, status: newStatus, resolutionNote: resolutionNote || r.resolutionNote }
+          : r
+      )
+    );
+  };
+
+  // Customer Membership / Guest Benefits Handlers
+  const updateCustomerMembership = (updater) => {
+    setCustomerMembership(prev => typeof updater === 'function' ? updater(prev) : { ...prev, ...updater });
+  };
+
   return (
     <OrderContext.Provider
       value={{
@@ -497,6 +1429,68 @@ export const OrderProvider = ({ children }) => {
         submitIssueReport,
         advanceIssueReportStage,
         clearIssueReport,
+        kitchenLoad,
+        updateKitchenLoadStatus,
+        customerMemory,
+        saveCustomerMemory,
+        forgetCustomerMemory,
+        issuesList,
+        submitIssue,
+        updateIssueWorkflow,
+        confirmIssueResolution,
+        updateOrderItemReadiness,
+        updateOrderETA,
+        // Retention & Privacy Connected Systems Context
+        feedbacksList,
+        addDiagnosticFeedback,
+        updateFeedbackStatus,
+        ugcSubmissions,
+        addUgcSubmission,
+        updateUgcPermission,
+        removalRequests,
+        addRemovalRequest,
+        updateRemovalRequestStatus,
+        customerMembership,
+        updateCustomerMembership,
+        // Connected Operational Prototype Context
+        orders,
+        guestFlow,
+        ingredients,
+        bills,
+        auditLogs,
+        dishAvailability,
+        isOffline,
+        setIsOffline,
+        offlineQueue,
+        customerAttentionNotice,
+        setCustomerAttentionNotice,
+        acceptRejectOrderItem,
+        updateCourseAction,
+        updateItemDelay,
+        refireOrderItem,
+        requestCancelOrder,
+        splitOrder,
+        mergeOrders,
+        moveOrderTable,
+        checkDuplicateOrder,
+        queueOfflineOrder,
+        syncOfflineQueue,
+        updateDishAvailability,
+        toggleIngredientAvailability,
+        splitBillEqually,
+        splitBillByItem,
+        recordPayment,
+        processRefund,
+        voidBill,
+        applyDiscount,
+        markItemComplimentary,
+        addReservation,
+        addWalkInGuest,
+        markGuestArrived,
+        assignTableToGuest,
+        groupTablesForGuest,
+        markGuestNoShow,
+        logAuditEntry,
       }}
     >
       {children}
@@ -511,5 +1505,3 @@ export const useOrder = () => {
   }
   return context;
 };
-
-

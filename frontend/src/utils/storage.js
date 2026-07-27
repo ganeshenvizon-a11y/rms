@@ -211,5 +211,235 @@ export const clearStoredIssueReport = () => {
   }
 };
 
+const CUSTOMER_MEMORY_KEY = 'tbv_restaurant_customer_memory';
+const KITCHEN_LOAD_KEY = 'tbv_restaurant_kitchen_load';
+const ISSUES_LIST_KEY = 'tbv_restaurant_issues_list';
+
+export const getStoredCustomerMemory = () => {
+  try {
+    const item = localStorage.getItem(CUSTOMER_MEMORY_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredCustomerMemory = (memory) => {
+  try {
+    localStorage.setItem(CUSTOMER_MEMORY_KEY, JSON.stringify(memory));
+  } catch (e) {
+    console.error("Error saving customer memory to localStorage", e);
+  }
+};
+
+export const clearStoredCustomerMemory = () => {
+  try {
+    localStorage.removeItem(CUSTOMER_MEMORY_KEY);
+  } catch (e) {
+    console.error("Error clearing customer memory", e);
+  }
+};
+
+export const getStoredKitchenLoad = () => {
+  try {
+    const item = localStorage.getItem(KITCHEN_LOAD_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredKitchenLoad = (load) => {
+  try {
+    localStorage.setItem(KITCHEN_LOAD_KEY, JSON.stringify(load));
+  } catch (e) {
+    console.error("Error saving kitchen load", e);
+  }
+};
+
+export const getStoredIssuesList = () => {
+  try {
+    const item = localStorage.getItem(ISSUES_LIST_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredIssuesList = (issues) => {
+  try {
+    localStorage.setItem(ISSUES_LIST_KEY, JSON.stringify(issues));
+  } catch (e) {
+    console.error("Error saving issues list", e);
+  }
+};
+
+const FEEDBACKS_LIST_KEY = 'tbv_restaurant_feedbacks_list';
+const UGC_SUBMISSIONS_KEY = 'tbv_restaurant_ugc_submissions';
+const REMOVAL_REQUESTS_KEY = 'tbv_restaurant_removal_requests';
+const CUSTOMER_MEMBERSHIP_KEY = 'tbv_restaurant_customer_membership';
+
+export const getStoredFeedbacksList = () => {
+  try {
+    const item = localStorage.getItem(FEEDBACKS_LIST_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredFeedbacksList = (list) => {
+  try {
+    localStorage.setItem(FEEDBACKS_LIST_KEY, JSON.stringify(list));
+  } catch (e) {
+    console.error("Error saving feedbacks list", e);
+  }
+};
+
+export const getStoredUgcSubmissions = () => {
+  try {
+    const item = localStorage.getItem(UGC_SUBMISSIONS_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredUgcSubmissions = (submissions) => {
+  try {
+    localStorage.setItem(UGC_SUBMISSIONS_KEY, JSON.stringify(submissions));
+  } catch (e) {
+    console.error("Error saving UGC submissions", e);
+  }
+};
+
+export const getStoredRemovalRequests = () => {
+  try {
+    const item = localStorage.getItem(REMOVAL_REQUESTS_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredRemovalRequests = (requests) => {
+  try {
+    localStorage.setItem(REMOVAL_REQUESTS_KEY, JSON.stringify(requests));
+  } catch (e) {
+    console.error("Error saving removal requests", e);
+  }
+};
+
+export const getStoredCustomerMembership = () => {
+  try {
+    const item = localStorage.getItem(CUSTOMER_MEMBERSHIP_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredCustomerMembership = (membership) => {
+  try {
+    localStorage.setItem(CUSTOMER_MEMBERSHIP_KEY, JSON.stringify(membership));
+  } catch (e) {
+    console.error("Error saving customer membership", e);
+  }
+};
+
+const GUEST_FLOW_KEY = 'tbv_restaurant_guest_flow';
+const INGREDIENTS_KEY = 'tbv_restaurant_ingredients';
+const AUDIT_LOGS_KEY = 'tbv_restaurant_audit_logs';
+const BILLS_LIST_KEY = 'tbv_restaurant_bills_list';
+const DISH_AVAILABILITY_KEY = 'tbv_restaurant_dish_availability';
+
+export const getStoredGuestFlow = () => {
+  try {
+    const item = localStorage.getItem(GUEST_FLOW_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredGuestFlow = (flow) => {
+  try {
+    localStorage.setItem(GUEST_FLOW_KEY, JSON.stringify(flow));
+  } catch (e) {
+    console.error("Error saving guest flow", e);
+  }
+};
+
+export const getStoredIngredients = () => {
+  try {
+    const item = localStorage.getItem(INGREDIENTS_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredIngredients = (ingredients) => {
+  try {
+    localStorage.setItem(INGREDIENTS_KEY, JSON.stringify(ingredients));
+  } catch (e) {
+    console.error("Error saving ingredients", e);
+  }
+};
+
+export const getStoredAuditLogs = () => {
+  try {
+    const item = localStorage.getItem(AUDIT_LOGS_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredAuditLogs = (logs) => {
+  try {
+    localStorage.setItem(AUDIT_LOGS_KEY, JSON.stringify(logs));
+  } catch (e) {
+    console.error("Error saving audit logs", e);
+  }
+};
+
+export const getStoredBillsList = () => {
+  try {
+    const item = localStorage.getItem(BILLS_LIST_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredBillsList = (bills) => {
+  try {
+    localStorage.setItem(BILLS_LIST_KEY, JSON.stringify(bills));
+  } catch (e) {
+    console.error("Error saving bills list", e);
+  }
+};
+
+export const getStoredDishAvailability = () => {
+  try {
+    const item = localStorage.getItem(DISH_AVAILABILITY_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredDishAvailability = (avail) => {
+  try {
+    localStorage.setItem(DISH_AVAILABILITY_KEY, JSON.stringify(avail));
+  } catch (e) {
+    console.error("Error saving dish availability", e);
+  }
+};
+
+
+
+
 
 
