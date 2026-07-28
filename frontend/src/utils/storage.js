@@ -438,6 +438,25 @@ export const setStoredDishAvailability = (avail) => {
   }
 };
 
+const COUPON_REQUESTS_KEY = 'tbv_restaurant_coupon_requests';
+
+export const getStoredCouponRequests = () => {
+  try {
+    const item = localStorage.getItem(COUPON_REQUESTS_KEY);
+    return item ? JSON.parse(item) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setStoredCouponRequests = (requests) => {
+  try {
+    localStorage.setItem(COUPON_REQUESTS_KEY, JSON.stringify(requests));
+  } catch (e) {
+    console.error("Error saving coupon requests", e);
+  }
+};
+
 
 
 

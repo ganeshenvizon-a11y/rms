@@ -1,109 +1,35 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../../context/OrderContext';
 import { useTable } from '../../context/TableContext';
 import { useToast } from '../../context/ToastContext';
 import { paymentService } from '../../services/paymentService';
-import { formatInvoiceAmount } from '../../utils/formatters';
-import { RESTAURANT_INFO } from '../../utils/mockData';
+import { formatInvoiceAmount, deriveInvoiceNumber } from '../../utils/formatters';
 import TopAppBar from '../../components/layout/TopAppBar';
-import Modal from '../../components/common/Modal';
-import Icon from '../../components/common/Icon';
 import CustomerPreferencesModal from '../../components/preferences/CustomerPreferencesModal';
 import DiagnosticFeedbackModal from '../../components/retention/DiagnosticFeedbackModal';
-import GuestBenefitsModal from '../../components/retention/GuestBenefitsModal';
 import SignatureDishStoryModal from '../../components/retention/SignatureDishStoryModal';
 import ContentRemovalModal from '../../components/retention/ContentRemovalModal';
-import { Heart, RefreshCw, MessageSquare, Award, Camera, ShieldCheck } from 'lucide-react';
-
-const CONFETTI_COLORS = ['#8D1230', '#E97818', '#F28C28', '#ffffff'];
-
-const useConfettiBurst = (canvasRef) => {
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    let frameId;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = canvas.height + 10;
-        this.size = Math.random() * 6 + 4;
-        this.speedY = Math.random() * -15 - 5;
-        this.speedX = Math.random() * 6 - 3;
-        this.color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-        this.rotation = Math.random() * 360;
-        this.rotationSpeed = Math.random() * 10 - 5;
-        this.gravity = 0.25;
-      }
-      update() {
-        this.speedY += this.gravity;
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.rotation += this.rotationSpeed;
-      }
-      draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate((this.rotation * Math.PI) / 180);
-        ctx.fillStyle = this.color;
-        ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
-        ctx.restore();
-      }
-    }
-
-    for (let i = 0; i < 60; i++) {
-      setTimeout(() => particles.push(new Particle()), i * 30);
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles = particles.filter((p) => p.y < canvas.height + 20);
-      particles.forEach((p) => {
-        p.update();
-        p.draw();
-      });
-      frameId = requestAnimationFrame(animate);
-    };
-    animate();
-
-    return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', resize);
-    };
-  }, [canvasRef]);
-};
+import MilestoneCouponCard from '../../components/retention/MilestoneCouponCard';
+import { CheckCircle2, MessageSquare, Camera, ShieldCheck, Download, UtensilsCrossed } from 'lucide-react';
 
 const ThankYouScreen = () => {
   const navigate = useNavigate();
   const { activeOrder, clearOrder, customerMemory, saveCustomerMemory, forgetCustomerMemory } = useOrder();
   const { tableNumber } = useTable();
   const { showToast } = useToast();
-  const canvasRef = useRef(null);
-  useConfettiBurst(canvasRef);
 
   const [isDownloading, setIsDownloading] = useState(false);
   const [isPrefsOpen, setIsPrefsOpen] = useState(false);
 
-  // Retention Modals state
   const [isDiagnosticFeedbackOpen, setIsDiagnosticFeedbackOpen] = useState(false);
-  const [isGuestBenefitsOpen, setIsGuestBenefitsOpen] = useState(false);
   const [isSignatureDishOpen, setIsSignatureDishOpen] = useState(false);
   const [isRemovalModalOpen, setIsRemovalModalOpen] = useState(false);
 
   const handleDownloadReceipt = async () => {
     setIsDownloading(true);
     try {
-      const res = await paymentService.downloadReceipt(activeOrder?.orderId || 'INV-9842', activeOrder?.transaction);
+      const res = await paymentService.downloadReceipt(activeOrder?.orderId || 'INV-5983', activeOrder?.transaction);
       const blob = new Blob([res.data.receiptText], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -125,154 +51,144 @@ const ThankYouScreen = () => {
     navigate('/');
   };
 
+  const totalPaid = activeOrder?.totals?.totalPayable || activeOrder?.totals?.grandTotal || activeOrder?.grandTotal || 262.5;
+  const invoiceNumber = deriveInvoiceNumber(activeOrder);
+
   return (
-    <>
-      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-10" />
-      <TopAppBar
-        variant="brand"
-        onOpenPreferences={() => setIsPrefsOpen(true)}
-      />
+    <div className="w-full min-h-screen bg-[#FFFDF9] text-[#211917] flex flex-col antialiased">
+      {/* 1. Compact Customer Header */}
+      <TopAppBar variant="brand" />
 
-      <main className="flex-1 pt-16 w-full max-w-lg mx-auto flex flex-col items-center justify-center px-4 py-8 relative space-y-6">
-        {/* Success Hero */}
-        <div className="w-full relative group max-w-xs">
-          <div className="absolute inset-0 bg-secondary-container/20 blur-3xl rounded-full scale-75 animate-pulse" />
-          <div className="relative rounded-[32px] overflow-hidden shadow-lg aspect-[4/3]">
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent z-10" />
-            <img
-              className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-              src={RESTAURANT_INFO.heroImage}
-              alt={RESTAURANT_INFO.name}
-            />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
-              <div className="w-16 h-16 bg-secondary-container rounded-full flex items-center justify-center shadow-xl animate-bounce">
-                <Icon name="check_circle" className="text-on-secondary-container text-3xl" filled />
-              </div>
-            </div>
+      <main
+        className="w-full max-w-[640px] mx-auto flex-1 flex flex-col px-4 pt-18 pb-6 space-y-4"
+        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }}
+      >
+        {/* 2. Compact Payment-Success Confirmation Card */}
+        <section
+          aria-label="Payment Confirmation"
+          className="w-full p-4 bg-white rounded-2xl border border-[#EADFD6] shadow-sm flex items-center gap-3.5 text-left"
+        >
+          <div className="w-11 h-11 rounded-full bg-[#E8F8F1] flex items-center justify-center text-[#138A5B] shrink-0">
+            <CheckCircle2 className="w-6 h-6" />
           </div>
-        </div>
-
-        {/* Typography Content */}
-        <div className="text-center space-y-1">
-          <h1 className="text-2xl md:text-4xl font-bold text-primary leading-tight">Thank You for Dining With Us</h1>
-          <div className="flex flex-col gap-1 items-center">
-            <p className="text-base font-semibold text-on-surface-variant flex items-center gap-2">
-              <Icon name="verified" className="text-secondary" filled />
-              Payment Successful
+          <div className="min-w-0 flex-1">
+            <h1 className="text-[15px] font-semibold text-[#211917] leading-tight">Payment Successful</h1>
+            <p className="text-[23px] font-bold text-[#A30F3B] leading-tight mt-0.5">
+              {formatInvoiceAmount(totalPaid)} paid
             </p>
-            <p className="text-xs text-outline">Order #{activeOrder?.orderId || 'ORD-1048'} Completed</p>
-            <p className="text-lg font-bold text-primary mt-1">
-              Total Paid: {formatInvoiceAmount(activeOrder?.totals?.totalPayable || activeOrder?.totals?.grandTotal || activeOrder?.grandTotal || 997.5)}
+            <p className="text-[12px] text-[#6E5F58] mt-0.5">
+              Table {tableNumber || '05'} · Invoice {invoiceNumber}
             </p>
           </div>
-        </div>
+        </section>
 
-        {/* Connected Customer Experience Sequence */}
-        <section className="w-full space-y-3 text-left">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-xs text-primary uppercase tracking-wider">
+        {/* 3–5. Coupon Request Progress Card */}
+        <MilestoneCouponCard
+          activeOrder={activeOrder}
+          onOpenPrivacyControls={() => setIsRemovalModalOpen(true)}
+        />
+
+        {/* 6. Connected Guest Experience Section */}
+        <section aria-label="Connected Guest Experience" className="w-full space-y-3 pt-2 text-left">
+          <div className="flex items-center justify-between px-0.5">
+            <h2 className="font-bold text-xs text-[#A30F3B] uppercase tracking-wider">
               Connected Guest Experience
-            </h3>
-            <span className="text-[10px] font-semibold text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">
-              Optional Steps
+            </h2>
+            <span className="text-[11px] font-semibold text-[#6E5F58] bg-[#F0E7E0] px-2 py-0.5 rounded-md">
+              Optional
             </span>
           </div>
 
           <div className="space-y-2.5">
-            {/* Step 1: Share Diagnostic Feedback */}
-            <div className="p-3.5 bg-surface rounded-2xl border border-outline-variant/30 shadow-sm flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                  <MessageSquare className="w-4 h-4" />
+            {/* Feedback Card */}
+            <div className="p-3.5 bg-white rounded-2xl border border-[#EADFD6] shadow-sm flex items-center justify-between gap-3 min-h-[78px]">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-[#FBECEF] text-[#A30F3B] flex items-center justify-center shrink-0">
+                  <MessageSquare className="w-5 h-5" />
                 </div>
-                <div>
-                  <h4 className="font-bold text-xs text-on-surface">1. Share Useful Feedback</h4>
-                  <p className="text-[11px] text-on-surface-variant">Help us improve kitchen speed, food quality & service.</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={() => setIsDiagnosticFeedbackOpen(true)}
-                  className="px-3 py-1.5 bg-primary text-on-primary font-bold text-xs rounded-xl shadow hover:bg-primary/90 transition-colors"
-                >
-                  Feedback
-                </button>
-              </div>
-            </div>
-
-            {/* Step 2: Explore Community Benefits */}
-            <div className="p-3.5 bg-surface rounded-2xl border border-outline-variant/30 shadow-sm flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-700 shrink-0">
-                  <Award className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs text-on-surface">2. Explore Guest Benefits</h4>
-                  <p className="text-[11px] text-on-surface-variant">5 completed visits · Regular Guest milestone unlocked.</p>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-xs text-[#211917] truncate">Share Useful Feedback</h3>
+                  <p className="text-[12px] text-[#6E5F58] leading-tight mt-0.5">
+                    Help us improve food, service, speed, cleanliness & value.
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={() => setIsGuestBenefitsOpen(true)}
-                  className="px-3 py-1.5 bg-amber-600 text-white font-bold text-xs rounded-xl shadow hover:bg-amber-700 transition-colors"
-                >
-                  View Benefits
-                </button>
-              </div>
-            </div>
-
-            {/* Step 3: Share Dish Moment */}
-            <div className="p-3.5 bg-surface rounded-2xl border border-outline-variant/30 shadow-sm flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0">
-                  <Camera className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs text-on-surface">3. Share a Dish Moment</h4>
-                  <p className="text-[11px] text-on-surface-variant">Watch Chicken Dum Biryani story or submit authentic content.</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={() => setIsSignatureDishOpen(true)}
-                  className="px-3 py-1.5 bg-secondary text-on-secondary font-bold text-xs rounded-xl shadow hover:opacity-90 transition-opacity"
-                >
-                  Dish Story
-                </button>
-              </div>
-            </div>
-
-            {/* Step 4: Privacy & Removal Controls */}
-            <div className="p-3 bg-surface-container-low rounded-xl border border-outline-variant/20 flex items-center justify-between text-xs">
-              <span className="text-on-surface-variant text-[11px] flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                Control your privacy & permissions anytime
-              </span>
               <button
-                onClick={() => setIsRemovalModalOpen(true)}
-                className="text-primary font-bold text-[11px] hover:underline"
+                onClick={() => setIsDiagnosticFeedbackOpen(true)}
+                className="px-3.5 py-1.5 bg-white border border-[#A30F3B] text-[#A30F3B] hover:bg-[#FBECEF] font-bold text-xs rounded-xl shadow-2xs transition-colors shrink-0 cursor-pointer"
               >
-                Privacy Controls
+                Feedback
+              </button>
+            </div>
+
+            {/* Dish Story Card */}
+            <div className="p-3.5 bg-white rounded-2xl border border-[#EADFD6] shadow-sm flex items-center justify-between gap-3 min-h-[78px]">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-[#FFF0E3] text-[#F47712] flex items-center justify-center shrink-0">
+                  <Camera className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-xs text-[#211917] truncate">Share a Dish Moment</h3>
+                  <p className="text-[12px] text-[#6E5F58] leading-tight mt-0.5">
+                    Watch a dish story or share authentic content.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsSignatureDishOpen(true)}
+                className="px-3.5 py-1.5 bg-white border border-[#F47712] text-[#F47712] hover:bg-[#FFF0E3] font-bold text-xs rounded-xl shadow-2xs transition-colors shrink-0 cursor-pointer"
+              >
+                Dish Story
+              </button>
+            </div>
+
+            {/* 7. Privacy & Communication Controls */}
+            <div
+              onClick={() => setIsRemovalModalOpen(true)}
+              className="p-3.5 bg-[#FFF8F1] rounded-xl border border-[#EADFD6] flex items-center justify-between gap-2.5 text-xs min-h-[48px] cursor-pointer hover:bg-[#FFF0E3]/50 transition-colors"
+            >
+              <div className="flex items-start gap-2 min-w-0">
+                <ShieldCheck className="w-4 h-4 text-[#A30F3B] shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <span className="font-bold text-[#211917] text-xs block">Privacy & Communication</span>
+                  <span className="text-[#6E5F58] text-[11px] leading-tight block">
+                    Review coupon consent, WhatsApp preferences and content permissions.
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsRemovalModalOpen(true);
+                }}
+                className="text-[#A30F3B] font-bold text-xs hover:underline shrink-0 px-2 py-1"
+              >
+                Manage
               </button>
             </div>
           </div>
         </section>
 
-        {/* Action Buttons */}
-        <div className="w-full flex flex-col gap-3 max-w-sm">
+        {/* 8. Receipt Actions */}
+        <div className="w-full pt-2">
           <button
             onClick={handleDownloadReceipt}
             disabled={isDownloading}
-            className="w-full h-12 bg-surface border border-outline text-on-surface rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-surface-container/50 text-xs disabled:opacity-60"
+            className="w-full h-12 bg-white border border-[#EADFD6] text-[#211917] rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-[#FFF8F1] text-xs disabled:opacity-60 transition-colors cursor-pointer shadow-2xs"
           >
-            <Icon name="download" />
+            <Download className="w-4 h-4 text-[#A30F3B]" />
             {isDownloading ? 'Downloading...' : 'Download Receipt'}
           </button>
+        </div>
+
+        {/* 9. Visit Again */}
+        <div className="w-full flex justify-center pb-2">
           <button
             onClick={handleVisitAgain}
-            className="w-full h-12 text-primary font-semibold flex items-center justify-center gap-1 hover:underline text-xs"
+            className="h-11 px-6 text-[#A30F3B] font-bold flex items-center justify-center gap-2 hover:underline text-xs min-h-[44px] cursor-pointer"
           >
-            <Icon name="restaurant_menu" />
+            <UtensilsCrossed className="w-4 h-4" />
             Visit Again
           </button>
         </div>
@@ -285,11 +201,6 @@ const ThankYouScreen = () => {
         order={activeOrder}
       />
 
-      <GuestBenefitsModal
-        isOpen={isGuestBenefitsOpen}
-        onClose={() => setIsGuestBenefitsOpen(false)}
-      />
-
       <SignatureDishStoryModal
         isOpen={isSignatureDishOpen}
         onClose={() => setIsSignatureDishOpen(false)}
@@ -300,8 +211,17 @@ const ThankYouScreen = () => {
         isOpen={isRemovalModalOpen}
         onClose={() => setIsRemovalModalOpen(false)}
       />
-    </>
+
+      <CustomerPreferencesModal
+        isOpen={isPrefsOpen}
+        onClose={() => setIsPrefsOpen(false)}
+        customerMemory={customerMemory}
+        onSaveMemory={saveCustomerMemory}
+        onForgetMemory={forgetCustomerMemory}
+      />
+    </div>
   );
 };
 
 export default ThankYouScreen;
+

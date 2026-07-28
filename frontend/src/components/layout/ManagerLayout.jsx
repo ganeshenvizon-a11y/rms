@@ -21,6 +21,7 @@ import {
   LayoutGrid,
   PanelLeftClose,
   PanelLeftOpen,
+  TicketCheck,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
   { id: 'menu', label: 'Menu & Categories', icon: BookOpen },
   { id: 'tables', label: 'Tables', icon: Grid },
   { id: 'guestflow', label: 'Guest Flow', icon: Users },
+  { id: 'couponManagement', label: 'Coupons & Loyalty', icon: TicketCheck },
   { id: 'employee', label: 'Employees', icon: Badge },
   { id: 'reports', label: 'Reports', icon: BarChart3 },
   { id: 'notifications', label: 'Notifications', icon: Bell },

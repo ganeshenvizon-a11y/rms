@@ -39,6 +39,8 @@ import {
   setStoredBillsList,
   getStoredDishAvailability,
   setStoredDishAvailability,
+  getStoredCouponRequests,
+  setStoredCouponRequests,
 } from '../utils/storage';
 import {
   INITIAL_KITCHEN_ORDERS,
@@ -68,7 +70,11 @@ import {
   INITIAL_PROTOTYPE_BILLS,
   INITIAL_INGREDIENTS,
   INITIAL_PROTOTYPE_GUEST_FLOW,
+  INITIAL_PROTOTYPE_COUPON_REQUESTS,
 } from '../data/restaurantPrototypeData';
+import { createPrototypeCouponCode, computeExpiryDates } from '../services/couponRequestService';
+import { restaurantConfig } from '../config/restaurantConfig';
+import { computeDiscountAmount, getCampaignLabel } from '../utils/couponFormatting';
 
 const OrderContext = createContext();
 
@@ -142,6 +148,15 @@ export const OrderProvider = ({ children }) => {
     const stored = getStoredCustomerMembership();
     return stored || INITIAL_PROTOTYPE_CUSTOMER_MEMBERSHIP;
   });
+
+  const [couponRequests, setCouponRequests] = useState(() => {
+    const stored = getStoredCouponRequests();
+    return stored && Array.isArray(stored) ? stored : INITIAL_PROTOTYPE_COUPON_REQUESTS;
+  });
+
+  useEffect(() => {
+    setStoredCouponRequests(couponRequests);
+  }, [couponRequests]);
 
   useEffect(() => {
     setStoredFeedbacksList(feedbacksList);
@@ -1398,6 +1413,307 @@ export const OrderProvider = ({ children }) => {
     setCustomerMembership(prev => typeof updater === 'function' ? updater(prev) : { ...prev, ...updater });
   };
 
+  // WhatsApp Coupon Request Handlers (Customer PWA + Manager Portal shared state)
+  const nowLabel = () => new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+  const updateCouponRequest = (requestId, updaterFn, auditText) => {
+    setCouponRequests(prev => prev.map(req => {
+      if (req.requestId !== requestId) return req;
+      const updated = updaterFn(req);
+      const audit = auditText ? [...(req.auditHistory || []), { time: nowLabel(), text: auditText }] : req.auditHistory;
+      return { ...req, ...updated, updatedAt: nowLabel(), auditHistory: audit };
+    }));
+  };
+
+  const getCouponRequestForOrder = (orderId) => {
+    return couponRequests.find(r => r.orderReference?.orderId === orderId && r.status !== 'CANCELLED') || null;
+  };
+
+  const createCouponRequest = (payload) => {
+    const existing = getCouponRequestForOrder(payload.orderReference?.orderId);
+    if (existing) return existing;
+
+    const newRequest = {
+      requestId: `CPN-REQ-${Math.floor(3000 + Math.random() * 900)}`,
+      customer: payload.customer,
+      milestone: payload.milestone,
+      orderReference: payload.orderReference,
+      couponOffer: payload.couponOffer,
+      consent: payload.consent,
+      whatsapp: { deepLinkOpenedAt: null, customerConfirmedSentAt: null, restaurantConfirmedReceivedAt: null },
+      status: 'FORM_STARTED',
+      coupon: null,
+      declineReason: null,
+      declineNote: null,
+      createdAt: nowLabel(),
+      updatedAt: nowLabel(),
+      auditHistory: [{ time: nowLabel(), text: 'Coupon request started by customer' }],
+    };
+
+    setCouponRequests(prev => [newRequest, ...prev]);
+    return newRequest;
+  };
+
+  const markCouponWhatsAppOpened = (requestId) => {
+    updateCouponRequest(requestId, (req) => ({
+      status: 'WHATSAPP_OPENED',
+      whatsapp: { ...req.whatsapp, deepLinkOpenedAt: nowLabel() },
+    }), 'Customer opened WhatsApp with prepared message');
+  };
+
+  const confirmCouponRequestSent = (requestId) => {
+    updateCouponRequest(requestId, (req) => ({
+      status: 'CUSTOMER_CONFIRMED_SENT',
+      whatsapp: { ...req.whatsapp, customerConfirmedSentAt: nowLabel() },
+    }), 'Customer confirmed message sent on WhatsApp');
+  };
+
+  const cancelCouponRequest = (requestId) => {
+    updateCouponRequest(requestId, () => ({ status: 'CANCELLED' }), 'Customer cancelled the coupon request');
+  };
+
+  const managerMarkCouponMessageReceived = (requestId, staffName = 'Manager') => {
+    updateCouponRequest(requestId, (req) => ({
+      status: 'AWAITING_RESTAURANT_REVIEW',
+      whatsapp: { ...req.whatsapp, restaurantConfirmedReceivedAt: nowLabel() },
+    }), `Marked WhatsApp message received by ${staffName}`);
+  };
+
+  const managerVerifyCouponEligibility = (requestId, staffName = 'Manager') => {
+    updateCouponRequest(requestId, () => ({ status: 'VERIFIED' }), `Eligibility verified by ${staffName}`);
+  };
+
+  const managerDeclineCouponRequest = (requestId, reason, note = '', staffName = 'Manager') => {
+    updateCouponRequest(requestId, () => ({
+      status: 'DECLINED',
+      declineReason: reason,
+      declineNote: note,
+    }), `Declined by ${staffName}: ${reason}`);
+  };
+
+  const managerIssuePrototypeCoupon = (requestId, staffName = 'Manager') => {
+    const request = couponRequests.find(r => r.requestId === requestId);
+    if (!request) return null;
+
+    const code = createPrototypeCouponCode({
+      restaurantPrefix: 'MGR',
+      discountValue: request.couponOffer?.discountValue || 15,
+      requestId,
+    });
+    const issuedAt = nowLabel();
+    const { iso: expiresAt, display: validUntil } = computeExpiryDates(new Date(), 30);
+    const couponRecord = {
+      couponId: `CPN-${requestId.split('-').pop()}`,
+      code,
+      requestId,
+      discountType: request.couponOffer?.discountType || 'PERCENTAGE',
+      discountValue: request.couponOffer?.discountValue || 15,
+      status: 'ISSUED',
+      issuedAt,
+      validUntil,
+      expiresAt,
+      issuedBy: staffName,
+      sentAt: null,
+      redemption: null,
+      revocation: null,
+      attributedOrderRevenuePaise: 0,
+    };
+
+    updateCouponRequest(requestId, () => ({
+      status: 'COUPON_ISSUED',
+      coupon: couponRecord,
+    }), `Prototype coupon issued: ${code}`);
+
+    return couponRecord;
+  };
+
+  const managerMarkCouponSent = (requestId, staffName = 'Manager') => {
+    updateCouponRequest(requestId, (req) => ({
+      coupon: req.coupon ? { ...req.coupon, sentAt: nowLabel() } : req.coupon,
+    }), `Coupon reply marked sent by ${staffName}`);
+  };
+
+  const managerMarkCouponReplyOpened = (requestId, staffName = 'Manager') => {
+    updateCouponRequest(requestId, () => ({}), `WhatsApp reply opened by ${staffName}`);
+  };
+
+  /**
+   * Redeems a coupon against a live bill, reusing the existing applyDiscount
+   * billing handler for the real GST/discount recalculation rather than
+   * re-deriving that math here. Falls back to a reference-only redemption
+   * (no live bill recalculation) when the bill isn't found in `bills`.
+   */
+  const managerRedeemCoupon = (requestId, { billId, note = '', staffName = 'Manager' } = {}) => {
+    const request = couponRequests.find(r => r.requestId === requestId);
+    if (!request || !request.coupon) return { success: false, message: 'Coupon not found or not yet issued.' };
+
+    const bill = bills.find(b => b.billId === billId || b.orderId === billId);
+    let subtotalPaise = 0;
+    let discountPaise = 0;
+    let finalPayablePaise = 0;
+
+    if (bill) {
+      const subtotal = bill.subtotal || 0;
+      const discount = computeDiscountAmount(subtotal, request.coupon);
+      const applyDiscountType = request.coupon.discountType === 'FLAT' ? 'FLAT' : 'PERCENT';
+      const applyDiscountValue = request.coupon.discountType === 'FLAT' ? discount : request.coupon.discountValue;
+      applyDiscount(bill.billId, applyDiscountType, applyDiscountValue, `${getCampaignLabel(request.couponOffer)} Coupon Redemption: ${request.coupon.code}`, staffName, true);
+
+      const gstRate = (restaurantConfig.taxStructure.totalRate || 5) / 100;
+      const subtotalAfterDiscount = subtotal - discount;
+      const gst = Math.round(subtotalAfterDiscount * gstRate * 100) / 100;
+      const invoiceTotal = subtotalAfterDiscount + (bill.packagingCharge || 0) + gst;
+
+      subtotalPaise = Math.round(subtotal * 100);
+      discountPaise = Math.round(discount * 100);
+      finalPayablePaise = Math.round(invoiceTotal * 100);
+    }
+
+    const redeemedAt = nowLabel();
+    const redemptionRecord = {
+      redemptionId: `RED-${Date.now()}`,
+      couponId: request.coupon.couponId,
+      couponCode: request.coupon.code,
+      sourceBillId: bill?.billId || billId || null,
+      sourceInvoiceId: request.orderReference.invoiceId,
+      sourceOrderId: bill?.orderId || request.orderReference.orderId,
+      subtotalPaise,
+      discountPaise,
+      finalPayablePaise,
+      redeemedAt,
+      redeemedBy: staffName,
+      redemptionChannel: 'MANAGER_PORTAL',
+      status: 'COMPLETED',
+      note,
+    };
+
+    updateCouponRequest(requestId, (req) => ({
+      status: 'REDEEMED',
+      coupon: {
+        ...req.coupon,
+        status: 'REDEEMED',
+        redemption: redemptionRecord,
+        attributedOrderRevenuePaise: finalPayablePaise,
+      },
+    }), `Coupon redeemed by ${staffName}${redemptionRecord.sourceBillId ? ` on ${redemptionRecord.sourceBillId}` : ''}`);
+
+    return { success: true, redemption: redemptionRecord };
+  };
+
+  const managerRevokeCoupon = (requestId, reason, note = '', staffName = 'Manager') => {
+    updateCouponRequest(requestId, (req) => ({
+      coupon: req.coupon ? {
+        ...req.coupon,
+        revocation: { reason, note, revokedBy: staffName, revokedAt: nowLabel() },
+      } : req.coupon,
+    }), `Revoked by ${staffName}: ${reason}`);
+  };
+
+  const managerExtendCouponExpiry = (requestId, newExpiryDate, reason, staffName = 'Manager') => {
+    updateCouponRequest(requestId, (req) => {
+      if (!req.coupon) return {};
+      const previousExpiry = req.coupon.expiresAt;
+      const newExpiresAt = new Date(newExpiryDate).toISOString();
+      const newValidUntil = new Date(newExpiryDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      return {
+        coupon: {
+          ...req.coupon,
+          expiresAt: newExpiresAt,
+          validUntil: newValidUntil,
+          expiryHistory: [
+            ...(req.coupon.expiryHistory || []),
+            { previousExpiry, newExpiry: newExpiresAt, changedBy: staffName, changedAt: nowLabel(), reason },
+          ],
+        },
+      };
+    }, `Expiry extended by ${staffName}: ${reason}`);
+  };
+
+  const managerRevealCouponPhone = (requestId, staffName = 'Manager') => {
+    const request = couponRequests.find(r => r.requestId === requestId);
+    updateCouponRequest(requestId, () => ({}), `Full phone number revealed by ${staffName}`);
+    return request?.customer?.formattedMobile || null;
+  };
+
+  const managerWithdrawMarketingConsent = (requestId, staffName = 'Manager') => {
+    updateCouponRequest(requestId, (req) => ({
+      consent: { ...req.consent, marketingGranted: false, marketingGrantedAt: null },
+    }), `Marketing consent withdrawn by ${staffName}`);
+  };
+
+  /**
+   * Creates and immediately issues a fully custom coupon directly from the
+   * Manager Portal — no prior customer WhatsApp request required. Reuses the
+   * exact same couponRequests shape as the milestone flow (tagged with
+   * origin: 'MANAGER_CREATED') so it's managed identically in the ledger.
+   */
+  const managerCreateDynamicCoupon = (payload, staffName = 'Manager') => {
+    const requestId = `CPN-REQ-${Math.floor(4000 + Math.random() * 900)}`;
+    const createdAt = nowLabel();
+    const code = createPrototypeCouponCode({
+      restaurantPrefix: 'MGR',
+      discountValue: payload.discountValue,
+      requestId,
+    });
+    const { iso: expiresAt, display: validUntil } = computeExpiryDates(new Date(), payload.validityDays || 30);
+
+    const newRequest = {
+      requestId,
+      origin: 'MANAGER_CREATED',
+      customer: payload.customer,
+      milestone: {
+        completedVisits: payload.completedVisits ?? null,
+        level: 'MANAGER_ISSUED',
+        eligible: true,
+        unlockedAt: createdAt,
+      },
+      orderReference: payload.orderReference,
+      couponOffer: {
+        campaignId: `CUSTOM-${requestId}`,
+        name: payload.campaignName,
+        discountType: payload.discountType,
+        discountValue: payload.discountValue,
+      },
+      consent: {
+        fulfilmentGranted: true,
+        fulfilmentGrantedAt: createdAt,
+        marketingGranted: !!payload.marketingGranted,
+        marketingGrantedAt: payload.marketingGranted ? createdAt : null,
+        consentVersion: 'MANAGER-ISSUED-V1',
+        attestedByStaff: true,
+      },
+      whatsapp: { deepLinkOpenedAt: null, customerConfirmedSentAt: null, restaurantConfirmedReceivedAt: null },
+      status: 'COUPON_ISSUED',
+      coupon: {
+        couponId: `CPN-${requestId.split('-').pop()}`,
+        code,
+        requestId,
+        discountType: payload.discountType,
+        discountValue: payload.discountValue,
+        status: 'ISSUED',
+        issuedAt: createdAt,
+        validUntil,
+        expiresAt,
+        issuedBy: staffName,
+        sentAt: null,
+        redemption: null,
+        revocation: null,
+        attributedOrderRevenuePaise: 0,
+      },
+      declineReason: null,
+      declineNote: null,
+      createdAt,
+      updatedAt: createdAt,
+      auditHistory: [
+        { time: createdAt, text: `Coupon manually created by ${staffName}: ${payload.campaignName}` },
+        { time: createdAt, text: `Prototype coupon issued: ${code}` },
+      ],
+    };
+
+    setCouponRequests(prev => [newRequest, ...prev]);
+    return newRequest;
+  };
+
   return (
     <OrderContext.Provider
       value={{
@@ -1451,6 +1767,25 @@ export const OrderProvider = ({ children }) => {
         updateRemovalRequestStatus,
         customerMembership,
         updateCustomerMembership,
+        // WhatsApp Coupon Request Prototype Context
+        couponRequests,
+        getCouponRequestForOrder,
+        createCouponRequest,
+        markCouponWhatsAppOpened,
+        confirmCouponRequestSent,
+        cancelCouponRequest,
+        managerMarkCouponMessageReceived,
+        managerVerifyCouponEligibility,
+        managerDeclineCouponRequest,
+        managerIssuePrototypeCoupon,
+        managerMarkCouponSent,
+        managerMarkCouponReplyOpened,
+        managerRedeemCoupon,
+        managerRevokeCoupon,
+        managerExtendCouponExpiry,
+        managerRevealCouponPhone,
+        managerWithdrawMarketingConsent,
+        managerCreateDynamicCoupon,
         // Connected Operational Prototype Context
         orders,
         guestFlow,

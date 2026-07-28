@@ -9,9 +9,10 @@ import ManagerSettingsView from '../../components/manager/ManagerSettingsView';
 import ManagerProfileView from '../../components/manager/ManagerProfileView';
 import ManagerNotificationsView from '../../components/manager/ManagerNotificationsView';
 import GuestFlowView from '../../components/manager/GuestFlowView';
+import CouponManagementScreen from './CouponManagementScreen';
 
 const ManagerMainScreen = () => {
-  // Tab state: 'dashboard' | 'menu' | 'employee' | 'reports' | 'tables' | 'settings' | 'profile' | 'guestflow'
+  // Tab state: 'dashboard' | 'menu' | 'employee' | 'reports' | 'tables' | 'settings' | 'profile' | 'guestflow' | 'couponManagement'
   const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
@@ -50,6 +51,10 @@ const ManagerMainScreen = () => {
 
       {activeTab === 'guestflow' && (
         <GuestFlowView />
+      )}
+
+      {activeTab === 'couponManagement' && (
+        <CouponManagementScreen />
       )}
     </ManagerLayout>
   );
