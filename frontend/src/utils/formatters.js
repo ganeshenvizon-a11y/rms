@@ -117,6 +117,15 @@ export const formatSalary = (amount, period = restaurantConfig.payrollDisplay.de
   return `${formattedAmount} ${periodLabel}`.trim();
 };
 
+/**
+ * Derives a dynamic invoice number from the active order/bill reference
+ * (e.g. billId 'BILL-1048' or orderId 'ORD-1048' -> 'INV-1048').
+ */
+export const deriveInvoiceNumber = (activeOrder) => {
+  const source = activeOrder?.billId || activeOrder?.orderId || 'ORD-1048';
+  return `INV-${source.replace(/^[A-Z]+-/, '')}`;
+};
+
 export const generateOrderId = () => {
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   return `${restaurantConfig.invoiceRules.invoicePrefix || 'INV'}-${randomNum}`;

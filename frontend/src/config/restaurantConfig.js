@@ -70,4 +70,12 @@ export const restaurantConfig = {
     defaultSalaryPeriod: 'month',
     currencyCode: 'INR',
   },
+
+  // WhatsApp coupon-request prototype destination — the restaurant's business
+  // number, kept in one place so no component hardcodes it directly.
+  whatsapp: {
+    countryCode: '91',
+    businessNumber: '918886911773',
+    displayNumber: '+91 88869 11773',
+  },
 };
