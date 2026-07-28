@@ -12,6 +12,7 @@ import ErrorState from '../../components/common/ErrorState';
 import CustomizationModal from '../../components/menu/CustomizationModal';
 import RestaurantTrustProfileModal from '../../components/trust/RestaurantTrustProfileModal';
 import SignatureDishStoryModal from '../../components/retention/SignatureDishStoryModal';
+import biryaniVideo from '../../assets/no_have_no_images.mp4';
 import {
   Sparkles,
   ChevronRight,
@@ -202,22 +203,41 @@ const FoodDetailsScreen = () => {
     showToast(`Added pairing "${pairing.name}" to cart`, 'success');
   };
 
+  const isChickenDumBiryani = dish && (
+    dish.id === 'biryani-chicken-dum' ||
+    (dish.name && dish.name.toLowerCase().includes('chicken dum biryani'))
+  );
+
   return (
     <div className="min-h-screen bg-[#FFFDF9] flex flex-col font-sans selection:bg-[#FFF0E3] selection:text-[#A30F3B]">
       <main className="flex-1 pb-36 max-w-2xl mx-auto w-full relative">
-        {/* 1. Hero Food Photography Section */}
+        {/* 1. Hero Food Photography / Video Section */}
         <section className="relative w-full h-[40vh] sm:h-[46vh] min-h-[260px] max-h-[420px] bg-stone-900 overflow-hidden">
-          <ResponsiveImage
-            src={dish.image}
-            alt={dish.name}
-            aspectRatio={undefined}
-            rounded="rounded-none"
-            fetchPriority="high"
-            className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
-            overlay={
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-            }
-          />
+          {isChickenDumBiryani ? (
+            <div className="relative w-full h-full">
+              <video
+                src={biryaniVideo}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none" />
+            </div>
+          ) : (
+            <ResponsiveImage
+              src={dish.image}
+              alt={dish.name}
+              aspectRatio={undefined}
+              rounded="rounded-none"
+              fetchPriority="high"
+              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+              overlay={
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+              }
+            />
+          )}
 
           {/* Glassmorphic Action Header */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">

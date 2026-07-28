@@ -3,6 +3,8 @@
  * Single source of truth for all frontend roles (Customer, Kitchen, Waiter, Counter, Manager).
  */
 
+import biryaniVideo from '../assets/no_have_no_images.mp4';
+
 export const SHARED_PROTOTYPE_IDS = {
   restaurantId: 'REST-001',
   tableId: 'TABLE-08',
@@ -984,7 +986,7 @@ export const SIGNATURE_DISH_STORIES = {
   'biryani-chicken-dum': {
     signatureDish: true,
     socialStory: {
-      verticalVideo: 'https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-food-in-a-pan-43407-large.mp4',
+      verticalVideo: biryaniVideo,
       videoDurationSeconds: 10,
       origin: 'A regional Andhra classic, Chicken Dum Biryani is layered rice and spiced chicken sealed and slow-cooked over a low flame for deep, even flavour.',
       chefNote: 'Best enjoyed immediately while the dum seal is freshly opened at the table.',
