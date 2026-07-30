@@ -4,7 +4,7 @@ import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import ResponsiveImage from '../common/ResponsiveImage';
 import { FoodTypeBadge, SpiceLevelBadge, PriceTag } from './DishBadges';
-import { Sparkles, ChevronRight, Clock } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import RecommendedDishCard from './RecommendedDishCard';
 
 /**
@@ -79,40 +79,24 @@ const FoodCard = ({ dish, onCustomize, variant = 'compact' }) => {
       {/* Info Column */}
       <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
         <div>
-          {/* Max 2 Visible Badges (Dietary & Spice) + Optional Favourite Sparkle */}
-          <div className="flex items-center justify-between gap-1 mb-1">
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-              <FoodTypeBadge foodType={dish.foodType} />
-              {dish.spiceLevel && <SpiceLevelBadge spiceLevel={dish.spiceLevel} />}
-            </div>
-            {dish.bestseller && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#A30F3B] shrink-0" title="Mangamma Favourite">
-                <Sparkles className="w-3.5 h-3.5 text-[#A30F3B]" aria-hidden="true" />
-                <span className="hidden sm:inline">Favourite</span>
-              </span>
-            )}
+          {/* Short tags — dietary type, plus spice level when it matters most */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar mb-1">
+            <FoodTypeBadge foodType={dish.foodType} />
+            {dish.spiceLevel && <SpiceLevelBadge spiceLevel={dish.spiceLevel} />}
           </div>
 
           {/* Dish Name */}
           <h3 className="font-bold text-[#211917] text-[15px] leading-snug truncate">
             {dish.name}
+            {dish.bestseller && (
+              <span className="ml-1.5 text-[10.5px] font-bold text-[#F47712] align-middle">Bestseller</span>
+            )}
           </h3>
-
-          {/* Line-clamped Description */}
-          <p className="text-[#6F5F58] text-[12.5px] leading-[1.35] line-clamp-2 mt-0.5">
-            {dish.shortDescription}
-          </p>
         </div>
 
         {/* Price & Action Row */}
         <div className="flex items-center justify-between pt-2 border-t border-[#F0E7E0] mt-1.5">
-          <div className="flex items-center gap-2">
-            <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[16px] text-[#A30F3B] font-bold" />
-            <div className="flex items-center gap-1 text-[11px] text-[#95867E]">
-              <Clock className="w-3 h-3" />
-              <span>{dish.preparationTimeMinutes || 20}m</span>
-            </div>
-          </div>
+          <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[16px] text-[#A30F3B] font-bold" />
 
           <button
             type="button"

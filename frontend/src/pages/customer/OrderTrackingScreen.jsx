@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../../context/OrderContext';
 import { useTable } from '../../context/TableContext';
 import { useToast } from '../../context/ToastContext';
-import { orderService } from '../../services/orderService';
 import TopAppBar from '../../components/layout/TopAppBar';
 import BottomNavBar from '../../components/layout/BottomNavBar';
 import OrderTimeline from '../../components/order/OrderTimeline';
@@ -11,22 +10,23 @@ import Modal from '../../components/common/Modal';
 import EmptyState from '../../components/common/EmptyState';
 import Icon from '../../components/common/Icon';
 import RestaurantTrustProfileModal from '../../components/trust/RestaurantTrustProfileModal';
-import { AlertCircle, Clock, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react';
+import { Clock, CheckCircle2, HelpCircle, AlertCircle, ChevronRight } from 'lucide-react';
+
+const STAGE_PROGRESS_LABELS = ['Order received', 'Being prepared', 'Ready to serve', 'Served'];
 
 const OrderTrackingScreen = () => {
   const navigate = useNavigate();
-  const { activeOrder, updateOrderStatus, assistanceRequests, addAssistanceRequest, issuesList } = useOrder();
+  const { activeOrder, assistanceRequests, addAssistanceRequest, issuesList } = useOrder();
   const { tableNumber } = useTable();
   const { showToast } = useToast();
 
-  const [currentStageIndex, setCurrentStageIndex] = useState(activeOrder?.stageIndex || 0);
   const [remainingSeconds, setRemainingSeconds] = useState(14 * 60);
   const [isAssistanceModalOpen, setIsAssistanceModalOpen] = useState(false);
-  const [isCallingWaiter, setIsCallingWaiter] = useState(false);
   const [serveReadyFirst, setServeReadyFirst] = useState(false);
   const [isTrustOpen, setIsTrustOpen] = useState(false);
 
-  // Check if active assistance request exists for table
+  const currentStageIndex = activeOrder?.stageIndex ?? 0;
+
   const activeAssistance = assistanceRequests?.find(
     (req) => req.tableNumber === tableNumber && req.status === 'pending'
   );
@@ -42,15 +42,12 @@ const OrderTrackingScreen = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleNextStage = () => {
-    const nextIdx = Math.min(3, currentStageIndex + 1);
-    const stageNames = ['received', 'preparing', 'ready', 'served'];
-    setCurrentStageIndex(nextIdx);
-    updateOrderStatus(stageNames[nextIdx], nextIdx);
-    showToast(`Order status updated to "${stageNames[nextIdx].toUpperCase()}"`, 'info');
-  };
-
   const handleRequestAssistanceOption = (optionLabel) => {
+    if (optionLabel === 'Report an Issue') {
+      setIsAssistanceModalOpen(false);
+      navigate('/report-issue');
+      return;
+    }
     if (activeAssistance) {
       showToast('Assistance already requested. Rahul will respond shortly.', 'warning');
       setIsAssistanceModalOpen(false);
@@ -82,10 +79,11 @@ const OrderTrackingScreen = () => {
   const items = activeOrder.items || [];
   const readyItems = items.filter((it) => it.readinessStatus === 'READY');
   const preparingItems = items.filter((it) => it.readinessStatus !== 'READY');
+  const allReady = items.length > 0 && readyItems.length === items.length;
 
-  const minutes = Math.floor(remainingSeconds / 60);
-  const seconds = remainingSeconds % 60;
-  const formattedTimer = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const minutesRemaining = Math.ceil(remainingSeconds / 60);
+  const countdownLabel = remainingSeconds <= 0 ? 'Any moment now' : `About ${minutesRemaining} min remaining`;
+  const progressPercent = Math.max(6, Math.min(100, (currentStageIndex / (STAGE_PROGRESS_LABELS.length - 1)) * 100));
 
   return (
     <>
@@ -95,88 +93,119 @@ const OrderTrackingScreen = () => {
       />
 
       <main className="flex-1 pt-20 pb-28 max-w-2xl mx-auto w-full px-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-bold text-on-surface-variant">
-            Order #{activeOrder.orderId || 'ORD-1048'} &bull; Table {tableNumber}
-          </p>
-          <button
-            onClick={handleNextStage}
-            className="px-3 py-1 bg-secondary-container/40 text-on-secondary-container rounded-full text-[10px] font-bold"
-          >
-            Advance Demo Stage &#8594;
-          </button>
+        {/* Scannable order meta row */}
+        <div className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant px-1">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/60" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+          </span>
+          <span>Live tracking</span>
+          <span className="text-on-surface-variant/40">&bull;</span>
+          <span>Table {tableNumber}</span>
+          <span className="text-on-surface-variant/40">&bull;</span>
+          <span>Order #{activeOrder.orderId || 'ORD-1048'}</span>
         </div>
 
         {/* Transparent ETA Change Notice */}
         {activeOrder.etaChangeReason && (
-          <section className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-2 text-xs text-amber-950 dark:text-amber-200">
+          <section className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-2.5 text-xs text-amber-950 dark:text-amber-200">
             <div className="flex items-center justify-between">
               <span className="font-bold flex items-center gap-1.5 text-amber-900">
                 <Clock className="w-4 h-4 text-amber-600" />
-                Updated Preparation Estimate
+                Your estimate was just updated
               </span>
               <span className="text-[10px] font-semibold text-amber-800">
-                Updated at {activeOrder.etaUpdatedAt || '7:31 PM'}
+                {activeOrder.etaUpdatedAt || '7:31 PM'}
               </span>
             </div>
-            <div className="flex items-center justify-between bg-white/70 dark:bg-black/30 p-2.5 rounded-xl border border-amber-300/40 font-mono">
-              <span className="line-through text-muted text-xs">Previous: {activeOrder.previousEstimate || '7:38 PM'}</span>
-              <span className="font-bold text-amber-800 text-sm">New ETA: {activeOrder.estimatedReadyAt || '7:46 PM'}</span>
+            <div className="flex items-center justify-between bg-white/70 dark:bg-black/30 px-3 py-2.5 rounded-xl border border-amber-300/40">
+              <span className="line-through text-muted text-xs tabular-nums">Was {activeOrder.previousEstimate || '7:38 PM'}</span>
+              <span className="font-bold text-amber-800 text-sm tabular-nums">Now {activeOrder.estimatedReadyAt || '7:46 PM'}</span>
             </div>
-            <p className="text-xs"><strong>Reason:</strong> {activeOrder.etaChangeReason}</p>
+            <p className="text-xs leading-relaxed">{activeOrder.etaChangeReason}</p>
           </section>
         )}
 
-        {/* Active Status Hero Card */}
-        <section className="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-6 shadow-sm border border-outline-variant/20 text-center">
-          <div className="inline-flex items-center justify-center p-4 bg-primary/10 text-primary rounded-full mb-3 animate-pulse">
+        {/* Active Status Hero Card — status, ETA and progress unified */}
+        <section
+          className="relative overflow-hidden rounded-2xl bg-surface-container-lowest p-6 shadow-soft border border-outline-variant/20 text-center"
+          aria-live="polite"
+        >
+          <div className="inline-flex items-center justify-center p-4 bg-primary/10 text-primary rounded-full mb-3">
             <Icon name="cooking" className="text-3xl" filled />
           </div>
-          <h2 className="text-lg font-bold text-on-surface mb-1">Our kitchen is preparing your order</h2>
-          <p className="text-xs text-on-surface-variant mb-3">Preparation estimates reflect live kitchen volume.</p>
-          <div className="inline-block bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/10">
-            <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider block">Estimated Window</span>
-            <span className="text-2xl font-black text-primary">{activeOrder.estimatedReadyAt || '7:46 PM'} ({formattedTimer})</span>
+          <h1 className="text-lg font-bold text-on-surface mb-1">We're freshly preparing your order</h1>
+          <p className="text-xs text-on-surface-variant mb-5 max-w-xs mx-auto leading-relaxed">
+            Our kitchen is cooking with care. This page updates automatically, so there's nothing you need to refresh.
+          </p>
+
+          <div className="bg-surface-container-low rounded-2xl border border-outline-variant/10 px-5 py-4">
+            <span className="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider block mb-1">
+              Expected ready by
+            </span>
+            <span className="text-3xl font-black text-primary tabular-nums block leading-tight">
+              {activeOrder.estimatedReadyAt || '7:46 PM'}
+            </span>
+            <span className="text-xs font-semibold text-on-surface-variant mt-1 block">
+              {countdownLabel}
+            </span>
+
+            <div className="mt-3.5 h-1.5 w-full rounded-full bg-surface-container-high overflow-hidden">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-700"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <span className="text-[10px] text-on-surface-variant/70 font-medium mt-1.5 block">
+              {STAGE_PROGRESS_LABELS[currentStageIndex]}
+            </span>
           </div>
         </section>
 
-        {/* Partial-Order Item Readiness Section */}
-        <section className="bg-surface-container-lowest rounded-2xl p-4 border border-outline-variant/20 space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm text-on-surface flex items-center gap-2">
-              <Icon name="checklist" className="text-primary text-base" />
-              Item Readiness Tracking
-            </h3>
-            <span className="text-xs font-semibold text-on-surface-variant">
-              {readyItems.length} of {items.length} Ready
+        {/* Item Readiness Section */}
+        <section className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 overflow-hidden">
+          <div className="flex items-center justify-between px-4 pt-4 pb-3">
+            <div>
+              <h2 className="font-bold text-sm text-on-surface flex items-center gap-2">
+                <Icon name="checklist" className="text-primary text-base" />
+                Item Readiness
+              </h2>
+              <p className="text-[11px] text-on-surface-variant mt-0.5">See what's ready to be served</p>
+            </div>
+            <span
+              className={`text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
+                allReady ? 'bg-emerald-500/15 text-emerald-800' : 'bg-secondary-container text-on-secondary-container'
+              }`}
+            >
+              {readyItems.length} of {items.length} ready
             </span>
           </div>
 
-          <div className="space-y-2 text-xs">
+          <div className="divide-y divide-outline-variant/10 border-t border-outline-variant/10">
             {items.map((item, idx) => {
               const isReady = item.readinessStatus === 'READY';
               return (
-                <div
-                  key={idx}
-                  className={`p-3 rounded-xl border flex items-center justify-between transition-colors ${
-                    isReady
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-200'
-                      : 'bg-surface-container-low border-outline-variant/10 text-on-surface'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
+                <div key={idx} className="flex items-center gap-3 px-4 py-3.5">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isReady ? 'bg-emerald-500/15' : 'bg-amber-500/15'}`}>
                     {isReady ? (
-                      <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-700" />
                     ) : (
-                      <Clock className="w-4 h-4 text-amber-600 shrink-0 animate-spin" />
+                      <Clock className="w-4 h-4 text-amber-700" />
                     )}
-                    <div>
-                      <span className="font-bold">{item.name} (x{item.quantity})</span>
-                      {item.note && <p className="text-[11px] opacity-80 italic">"{item.note}"</p>}
-                    </div>
                   </div>
-                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${isReady ? 'bg-emerald-500/20 text-emerald-800' : 'bg-amber-500/20 text-amber-800'}`}>
-                    {isReady ? 'Ready' : 'Still Preparing'}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-on-surface truncate">{item.name}</p>
+                    <p className="text-[11px] text-on-surface-variant">
+                      Qty {item.quantity}
+                      {item.note && <span className="italic"> &middot; "{item.note}"</span>}
+                    </p>
+                  </div>
+                  <span
+                    className={`text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
+                      isReady ? 'bg-emerald-500/15 text-emerald-800' : 'bg-amber-500/15 text-amber-800'
+                    }`}
+                  >
+                    {isReady ? 'Ready to serve' : 'Preparing'}
                   </span>
                 </div>
               );
@@ -184,9 +213,9 @@ const OrderTrackingScreen = () => {
           </div>
 
           {readyItems.length > 0 && preparingItems.length > 0 && (
-            <div className="pt-2 border-t border-outline-variant/10 flex items-center justify-between text-xs">
-              <span className="text-on-surface-variant font-medium">Have ready dishes served early?</span>
-              <label className="flex items-center gap-2 font-bold text-primary cursor-pointer">
+            <div className="flex items-center justify-between gap-3 text-xs px-4 py-3 border-t border-outline-variant/10 bg-surface-container-low/60">
+              <span className="text-on-surface-variant font-medium">Serve ready dishes now, rather than waiting?</span>
+              <label className="flex items-center gap-2 font-bold text-primary cursor-pointer shrink-0 min-h-11">
                 <input
                   type="checkbox"
                   checked={serveReadyFirst}
@@ -194,85 +223,94 @@ const OrderTrackingScreen = () => {
                     setServeReadyFirst(e.target.checked);
                     showToast(e.target.checked ? 'Notified waiter to serve ready items first' : 'Standard serving sequence restored', 'info');
                   }}
-                  className="rounded text-primary focus:ring-primary"
+                  className="w-4 h-4 rounded text-primary focus:ring-primary"
                 />
-                Serve ready items first
+                Yes, please
               </label>
             </div>
           )}
         </section>
 
-        {/* Progress Timeline */}
-        <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+        {/* Order Progress Stepper */}
+        <section className="bg-surface-container-lowest rounded-2xl p-5 shadow-soft border border-outline-variant/20">
+          <h2 className="font-bold text-sm text-on-surface mb-4">Order Progress</h2>
           <OrderTimeline currentStageIndex={currentStageIndex} />
-        </div>
+        </section>
 
-        {/* Prominent Service Recovery Action: "Something isn't right" */}
-        <section className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-700 font-bold">
-                <AlertCircle className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="font-bold text-rose-950 dark:text-rose-200 text-sm">Something isn’t right?</h4>
-                <p className="text-xs text-rose-900/80">Report missing items, cold food, delays, or billing questions.</p>
-              </div>
+        {/* Help & Support — secondary, low-noise */}
+        <section className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 p-4 space-y-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0">
+              <HelpCircle className="w-[18px] h-[18px]" />
+            </div>
+            <div>
+              <h2 className="font-bold text-on-surface text-sm">Need help?</h2>
+              <p className="text-[11px] text-on-surface-variant">We're one tap away if something isn't right.</p>
             </div>
           </div>
 
-          {activeIssue ? (
-            <div className="p-3 bg-surface rounded-xl border border-rose-400/40 text-xs space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-rose-800 flex items-center gap-1">
-                  <Icon name="pending_actions" className="text-sm" />
-                  Issue Ticket #{activeIssue.issueId}
+          {activeIssue && (
+            <div className="rounded-xl border border-amber-400/30 bg-amber-500/5 p-3.5 space-y-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wide text-amber-900/80">
+                  Support ticket #{activeIssue.issueId}
                 </span>
-                <span className="bg-rose-500/20 text-rose-800 font-bold px-2 py-0.5 rounded-full text-[10px]">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-900 shrink-0">
                   {activeIssue.statusLabel || activeIssue.status}
                 </span>
               </div>
-              <p className="text-on-surface-variant font-medium">• Owner: <strong>{activeIssue.assignedOwner}</strong></p>
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                <div>
+                  <dt className="text-on-surface-variant text-[10px] uppercase tracking-wide">Assigned to</dt>
+                  <dd className="font-semibold text-on-surface">{activeIssue.assignedOwner || 'Our team'}</dd>
+                </div>
+                <div>
+                  <dt className="text-on-surface-variant text-[10px] uppercase tracking-wide">Contact</dt>
+                  <dd className="font-semibold text-on-surface">Rahul (waiter)</dd>
+                </div>
+              </dl>
               {activeIssue.recoveryAction && (
-                <p className="text-on-surface text-[11px] bg-rose-50 p-2 rounded-lg border border-rose-200">
-                  <strong>Action:</strong> {activeIssue.recoveryAction}
+                <p className="text-[11px] text-on-surface bg-surface/80 p-2.5 rounded-lg border border-amber-300/30 leading-relaxed">
+                  <strong>Latest update:</strong> {activeIssue.recoveryAction}
                 </p>
               )}
               <button
                 onClick={() => navigate('/report-status')}
-                className="w-full py-1.5 bg-rose-600 text-white rounded-lg font-bold text-xs shadow hover:bg-rose-700"
+                className="w-full min-h-11 py-2 bg-primary text-on-primary rounded-lg font-bold text-xs shadow-sm hover:bg-primary/90 flex items-center justify-center gap-1.5 transition-colors"
               >
-                View Issue Status & Confirm Resolution
+                View Full Status
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
-          ) : (
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setIsAssistanceModalOpen(true)}
+              className="min-h-11 rounded-xl border border-outline text-on-surface font-bold text-xs hover:bg-surface-container flex items-center justify-center gap-2 transition-colors"
+            >
+              <Icon name="support_agent" className="text-primary text-base" />
+              <span>Get Support</span>
+            </button>
+            <button
+              onClick={() => handleRequestAssistanceOption('Call Waiter')}
+              disabled={!!activeAssistance}
+              className="min-h-11 rounded-xl bg-primary/10 text-primary font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary/15 transition-colors disabled:opacity-60"
+            >
+              <Icon name="front_hand" className="text-base" />
+              <span>{activeAssistance ? 'Rahul is on the way' : 'Call Waiter'}</span>
+            </button>
+          </div>
+
+          {!activeIssue && (
             <button
               onClick={() => navigate('/report-issue')}
-              className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-2"
+              className="w-full min-h-11 flex items-center justify-center gap-1.5 text-xs font-semibold text-rose-700 hover:text-rose-800 transition-colors"
             >
-              <Icon name="report_problem" className="text-base" />
-              <span>Report an Issue (Service Recovery)</span>
+              <AlertCircle className="w-3.5 h-3.5" />
+              Something wrong with your order? Report it
             </button>
           )}
-        </section>
-
-        {/* Waiter Assistance Actions */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            onClick={() => setIsAssistanceModalOpen(true)}
-            className="h-12 rounded-xl border border-outline text-on-surface font-bold text-xs hover:bg-surface-container flex items-center justify-center gap-2 transition-colors"
-          >
-            <Icon name="support_agent" className="text-primary text-base" />
-            <span>Request Waiter Assistance</span>
-          </button>
-          <button
-            onClick={() => handleRequestAssistanceOption('Call Waiter')}
-            disabled={!!activeAssistance}
-            className="h-12 rounded-xl bg-primary text-on-primary font-bold text-xs flex items-center justify-center gap-2 shadow hover:bg-primary/90 transition-colors disabled:opacity-60"
-          >
-            <Icon name="front_hand" className="text-base" />
-            <span>{activeAssistance ? 'Rahul Notified (On the way)' : 'Call Waiter to Table'}</span>
-          </button>
         </section>
       </main>
 
@@ -285,8 +323,8 @@ const OrderTrackingScreen = () => {
         onRequestAssistance={(type) => addAssistanceRequest(tableNumber, type)}
       />
 
-      {/* Waiter Assistance Modal */}
-      <Modal isOpen={isAssistanceModalOpen} onClose={() => setIsAssistanceModalOpen(false)} title="Request Waiter Assistance" position="bottom">
+      {/* Support Modal */}
+      <Modal isOpen={isAssistanceModalOpen} onClose={() => setIsAssistanceModalOpen(false)} title="How can we help?" position="bottom">
         <div className="space-y-2">
           {activeAssistance && (
             <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-900 font-medium mb-3">
@@ -301,11 +339,16 @@ const OrderTrackingScreen = () => {
             'Billing assistance',
             'Allergy assistance',
             'Speak to manager',
+            'Report an Issue',
           ].map((req) => (
             <button
               key={req}
               onClick={() => handleRequestAssistanceOption(req)}
-              className="w-full text-left p-3.5 bg-surface-container-low hover:bg-primary/5 rounded-xl text-xs font-bold text-on-surface transition-colors flex items-center justify-between border border-outline-variant/10"
+              className={`w-full text-left min-h-11 p-3.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-between border ${
+                req === 'Report an Issue'
+                  ? 'bg-rose-500/5 hover:bg-rose-500/10 border-rose-300/40 text-rose-800'
+                  : 'bg-surface-container-low hover:bg-primary/5 border-outline-variant/10 text-on-surface'
+              }`}
             >
               <span>{req}</span>
               <Icon name="chevron_right" className="text-on-surface-variant" />

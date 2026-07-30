@@ -56,9 +56,9 @@ export const ISSUE_CATEGORIES = [
 ];
 
 export const REPORT_STAGES = [
-  { id: 'REPORTED', title: 'Report Received' },
-  { id: 'OWNER_ASSIGNED', title: 'Staff Assigned' },
-  { id: 'ACTION_IN_PROGRESS', title: 'Resolution In Progress' },
-  { id: 'WAITING_FOR_CUSTOMER', title: 'Waiting for Confirmation' },
-  { id: 'RESOLVED', title: 'Resolved' },
+  { id: 'REPORTED', title: 'Report Received', subtitle: "We've logged your concern", icon: 'ClipboardCheck' },
+  { id: 'OWNER_ASSIGNED', title: 'Staff Assigned', subtitle: 'A team member has taken ownership', icon: 'UserCheck' },
+  { id: 'ACTION_IN_PROGRESS', title: 'Resolution In Progress', subtitle: "We're actively making it right", icon: 'Sparkles' },
+  { id: 'WAITING_FOR_CUSTOMER', title: 'Waiting for Confirmation', subtitle: 'Just need your thumbs-up', icon: 'BellRing' },
+  { id: 'RESOLVED', title: 'Resolved', subtitle: 'All done — thank you for your patience', icon: 'PartyPopper' },
 ];

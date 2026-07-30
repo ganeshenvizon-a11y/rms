@@ -25,16 +25,16 @@ const VisualCategoryRail = ({ categories = [], selectedCategory, onSelectCategor
   if (!categories || categories.length === 0) return null;
 
   return (
-    <section className="mt-4 mb-7 relative group/rail">
+    <section className="mb-5 relative group/rail">
       {/* Left Scroll Arrow */}
       {canScrollLeft && (
         <button
           type="button"
           onClick={scrollLeft}
           aria-label="Scroll categories left"
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 shadow-md border border-[#EADFD6] text-[#A30F3B] hidden sm:flex items-center justify-center hover:bg-[#FFF7EE] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-white/95 shadow-md border border-[#EADFD6] text-[#A30F3B] hidden sm:flex items-center justify-center hover:bg-[#FFF7EE] hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
       )}
 
@@ -44,9 +44,9 @@ const VisualCategoryRail = ({ categories = [], selectedCategory, onSelectCategor
           type="button"
           onClick={scrollRight}
           aria-label="Scroll categories right"
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 shadow-md border border-[#EADFD6] text-[#A30F3B] hidden sm:flex items-center justify-center hover:bg-[#FFF7EE] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-white/95 shadow-md border border-[#EADFD6] text-[#A30F3B] hidden sm:flex items-center justify-center hover:bg-[#FFF7EE] hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-4 h-4" />
         </button>
       )}
 
@@ -54,7 +54,7 @@ const VisualCategoryRail = ({ categories = [], selectedCategory, onSelectCategor
       <div
         ref={ref}
         {...dragProps}
-        className="flex gap-3 overflow-x-auto no-scrollbar px-4 py-1.5 select-none cursor-grab active:cursor-grabbing scroll-smooth"
+        className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-1 select-none cursor-grab active:cursor-grabbing scroll-smooth"
         style={{
           scrollSnapType: isDragging ? 'none' : 'x proximity',
           scrollPaddingLeft: '16px',

@@ -18,23 +18,35 @@ export const RESTAURANT_INFO = {
 
 export const CATEGORIES = [
   { id: 'all', name: 'Full Menu', icon: 'Utensils' },
+  { id: 'starters', name: 'Starters', icon: 'Flame' },
   { id: 'meals', name: 'Meals', icon: 'UtensilsCrossed' },
   { id: 'biryanis', name: 'Biryanis', icon: 'ChefHat' },
-  { id: 'veg_soups', name: 'Veg Soups', icon: 'Soup' },
-  { id: 'nonveg_soups', name: 'Non-Veg Soups', icon: 'Soup' },
-  { id: 'nonveg_starters', name: 'Non-Veg Starters', icon: 'Flame' },
-  { id: 'chinese_veg_starters', name: 'Chinese Veg Starters', icon: 'Sparkles' },
-  { id: 'fish_prawns', name: 'Fish & Prawns', icon: 'Fish' },
-  { id: 'tandoor', name: 'Tandoor', icon: 'Flame' },
-  { id: 'main_course_veg', name: 'Main Course – Veg', icon: 'Salad' },
-  { id: 'main_course_nonveg', name: 'Main Course – Non-Veg', icon: 'UtensilsCrossed' },
-  { id: 'rotis_breads', name: 'Rotis & Breads', icon: 'Wheat' },
-  { id: 'veg_pulaos', name: 'Vegetarian Pulaos', icon: 'Wheat' },
-  { id: 'rice_varieties', name: 'Rice Varieties', icon: 'Wheat' },
-  { id: 'fried_rice_noodles', name: 'Fried Rice & Noodles', icon: 'Soup' },
+  { id: 'rotis_breads', name: 'Indian Breads', icon: 'Wheat' },
   { id: 'desserts', name: 'Desserts', icon: 'Cake' },
-  { id: 'drinks', name: 'Refreshing Drinks', icon: 'CupSoda' },
+  { id: 'drinks', name: 'Cooldrinks', icon: 'CupSoda' },
 ];
+
+// Every dish is filed under exactly one of the master categories above (dish.category).
+// dish.subCategory retains the finer-grained original grouping for internal use
+// (kitchen station routing, dish detail copy) without affecting menu navigation.
+const MASTER_CATEGORY_MAP = {
+  meals: 'meals',
+  biryanis: 'biryanis',
+  veg_soups: 'starters',
+  nonveg_soups: 'starters',
+  nonveg_starters: 'starters',
+  chinese_veg_starters: 'starters',
+  fish_prawns: 'starters',
+  tandoor: 'starters',
+  main_course_veg: 'meals',
+  main_course_nonveg: 'meals',
+  rotis_breads: 'rotis_breads',
+  veg_pulaos: 'meals',
+  rice_varieties: 'meals',
+  fried_rice_noodles: 'meals',
+  desserts: 'desserts',
+  drinks: 'drinks',
+};
 
 // -----------------------------------------------------------------------------
 // Dish data. 150 dishes across 16 categories, sourced from MGM_Menu.pdf (verified
@@ -177,7 +189,8 @@ function buildDish([id, name, price, catId, type, spiceOverride, desc, extra = {
     price,
     priceDisplay: extra.priceDisplay || null,
     image: cat.image,
-    category: catId,
+    category: MASTER_CATEGORY_MAP[catId],
+    subCategory: catId,
 
     foodType: foodTypeFor(type),
     containsEgg: type === EGG,

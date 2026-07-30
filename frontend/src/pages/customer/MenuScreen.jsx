@@ -10,7 +10,6 @@ import StickyCartBar from '../../components/menu/StickyCartBar';
 import CustomizationModal from '../../components/menu/CustomizationModal';
 import RestaurantTrustProfileModal from '../../components/trust/RestaurantTrustProfileModal';
 import CustomerPreferencesModal from '../../components/preferences/CustomerPreferencesModal';
-import MenuDiscoveryHero from '../../components/menu/MenuDiscoveryHero';
 import CompactKitchenStatus from '../../components/menu/CompactKitchenStatus';
 import VisualCategoryRail from '../../components/menu/VisualCategoryRail';
 import DietaryFilterRail, { QUICK_FILTERS } from '../../components/menu/DietaryFilterRail';
@@ -29,9 +28,9 @@ import { useToast } from '../../context/ToastContext';
 const MenuScreen = () => {
   const location = useLocation();
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilters, setActiveFilters] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(location.state?.category || 'all');
+  const [searchQuery, setSearchQuery] = useState(location.state?.initialSearchQuery || '');
+  const [activeFilters, setActiveFilters] = useState(location.state?.activeFilters || []);
   const [dishes, setDishes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -93,6 +92,11 @@ const MenuScreen = () => {
 
   const resetFilters = () => setActiveFilters([]);
 
+  const handleSelectCategory = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setActiveFilters([]);
+  };
+
   const visibleDishes = dishes.filter((d) =>
     activeFilters.every((fid) => QUICK_FILTERS.find((f) => f.id === fid)?.test(d))
   );
@@ -120,12 +124,6 @@ const MenuScreen = () => {
 
   const showCuratedRecommendations = selectedCategory === 'all' && !searchQuery && activeFilters.length === 0;
 
-  const scrollToFavourites = () => {
-    if (favouritesRef.current) {
-      favouritesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   const selectedCategoryObj = categories.find((c) => c.id === selectedCategory) || { id: 'all', name: 'Full Menu' };
 
   // Bottom padding dynamic clearance so floating nav & cart never obscure content
@@ -148,36 +146,38 @@ const MenuScreen = () => {
           paddingBottom: contentPaddingBottom,
         }}
       >
-        {/* 1. Welcome / Discovery Hero */}
-        <MenuDiscoveryHero tableNumber={tableNumber} onSeeFavourites={scrollToFavourites} />
-
-        {/* 2. Compact Kitchen Status */}
+        {/* 1. Compact sticky status strip — pairs with TopAppBar's single table chip */}
         <CompactKitchenStatus kitchenLoad={kitchenLoad} />
 
-        {/* 3. Search */}
-        <section className="px-4 mb-7">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} onClear={() => setSearchQuery('')} />
+        {/* 2. Prominent search */}
+        <section className="px-4 mt-5 mb-6">
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onClear={() => setSearchQuery('')}
+            autoFocus={Boolean(location.state?.focusSearch)}
+          />
         </section>
 
-        {/* 4. Visual Category Shortcuts Rail */}
+        {/* 3. Horizontally scrollable category tabs */}
         {categories.length === 0 && isLoading ? (
           <CategorySkeletonRow />
         ) : (
           <VisualCategoryRail
             categories={categories}
             selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
+            onSelectCategory={handleSelectCategory}
           />
         )}
 
-        {/* 5. Dietary Quick Filters */}
+        {/* 4. High-value quick filters + "More filters" bottom sheet */}
         <DietaryFilterRail
           activeFilters={activeFilters}
           onToggleFilter={toggleFilter}
           onResetFilters={resetFilters}
         />
 
-        {/* 6. Recommended for your table */}
+        {/* 5. Recommended — compact single row, skipped once the user is searching/filtering */}
         {showCuratedRecommendations && favouriteDishes.length > 0 && (
           <RecommendedDishRail
             recommendedDishes={favouriteDishes}
@@ -190,7 +190,7 @@ const MenuScreen = () => {
           />
         )}
 
-        {/* 7. Selected Category Heading */}
+        {/* 6. Selected Category Heading */}
         <div id="full-menu-section">
           <MenuSectionHeader
             selectedCategoryObj={selectedCategoryObj}
@@ -199,7 +199,7 @@ const MenuScreen = () => {
           />
         </div>
 
-        {/* 8. Full Dish List with Card Variety */}
+        {/* 6b. Simplified dish cards: name, short tags, price, strong CTA */}
         {isLoading ? (
           <div className="px-4">
             <MenuSkeletonList count={5} />

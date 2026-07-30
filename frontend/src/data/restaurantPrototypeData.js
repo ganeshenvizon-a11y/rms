@@ -744,7 +744,7 @@ export const INITIAL_PROTOTYPE_ISSUES = [
     description: 'Biryani order taking over 30 minutes. Customer requested immediate check with head chef.',
     priority: 'HIGH',
     status: 'OWNER_ASSIGNED',
-    statusLabel: 'Rahul is handling this',
+    statusLabel: 'Ananya is personally handling this',
     reportedAt: '7:12 PM',
     assignedOwner: 'Ananya Reddy (Shift Manager)',
     assignedRole: 'Shift Manager',

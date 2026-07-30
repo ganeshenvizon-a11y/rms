@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import { SlidersHorizontal, Check, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useDraggableScroll } from '../../hooks/useDraggableScroll';
 
-export const PRIMARY_FILTER_IDS = ['veg', 'nonveg', 'egg', 'jain', 'available'];
-export const SECONDARY_FILTER_IDS = ['mild', 'spicy', 'under20'];
+// Only the highest-value filters stay visible inline; everything else lives
+// behind the "More filters" bottom sheet to keep the chip row scannable.
+export const PRIMARY_FILTER_IDS = ['veg', 'nonveg', 'bestseller', 'under20'];
+export const SECONDARY_FILTER_IDS = ['egg', 'jain', 'available', 'mild', 'spicy'];
 
 export const QUICK_FILTERS = [
-  { id: 'veg', label: 'Vegetarian', test: (d) => d.foodType === 'VEGETARIAN' },
-  { id: 'nonveg', label: 'Non-Vegetarian', test: (d) => d.foodType === 'NON_VEGETARIAN' },
+  { id: 'veg', label: 'Veg', test: (d) => d.foodType === 'VEGETARIAN' },
+  { id: 'nonveg', label: 'Non-Veg', test: (d) => d.foodType === 'NON_VEGETARIAN' },
+  { id: 'bestseller', label: 'Bestsellers', test: (d) => !!d.bestseller },
+  { id: 'under20', label: 'Under 20 Mins', test: (d) => (d.preparationTimeMinutes || 99) <= 20 },
   { id: 'egg', label: 'Egg', test: (d) => d.containsEgg },
   { id: 'jain', label: 'Jain Option', test: (d) => d.jainAvailable },
   { id: 'available', label: 'Available Now', test: (d) => d.availabilityStatus === 'AVAILABLE' },
   { id: 'mild', label: 'Mild Spice', test: (d) => d.spiceLevel === 'MILD' },
   { id: 'spicy', label: 'Spicy', test: (d) => d.spiceLevel === 'SPICY' },
-  { id: 'under20', label: 'Under 20 Mins', test: (d) => (d.preparationTimeMinutes || 99) <= 20 },
 ];
 
 /**
@@ -27,7 +30,7 @@ const DietaryFilterRail = ({ activeFilters = [], onToggleFilter, onResetFilters 
   const secondaryActiveCount = activeFilters.filter((id) => SECONDARY_FILTER_IDS.includes(id)).length;
 
   return (
-    <section className="mt-3 mb-8 relative group/filter">
+    <section className="mb-6 relative group/filter">
       {/* Left Scroll Arrow */}
       {canScrollLeft && (
         <button
@@ -84,11 +87,11 @@ const DietaryFilterRail = ({ activeFilters = [], onToggleFilter, onResetFilters 
           );
         })}
 
-        {/* Secondary filters button */}
+        {/* More filters trigger — opens the bottom sheet with the rest */}
         <button
           type="button"
           onClick={() => setIsFilterModalOpen(true)}
-          aria-label="Open detailed dietary and prep time filters"
+          aria-label="Open more dietary and spice filters"
           className={`shrink-0 min-h-[36px] px-3.5 py-1.5 rounded-full text-[12.5px] font-bold border flex items-center gap-1.5 transition-all duration-150 active:scale-95 cursor-pointer ${
             secondaryActiveCount > 0
               ? 'bg-[#A30F3B] text-white border-[#A30F3B]'
@@ -96,7 +99,7 @@ const DietaryFilterRail = ({ activeFilters = [], onToggleFilter, onResetFilters 
           }`}
         >
           <SlidersHorizontal className="w-3.5 h-3.5" aria-hidden="true" />
-          <span>Filters</span>
+          <span>More filters</span>
           {secondaryActiveCount > 0 && (
             <span className="w-4 h-4 rounded-full bg-white text-[#A30F3B] text-[10px] font-extrabold flex items-center justify-center">
               {secondaryActiveCount}
@@ -122,7 +125,7 @@ const DietaryFilterRail = ({ activeFilters = [], onToggleFilter, onResetFilters 
             <div className="flex items-center justify-between pb-3 border-b border-[#EADFD6]">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-5 h-5 text-[#A30F3B]" />
-                <h3 className="text-lg font-bold text-[#211917]">All Filters</h3>
+                <h3 className="text-lg font-bold text-[#211917]">More Filters</h3>
               </div>
               <button
                 type="button"
@@ -139,7 +142,7 @@ const DietaryFilterRail = ({ activeFilters = [], onToggleFilter, onResetFilters 
                   Dietary Preferences
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {primaryFilters.map((f) => {
+                  {QUICK_FILTERS.filter((f) => ['egg', 'jain', 'available'].includes(f.id)).map((f) => {
                     const isActive = activeFilters.includes(f.id);
                     return (
                       <button
@@ -162,10 +165,10 @@ const DietaryFilterRail = ({ activeFilters = [], onToggleFilter, onResetFilters 
 
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#95867E] mb-2.5">
-                  Spice Level & Prep Time
+                  Spice Level
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {QUICK_FILTERS.filter((f) => SECONDARY_FILTER_IDS.includes(f.id)).map((f) => {
+                  {QUICK_FILTERS.filter((f) => ['mild', 'spicy'].includes(f.id)).map((f) => {
                     const isActive = activeFilters.includes(f.id);
                     return (
                       <button

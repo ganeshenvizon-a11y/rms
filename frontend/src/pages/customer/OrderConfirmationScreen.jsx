@@ -1,119 +1,187 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../../context/OrderContext';
 import { useTable } from '../../context/TableContext';
-import { formatInvoiceAmount, formatMenuPrice, formatTime } from '../../utils/formatters';
+import { formatInvoiceAmount, formatMenuPrice, formatTime, deriveInvoiceNumber } from '../../utils/formatters';
 import Icon from '../../components/common/Icon';
-import CustomerPreferencesModal from '../../components/preferences/CustomerPreferencesModal';
-import { AlertTriangle, CheckCircle, Clock, Heart } from 'lucide-react';
+import { CheckCircle2, ChefHat, Clock, Flame, Soup, PartyPopper, Plus } from 'lucide-react';
 
-const CONFETTI_DOTS = [
-  { className: 'bg-red-400 top-4 left-1/4' },
-  { className: 'bg-amber-400 top-10 right-1/3' },
-  { className: 'bg-emerald-400 bottom-4 left-1/3' },
-  { className: 'bg-blue-400 bottom-10 right-1/4' },
-  { className: 'bg-orange-400 top-1/2 left-10' },
+const NEXT_STEPS = [
+  { key: 'received', label: 'Order received', icon: CheckCircle2, status: 'done' },
+  { key: 'preparing', label: 'Being prepared', icon: Flame, status: 'active' },
+  { key: 'ready', label: 'Ready to serve', icon: Soup, status: 'upcoming' },
 ];
+
+/** Merges cart line items that share the same dish + modifiers so the same dish never appears twice. */
+const groupOrderItems = (items = []) => {
+  const grouped = [];
+  const indexByKey = new Map();
+
+  items.forEach((item) => {
+    const modifierKey = [
+      item.makeVegan ? 'vegan' : '',
+      item.jainPreparation ? 'jain' : '',
+      ...(item.selectedCustomizations || []).map((mod) => `${mod.label || mod.name}:${mod.priceDelta || 0}`),
+      item.itemNote || '',
+    ].join('|');
+    const key = `${item.name}__${modifierKey}`;
+
+    if (indexByKey.has(key)) {
+      grouped[indexByKey.get(key)].quantity += item.quantity;
+    } else {
+      indexByKey.set(key, grouped.length);
+      grouped.push({ ...item });
+    }
+  });
+
+  return grouped;
+};
 
 const OrderConfirmationScreen = () => {
   const navigate = useNavigate();
-  const { activeOrder, kitchenLoad, customerMemory, saveCustomerMemory, forgetCustomerMemory } = useOrder();
+  const { activeOrder, kitchenLoad } = useOrder();
   const { tableNumber } = useTable();
-  const [isPrefsOpen, setIsPrefsOpen] = useState(false);
 
   const orderTime = formatTime(activeOrder?.createdAt || new Date());
   const totals = activeOrder?.totals || { subtotal: 0, gst: 0, totalPayable: 0 };
-  const prepRange = `${kitchenLoad?.averagePreparationMinutes || 20}–${(kitchenLoad?.averagePreparationMinutes || 20) + 5} mins`;
+  const prepMinStart = kitchenLoad?.averagePreparationMinutes || 20;
+  const prepRange = `${prepMinStart}–${prepMinStart + 5} mins`;
+  const invoiceNumber = deriveInvoiceNumber(activeOrder);
+  const orderItems = useMemo(() => groupOrderItems(activeOrder?.items || []), [activeOrder?.items]);
+  const itemCount = orderItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <main className="flex-1 flex flex-col bg-surface-container min-h-screen">
       <div className="w-full max-w-md mx-auto min-h-screen flex flex-col px-4 py-4">
         {/* Header */}
-        <header className="flex justify-between items-center py-4">
-          <button aria-label="Back" onClick={() => navigate('/menu')} className="p-2 -ml-2 text-text">
+        <header className="flex justify-between items-center py-2 mb-2">
+          <button
+            aria-label="Back to menu"
+            onClick={() => navigate('/menu')}
+            className="min-h-11 min-w-11 flex items-center justify-center -ml-2 text-text rounded-full hover:bg-surface-container-high"
+          >
             <Icon name="arrow_back" />
           </button>
-          <span className="text-xs font-bold text-maroon-800 bg-saffron-100 px-3 py-1 rounded-full">
+          <span className="text-xs font-bold text-maroon-800 bg-saffron-100 px-3 py-2 rounded-full">
             Table #{tableNumber}
           </span>
         </header>
 
-        {/* Success Status */}
-        <section className="text-center mb-4">
-          <div className="relative h-[100px] w-full flex justify-center items-center">
-            <div className="z-10 bg-emerald-500 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg">
-              <CheckCircle className="w-10 h-10" />
+        {/* Success card: confirmation state, ETA, and order meta in one clear unit */}
+        <section
+          aria-labelledby="order-confirmed-heading"
+          className="bg-surface-container-lowest rounded-3xl shadow-sm border border-border overflow-hidden mb-4"
+        >
+          <div className="text-center px-5 pt-7 pb-5">
+            <div className="mx-auto w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mb-3">
+              <div className="w-12 h-12 rounded-full bg-success flex items-center justify-center text-white shadow-sm">
+                <CheckCircle2 className="w-7 h-7" strokeWidth={2.5} aria-hidden="true" />
+              </div>
             </div>
-            {CONFETTI_DOTS.map((dot, idx) => (
-              <div key={idx} className={`absolute w-1.5 h-1.5 rounded-full ${dot.className}`} />
-            ))}
+
+            <h1 id="order-confirmed-heading" className="text-xl font-bold text-ink">
+              Order confirmed!
+            </h1>
+            <p className="text-text text-sm mt-1.5 leading-snug">
+              Your order has been sent to the kitchen and the chefs are on it.
+            </p>
+
+            <span className="inline-flex items-center gap-1.5 mt-3 bg-success/10 text-success text-xs font-bold px-3 py-1.5 rounded-full">
+              <ChefHat className="w-3.5 h-3.5" aria-hidden="true" />
+              Sent to kitchen
+            </span>
           </div>
-          <h1 className="text-2xl font-bold mt-2 text-ink">Order sent to kitchen!</h1>
-          <p className="text-text mt-1 text-xs">
-            Thanks! Your customized order is being prepared with care ❤️
+
+          {/* Order meta: id, table, time */}
+          <dl className="grid grid-cols-3 gap-px bg-border border-t border-border">
+            <div className="bg-surface-container-lowest text-center px-2 py-3">
+              <dt className="text-[10px] uppercase tracking-wider text-muted font-bold">Order ID</dt>
+              <dd className="text-maroon-800 font-bold text-sm mt-0.5">{invoiceNumber}</dd>
+            </div>
+            <div className="bg-surface-container-lowest text-center px-2 py-3">
+              <dt className="text-[10px] uppercase tracking-wider text-muted font-bold">Table</dt>
+              <dd className="font-bold text-sm text-ink mt-0.5">{tableNumber}</dd>
+            </div>
+            <div className="bg-surface-container-lowest text-center px-2 py-3">
+              <dt className="text-[10px] uppercase tracking-wider text-muted font-bold">Order time</dt>
+              <dd className="font-bold text-sm text-ink mt-0.5">{orderTime}</dd>
+            </div>
+          </dl>
+
+          {/* ETA strip */}
+          <div className="flex items-center gap-3 px-5 py-4 border-t border-border bg-saffron-100/60">
+            <div className="bg-surface-container-lowest p-2 rounded-xl text-maroon-800 flex-shrink-0">
+              <Clock className="w-5 h-5" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-[11px] text-muted font-semibold">Estimated preparation window</p>
+              <p className="font-bold text-base text-ink leading-tight">{prepRange}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* What happens next */}
+        <section aria-label="Order progress" className="bg-surface-container-lowest rounded-2xl p-4 border border-border shadow-sm mb-4">
+          <h2 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">What happens next</h2>
+          <ol className="flex items-start justify-between">
+            {NEXT_STEPS.map((step, idx) => {
+              const StepIcon = step.icon;
+              const isDone = step.status === 'done';
+              const isActive = step.status === 'active';
+              return (
+                <li key={step.key} className="flex-1 flex flex-col items-center text-center relative">
+                  {idx > 0 && (
+                    <span
+                      className={`absolute top-4 right-1/2 w-full h-0.5 -z-0 ${isDone || isActive ? 'bg-saffron-600' : 'bg-border'}`}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span
+                    className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center border-2 ${
+                      isDone
+                        ? 'bg-success border-success text-white'
+                        : isActive
+                        ? 'bg-saffron-600 border-saffron-600 text-white animate-pulse'
+                        : 'bg-surface-container-lowest border-border text-muted'
+                    }`}
+                  >
+                    <StepIcon className="w-4 h-4" aria-hidden="true" />
+                  </span>
+                  <span className={`text-[11px] font-semibold mt-2 leading-tight px-1 ${isDone || isActive ? 'text-ink' : 'text-muted'}`}>
+                    {step.label}
+                    {isActive && <span className="sr-only"> (current stage)</span>}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+          <p className="text-xs text-muted mt-3 text-center leading-relaxed">
+            You'll get a live update on this screen as your food moves through each stage.
           </p>
         </section>
 
-        {/* Review Customizations Warning Banner */}
-        <div className="bg-saffron-100/80 border border-saffron-600/30 rounded-xl p-3.5 mb-4 text-maroon-800 text-xs flex items-center gap-2.5">
-          <AlertTriangle className="w-5 h-5 text-maroon-800 flex-shrink-0" />
-          <span>
-            <strong>Review customizations before confirming your order.</strong> All selected modifiers have been dispatched to kitchen displays.
-          </span>
-        </div>
+        {/* Order items */}
+        <section aria-labelledby="order-items-heading" className="bg-surface-container-lowest rounded-2xl p-4 border border-border shadow-sm mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 id="order-items-heading" className="font-bold text-base text-ink">
+              Your order
+            </h2>
+            <span className="text-[11px] font-bold text-muted bg-surface-container px-2.5 py-1 rounded-full">
+              {itemCount} {itemCount === 1 ? 'item' : 'items'}
+            </span>
+          </div>
 
-        {/* Order Quick Details */}
-        <section className="bg-surface-container-lowest rounded-2xl p-4 flex justify-between items-center mb-4 border border-border shadow-sm">
-          <div className="text-center flex-1">
-            <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Order ID</p>
-            <p className="text-maroon-800 font-bold text-base">#{activeOrder?.orderId || 'ORD-1048'}</p>
-          </div>
-          <div className="w-px h-8 bg-border" />
-          <div className="text-center flex-1">
-            <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Table</p>
-            <p className="font-bold text-base text-ink">{tableNumber}</p>
-          </div>
-          <div className="w-px h-8 bg-border" />
-          <div className="text-center flex-1">
-            <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Order Time</p>
-            <p className="font-bold text-base text-ink">{orderTime}</p>
-          </div>
-        </section>
-
-        {/* Honest Preparation Card */}
-        <section className="bg-surface-container-lowest rounded-2xl p-4 flex items-center justify-between mb-4 border border-border shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="bg-saffron-100 p-2.5 rounded-xl text-maroon-800">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs text-muted">Estimated preparation window</p>
-              <p className="font-bold text-base text-ink">{prepRange}</p>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate('/order-tracking')}
-            className="bg-saffron-100 border border-saffron-600/30 py-2 px-3 rounded-xl text-xs font-bold text-maroon-800 flex items-center gap-1 hover:bg-saffron-100/70"
-          >
-            Track order
-            <Icon name="chevron_right" className="text-base" />
-          </button>
-        </section>
-
-        {/* Order Summary with Modifiers */}
-        <section className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm mb-6 border border-border">
-          <h2 className="font-bold text-base mb-4 text-ink">Order & Modifier Summary</h2>
-          <div className="space-y-4 mb-6">
-            {(activeOrder?.items || []).map((item, idx) => {
+          <div className="space-y-3">
+            {orderItems.map((item, idx) => {
               const itemTotalPrice = (item.unitPrice !== undefined ? item.unitPrice : item.price) * item.quantity;
               const hasModifiers = (item.selectedCustomizations && item.selectedCustomizations.length > 0) || item.makeVegan || item.jainPreparation;
 
               return (
-                <div key={idx} className="border-b border-border pb-3 last:border-b-0 space-y-2">
+                <article key={idx} className="rounded-xl border border-border p-3">
                   <div className="flex items-start gap-3">
                     <div className="w-14 h-14 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
                       {item.image ? (
-                        <img alt={item.name} className="w-full h-full object-cover" src={item.image} />
+                        <img alt="" className="w-full h-full object-cover" src={item.image} />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted">
                           <Icon name="restaurant" />
@@ -121,104 +189,102 @@ const OrderConfirmationScreen = () => {
                       )}
                     </div>
                     <div className="flex-grow min-w-0">
-                      <div className="flex justify-between items-start">
-                        <p className="font-bold text-ink text-sm">{item.name}</p>
-                        <p className="font-bold text-maroon-800 text-sm font-mono">{formatInvoiceAmount(itemTotalPrice)}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="font-bold text-ink text-sm leading-snug">{item.name}</p>
+                        <p className="font-bold text-maroon-800 text-sm font-mono whitespace-nowrap">{formatInvoiceAmount(itemTotalPrice)}</p>
                       </div>
-                      <p className="text-xs text-muted font-medium">Quantity: {item.quantity}</p>
+                      <span className="inline-block text-[11px] text-muted font-semibold bg-surface-container px-2 py-0.5 rounded-full mt-1">
+                        Qty {item.quantity}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Selected Modifiers Display */}
                   {hasModifiers && (
-                    <div className="ml-17 bg-saffron-100/70 p-2.5 rounded-xl border border-saffron-600/30 text-xs space-y-1 text-ink">
-                      {item.makeVegan && <div className="font-semibold text-emerald-800">🌱 Vegan Preparation</div>}
-                      {item.jainPreparation && <div className="font-semibold text-emerald-800">🌿 Jain Preparation</div>}
+                    <div className="mt-2.5 bg-saffron-100/70 p-2.5 rounded-xl border border-saffron-600/30 text-xs space-y-1 text-ink">
+                      {item.makeVegan && <div className="font-semibold text-success">Vegan preparation</div>}
+                      {item.jainPreparation && <div className="font-semibold text-success">Jain preparation</div>}
                       {item.selectedCustomizations?.map((mod, mIdx) => (
-                        <div key={mIdx} className="flex justify-between">
-                          <span>• {mod.label || mod.name}</span>
-                          {mod.priceDelta > 0 && <span className="font-mono text-maroon-800">+{formatMenuPrice(mod.priceDelta)}</span>}
+                        <div key={mIdx} className="flex justify-between gap-2">
+                          <span>{mod.label || mod.name}</span>
+                          {mod.priceDelta > 0 && <span className="font-mono text-maroon-800 whitespace-nowrap">+{formatMenuPrice(mod.priceDelta)}</span>}
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {/* High Visibility Allergy Alert */}
                   {item.allergyAlert && (
-                    <div className="ml-17 bg-red-100 border-l-4 border-red-600 p-2.5 rounded-r-xl text-xs text-red-900 font-bold space-y-0.5">
+                    <div className="mt-2.5 bg-red-50 border-l-4 border-red-600 p-2.5 rounded-r-xl text-xs text-red-900 font-bold space-y-0.5">
                       <div className="flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
-                        <AlertTriangle className="w-4 h-4 text-red-600" />
-                        <span>ALLERGY ALERT</span>
+                        <Flame className="w-3.5 h-3.5 text-red-600" aria-hidden="true" />
+                        <span>Allergy alert</span>
                       </div>
-                      <p className="text-red-900">{item.allergyAlert}</p>
+                      <p className="text-red-900 font-normal">{item.allergyAlert}</p>
                     </div>
                   )}
 
-                  {/* Special instructions */}
                   {item.itemNote && (
-                    <div className="ml-17 text-xs text-text italic">
-                      Special instruction: "{item.itemNote}"
-                    </div>
+                    <p className="mt-2 text-xs text-text italic">Note: &ldquo;{item.itemNote}&rdquo;</p>
                   )}
-                </div>
+                </article>
               );
             })}
           </div>
+        </section>
 
-          <div className="border-t border-dashed border-border pt-4 space-y-2 text-xs text-text">
-            <div className="flex justify-between font-medium">
+        {/* Billing summary — visually separate from items and CTAs */}
+        <section aria-labelledby="bill-summary-heading" className="bg-surface-container-lowest rounded-2xl p-4 border border-border shadow-sm mb-5">
+          <h2 id="bill-summary-heading" className="font-bold text-base text-ink mb-3">
+            Bill summary
+          </h2>
+          <div className="space-y-2.5 text-sm text-text">
+            <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>{formatInvoiceAmount(totals.subtotal || 0)}</span>
+              <span className="font-mono">{formatInvoiceAmount(totals.subtotal || 0)}</span>
             </div>
             {totals.discountAmount > 0 && (
-              <div className="flex justify-between font-medium text-emerald-600">
+              <div className="flex justify-between text-success">
                 <span>Discount</span>
-                <span>-{formatInvoiceAmount(totals.discountAmount)}</span>
+                <span className="font-mono">-{formatInvoiceAmount(totals.discountAmount)}</span>
               </div>
             )}
-            <div className="flex justify-between font-medium">
+            <div className="flex justify-between">
               <span>GST @ 5%</span>
-              <span>{formatInvoiceAmount(totals.gst ?? totals.tax ?? 0)}</span>
+              <span className="font-mono">{formatInvoiceAmount(totals.gst ?? totals.tax ?? 0)}</span>
             </div>
             {totals.tipAmount > 0 && (
-              <div className="flex justify-between font-medium text-maroon-800">
-                <span>Optional Staff Tip</span>
-                <span>+{formatInvoiceAmount(totals.tipAmount)}</span>
+              <div className="flex justify-between text-maroon-800">
+                <span>Optional staff tip</span>
+                <span className="font-mono">+{formatInvoiceAmount(totals.tipAmount)}</span>
               </div>
             )}
           </div>
-          <div className="border-t border-border mt-4 pt-3 flex justify-between items-center">
-            <span className="font-bold text-base text-ink">Total Payable</span>
-            <span className="font-bold text-xl text-maroon-800">{formatInvoiceAmount(totals.totalPayable || totals.grandTotal || 0)}</span>
+          <div className="border-t border-dashed border-border my-3" />
+          <div className="flex justify-between items-center bg-saffron-100/60 -mx-4 -mb-4 px-4 py-3.5 rounded-b-2xl">
+            <span className="font-bold text-sm text-ink">Total payable</span>
+            <span className="font-bold text-xl text-maroon-800 font-mono">
+              {formatInvoiceAmount(totals.totalPayable || totals.grandTotal || 0)}
+            </span>
           </div>
         </section>
 
-        {/* Footer Actions */}
+        {/* Primary actions */}
         <footer className="mt-auto space-y-3 pb-6">
           <button
             onClick={() => navigate('/order-tracking')}
-            className="w-full bg-saffron-600 hover:bg-saffron-500 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-colors text-sm"
+            className="w-full min-h-[48px] bg-saffron-600 hover:bg-saffron-500 active:bg-saffron-500 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-colors text-sm"
           >
-            <span>Track Order Status</span>
+            <span>Track order</span>
             <Icon name="chevron_right" />
           </button>
           <button
             onClick={() => navigate('/menu')}
-            className="w-full bg-surface-container-lowest border border-border hover:bg-surface-container text-ink font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm"
+            className="w-full min-h-[48px] bg-surface-container-lowest border border-border hover:bg-surface-container active:bg-surface-container text-ink font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm"
           >
-            <Icon name="add" className="text-maroon-800" />
-            <span>Order More Dishes</span>
+            <Plus className="w-4 h-4 text-maroon-800" aria-hidden="true" />
+            <span>Order more dishes</span>
           </button>
         </footer>
       </div>
-
-      <CustomerPreferencesModal
-        isOpen={false}
-        onClose={() => setIsPrefsOpen(false)}
-        customerMemory={customerMemory}
-        onSaveMemory={saveCustomerMemory}
-        onForgetMemory={forgetCustomerMemory}
-      />
     </main>
   );
 };

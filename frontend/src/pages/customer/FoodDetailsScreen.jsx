@@ -66,7 +66,7 @@ const dishDetailsTheme = {
  */
 const getDishInclusions = (dish) => {
   if (!dish) return [];
-  const cat = dish.category || '';
+  const cat = dish.subCategory || dish.category || '';
   const name = (dish.name || '').toLowerCase();
 
   if (cat === 'biryanis' || name.includes('biryani')) {

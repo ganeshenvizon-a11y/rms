@@ -42,8 +42,8 @@ const CartScreen = () => {
 
   const [promoCodeInput, setPromoCodeInput] = useState('');
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+  const [promoError, setPromoError] = useState('');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const [showMobileDetails, setShowMobileDetails] = useState(false);
 
   const [editingItem, setEditingItem] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -52,6 +52,7 @@ const CartScreen = () => {
     e.preventDefault();
     if (!promoCodeInput.trim()) return;
     setIsApplyingPromo(true);
+    setPromoError('');
     try {
       const res = await cartService.applyPromoCode(promoCodeInput);
       if (res.data.success) {
@@ -59,10 +60,10 @@ const CartScreen = () => {
         showToast(`Promo "${res.data.promo.code}" applied successfully!`, 'success');
         setPromoCodeInput('');
       } else {
-        showToast(res.data.message || 'Invalid promo code', 'error');
+        setPromoError(res.data.message || 'Invalid promo code. Please check and try again.');
       }
     } catch (err) {
-      showToast('Error applying promo code', 'error');
+      setPromoError('Could not apply promo code. Please try again.');
     } finally {
       setIsApplyingPromo(false);
     }
@@ -120,12 +121,23 @@ const CartScreen = () => {
     <>
       <TopAppBar variant="brand" />
 
-      <main className="flex-1 pt-20 pb-56 md:pb-16 max-w-[1280px] mx-auto w-full px-4 md:px-10">
-        <header className="mb-4">
+      <main className="flex-1 pt-20 pb-48 md:pb-16 max-w-[1280px] mx-auto w-full px-4 md:px-10">
+        <header className="mb-5">
           <h2 className="text-2xl md:text-4xl font-bold text-ink">Your Selection</h2>
-          <p className="text-sm text-muted mt-1">Table {tableNumber} &bull; Review your order before sending it to the kitchen.</p>
+          <p className="text-sm text-muted mt-1">Review your order before it's sent to the kitchen.</p>
         </header>
 
+        {/* Card: table & order context — table number itself lives in the top bar chip,
+            so this card only adds information that isn't shown there yet. */}
+        <section className="mb-4 bg-surface-container-lowest rounded-2xl px-4 py-3 border border-border shadow-card flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2 text-ink font-semibold">
+            <Icon name="restaurant" className="text-maroon-800 text-lg" />
+            <span>Dine-in &bull; Table {tableNumber}</span>
+          </div>
+          <span className="text-muted font-medium">{totals.itemCount} {totals.itemCount === 1 ? 'item' : 'items'}</span>
+        </section>
+
+        {/* Card: kitchen status */}
         <section className="mb-6">
           <HonestExpectationBanner
             kitchenLoad={kitchenLoad}
@@ -147,19 +159,16 @@ const CartScreen = () => {
                     <img src={item.image} alt={item.name} className="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-border" />
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-bold text-ink text-base">{item.name}</h3>
-                          <span className="text-xs text-maroon-800 font-semibold">{formatMenuPrice(singleUnitPrice)} each</span>
-                        </div>
-                        <button
-                          onClick={() => removeFromCart(item.cartItemId || item.id)}
-                          className="text-muted hover:text-danger transition-colors p-1.5 rounded-lg hover:bg-danger/10"
-                          title="Remove item"
+                      <div className="flex items-start gap-2">
+                        <span
+                          className={`mt-1 w-3.5 h-3.5 shrink-0 rounded-sm border-2 flex items-center justify-center ${item.isVeg ? 'border-success' : 'border-danger'}`}
+                          aria-hidden="true"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <span className={`w-1.5 h-1.5 rounded-full ${item.isVeg ? 'bg-success' : 'bg-danger'}`} />
+                        </span>
+                        <h3 className="font-bold text-ink text-base leading-snug min-w-0">{item.name}</h3>
                       </div>
+                      <span className="text-xs text-maroon-800 font-semibold pl-[22px]">{formatMenuPrice(singleUnitPrice)} each</span>
 
                       {hasModifiers && (
                         <div className="mt-2 text-xs space-y-1 bg-cream p-2.5 rounded-xl border border-border">
@@ -188,55 +197,77 @@ const CartScreen = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between pt-3 border-t border-border gap-2">
+                    {/* Secondary actions — deliberately low emphasis, plain text links */}
+                    <div className="flex items-center gap-4">
                       {item.originalDish?.customizationAvailable !== false && (
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(item)}
-                          className="px-3 py-1.5 bg-saffron-100 hover:bg-saffron-100/70 text-maroon-900 text-xs font-bold rounded-lg border border-saffron-600/30 flex items-center gap-1 transition-colors"
+                          className="min-h-[40px] flex items-center gap-1 text-maroon-800 hover:text-maroon-900 text-xs font-bold transition-colors"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
-                          <span>Edit Customization</span>
+                          <span>Edit</span>
                         </button>
                       )}
+                      <button
+                        onClick={() => removeFromCart(item.cartItemId || item.id)}
+                        className="min-h-[40px] flex items-center gap-1 text-muted hover:text-danger text-xs font-bold transition-colors"
+                        aria-label={`Remove ${item.name} from cart`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Remove</span>
+                      </button>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    {/* Quantity + line total — the one place quantity and price appear together */}
+                    <div className="flex items-center gap-3">
                       <div className="flex items-center bg-surface-container rounded-xl p-1">
                         <button
                           onClick={() => updateQuantity(item.cartItemId || item.id, item.quantity - 1)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest shadow-sm text-text hover:bg-surface-container-low active:scale-90"
+                          aria-label={`Decrease quantity of ${item.name}`}
+                          className="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-lowest shadow-sm text-text hover:bg-surface-container-low active:scale-90"
                         >
-                          <Minus className="w-3.5 h-3.5" />
+                          <Minus className="w-4 h-4" />
                         </button>
-                        <span className="font-bold w-6 text-center text-xs text-ink">{item.quantity}</span>
+                        <span className="font-bold w-7 text-center text-sm text-ink" aria-live="polite">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.cartItemId || item.id, item.quantity + 1)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest shadow-sm text-text hover:bg-surface-container-low active:scale-90"
+                          aria-label={`Increase quantity of ${item.name}`}
+                          className="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-lowest shadow-sm text-text hover:bg-surface-container-low active:scale-90"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-4 h-4" />
                         </button>
                       </div>
 
-                      <span className="font-bold text-maroon-800 text-base">{formatInvoiceAmount(itemTotalPrice)}</span>
+                      <span className="font-bold text-maroon-800 text-base [font-variant-numeric:tabular-nums]">{formatInvoiceAmount(itemTotalPrice)}</span>
                     </div>
                   </div>
                 </div>
               );
             })}
 
-            <div>
-              <label className="text-xs font-semibold text-text mb-2 block">Special Order Notes</label>
+            {/* Card: special order notes */}
+            <div className="bg-surface-container-lowest rounded-2xl p-4 border border-border shadow-card">
+              <label htmlFor="special-order-notes" className="text-xs font-bold text-ink mb-1.5 block">
+                Special Order Notes <span className="text-muted font-medium">(optional)</span>
+              </label>
               <textarea
-                rows={2}
+                id="special-order-notes"
+                rows={3}
+                maxLength={200}
                 value={specialOrderNotes}
                 onChange={(e) => setSpecialOrderNotes(e.target.value)}
-                placeholder="e.g. Please bring water first, separate bill requested, etc."
-                className="w-full bg-surface-container-lowest border border-border rounded-xl p-3 focus:ring-2 focus:ring-maroon-700/40 text-xs placeholder:text-muted shadow-sm resize-none outline-none"
+                placeholder="e.g. Please bring water first, or we'd like a separate bill for the table."
+                className="w-full min-h-[84px] bg-surface-container border border-border rounded-xl p-3 focus:ring-2 focus:ring-maroon-700/40 focus:border-maroon-700/40 text-xs placeholder:text-muted shadow-sm resize-none outline-none"
               />
+              <div className="flex justify-between items-center mt-1.5">
+                <span className="text-[11px] text-muted">Visible to kitchen staff only</span>
+                <span className="text-[11px] text-muted">{specialOrderNotes.length}/200</span>
+              </div>
             </div>
 
+            {/* Card: promo code — empty / success / error states */}
             <div className="bg-surface-container-lowest rounded-2xl p-4 border border-border shadow-card space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -251,25 +282,38 @@ const CartScreen = () => {
                     <span className="font-bold text-success">{appliedPromo.code}</span>
                     <p className="text-[10px] text-success">{appliedPromo.description}</p>
                   </div>
-                  <button onClick={() => setAppliedPromo(null)} className="text-[11px] font-bold text-danger underline">Remove</button>
+                  <button onClick={() => setAppliedPromo(null)} className="min-h-[40px] px-2 text-[11px] font-bold text-danger underline">Remove</button>
                 </div>
               ) : (
-                <form onSubmit={handleApplyPromo} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={promoCodeInput}
-                    onChange={(e) => setPromoCodeInput(e.target.value)}
-                    placeholder="Enter promo code"
-                    className="flex-1 px-3 py-2 bg-surface-container border border-border rounded-xl text-xs uppercase font-bold outline-none"
-                  />
-                  <button
-                    type="submit"
-                    disabled={isApplyingPromo || !promoCodeInput.trim()}
-                    className="px-4 py-2 bg-saffron-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 hover:bg-saffron-500"
-                  >
-                    Apply
-                  </button>
-                </form>
+                <>
+                  <form onSubmit={handleApplyPromo} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCodeInput}
+                      onChange={(e) => {
+                        setPromoCodeInput(e.target.value);
+                        if (promoError) setPromoError('');
+                      }}
+                      placeholder="Enter promo code"
+                      aria-invalid={!!promoError}
+                      className={`flex-1 min-h-[44px] px-3 bg-surface-container border rounded-xl text-xs uppercase font-bold outline-none ${promoError ? 'border-danger focus:ring-2 focus:ring-danger/30' : 'border-border focus:ring-2 focus:ring-maroon-700/30'}`}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isApplyingPromo || !promoCodeInput.trim()}
+                      className="min-h-[44px] px-4 bg-saffron-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 hover:bg-saffron-500 flex items-center gap-1.5"
+                    >
+                      {isApplyingPromo && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                      <span>{isApplyingPromo ? 'Applying…' : 'Apply'}</span>
+                    </button>
+                  </form>
+                  {promoError && (
+                    <p className="flex items-center gap-1 text-[11px] font-semibold text-danger">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      {promoError}
+                    </p>
+                  )}
+                </>
               )}
             </div>
 
@@ -286,19 +330,21 @@ const CartScreen = () => {
               />
             </div>
 
-            <div className="hidden md:flex gap-4 mt-2">
+            {/* Desktop CTA — one obvious primary action; "Continue Ordering" stays a low-emphasis text link */}
+            <div className="hidden md:flex items-center justify-between gap-4 mt-2">
               <button
                 onClick={() => navigate('/menu')}
-                className="flex-grow h-14 border border-border text-text rounded-xl font-semibold hover:bg-surface-container transition-colors active:scale-95 text-sm"
+                className="min-h-[44px] px-2 text-maroon-800 hover:text-maroon-900 font-semibold text-sm underline-offset-2 hover:underline"
               >
                 Continue Ordering
               </button>
               <button
                 onClick={handlePlaceOrder}
                 disabled={isPlacingOrder}
-                className="flex-[2] h-14 bg-saffron-600 text-white rounded-xl font-bold hover:bg-saffron-500 transition-opacity active:scale-95 shadow-md disabled:opacity-60 text-sm"
+                className="flex-1 max-w-md h-14 bg-saffron-600 text-white rounded-xl font-bold hover:bg-saffron-500 transition-opacity active:scale-95 shadow-floating disabled:opacity-60 text-sm flex items-center justify-center gap-2"
               >
-                {isPlacingOrder ? 'Placing Order...' : `Place Order • ${formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}`}
+                {isPlacingOrder && <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                <span>{isPlacingOrder ? 'Sending to Kitchen…' : `Send to Kitchen • ${formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}`}</span>
               </button>
             </div>
           </div>
@@ -341,43 +387,24 @@ const CartScreen = () => {
         />
       )}
 
-      {/* Mobile sticky footer — "N items · ₹total / Review Order" */}
+      {/* Mobile sticky footer — a single obvious primary action.
+          Full bill breakdown already lives inline above (BillingSummary), so this
+          bar only recaps the payable total instead of duplicating it. "Continue
+          ordering" isn't repeated here either — the Menu tab in BottomNavBar covers it. */}
       <div
-        className="md:hidden fixed left-0 w-full bg-surface-container-lowest p-4 flex flex-col gap-2 z-40 border-t border-border shadow-xl"
+        className="md:hidden fixed left-0 w-full bg-surface-container-lowest p-4 z-40 border-t border-border shadow-xl"
         style={{ bottom: 'calc(90px + env(safe-area-inset-bottom))' }}
       >
-        <div className="flex justify-between items-center">
-          <div className="flex flex-col">
-            <span className="text-[11px] text-muted">
-              {totals.itemCount} {totals.itemCount === 1 ? 'item' : 'items'} · {formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}
-            </span>
-          </div>
-          <button onClick={() => setShowMobileDetails((s) => !s)} className="text-maroon-800 text-xs font-semibold flex items-center gap-0.5">
-            Details
-            <Icon name={showMobileDetails ? 'expand_more' : 'expand_less'} />
-          </button>
-        </div>
-        {showMobileDetails && (
-          <div className="flex flex-col gap-1.5 pb-2 border-b border-border text-xs text-muted">
-            <div className="flex justify-between"><span>Subtotal</span><span>{formatInvoiceAmount(totals.subtotal)}</span></div>
-            {totals.discountAmount > 0 && (
-              <div className="flex justify-between text-success"><span>Discount</span><span>-{formatInvoiceAmount(totals.discountAmount)}</span></div>
-            )}
-            <div className="flex justify-between"><span>GST @ 5%</span><span>{formatInvoiceAmount(totals.gst)}</span></div>
-          </div>
-        )}
-        <div className="flex gap-2">
-          <button onClick={() => navigate('/menu')} className="flex-1 h-12 border border-border text-text rounded-xl font-semibold active:scale-95 text-xs">
-            Continue
-          </button>
-          <button
-            onClick={handlePlaceOrder}
-            disabled={isPlacingOrder}
-            className="flex-[2] h-12 bg-saffron-600 text-white rounded-xl font-bold active:scale-95 shadow-md text-xs disabled:opacity-60"
-          >
-            {isPlacingOrder ? 'Placing...' : 'Review Order'}
-          </button>
-        </div>
+        <button
+          onClick={handlePlaceOrder}
+          disabled={isPlacingOrder}
+          className="w-full h-14 bg-saffron-600 text-white rounded-xl font-bold active:scale-95 shadow-md text-sm disabled:opacity-60 flex items-center justify-center gap-2"
+        >
+          {isPlacingOrder && <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+          <span>
+            {isPlacingOrder ? 'Sending to Kitchen…' : `Send to Kitchen • ${formatInvoiceAmount(totals.totalPayable || totals.grandTotal)}`}
+          </span>
+        </button>
       </div>
 
       <BottomNavBar />

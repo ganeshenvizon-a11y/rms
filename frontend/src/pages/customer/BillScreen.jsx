@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../../context/OrderContext';
 import { useTable } from '../../context/TableContext';
@@ -12,6 +12,36 @@ import EmptyState from '../../components/common/EmptyState';
 import Icon from '../../components/common/Icon';
 import BillingSummary from '../../components/common/BillingSummary';
 import { AlertCircle } from 'lucide-react';
+
+// Collapses cart lines that share the same dish + modifiers + note into a single
+// receipt row (summing quantity) so identical items never render as separate
+// "duplicate" rows — only genuinely different customizations get their own line.
+const mergeDuplicateItems = (items = []) => {
+  const merged = [];
+  const indexByKey = new Map();
+
+  items.forEach((item) => {
+    const modifierLabels = (item.selectedCustomizations || [])
+      .map((c) => c.label || c.name)
+      .filter(Boolean)
+      .sort();
+    const key = JSON.stringify({
+      name: item.name,
+      modifiers: modifierLabels,
+      note: (item.itemNote || item.specialInstructions || '').trim(),
+    });
+
+    if (indexByKey.has(key)) {
+      const existing = merged[indexByKey.get(key)];
+      existing.quantity += item.quantity;
+    } else {
+      indexByKey.set(key, merged.length);
+      merged.push({ ...item, modifierLabels });
+    }
+  });
+
+  return merged;
+};
 
 const BillScreen = () => {
   const navigate = useNavigate();
@@ -34,6 +64,8 @@ const BillScreen = () => {
       setIsNotifyingStaff(false);
     }
   };
+
+  const mergedItems = useMemo(() => mergeDuplicateItems(activeOrder?.items), [activeOrder?.items]);
 
   if (!activeOrder) {
     return (
@@ -64,100 +96,135 @@ const BillScreen = () => {
     totalPayable: activeOrder.totalPayable || activeOrder.grandTotal || 0,
   };
 
+  const itemCount = mergedItems.reduce((acc, item) => acc + item.quantity, 0);
+
   return (
     <>
       <TopAppBar variant="brand" />
 
-      <main className="flex-1 pt-20 pb-24 max-w-[1280px] mx-auto w-full px-4 md:px-10">
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-on-surface mb-1">Bill Summary</h2>
-            <p className="text-xs text-on-surface-variant">Review your selection before proceeding to secure payment.</p>
+      <main className="flex-1 pt-20 pb-28 max-w-[1280px] mx-auto w-full px-4 md:px-10">
+        {/* Order Identity Header */}
+        <header className="mb-6 md:mb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wide">
+              <Icon name="table_restaurant" className="text-sm" />
+              Table {tableNumber}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-semibold">
+              <Icon name="receipt_long" className="text-sm" />
+              {activeOrder.invoiceId || `#${activeOrder.orderId}`}
+            </span>
           </div>
-          {/* Service Recovery Trigger */}
-          <button
-            onClick={() => navigate('/report-issue')}
-            className="px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs rounded-xl border border-rose-500/30 flex items-center gap-1.5 self-start sm:self-auto"
-          >
-            <AlertCircle className="w-4 h-4 text-rose-600" />
-            <span>Billing issue or discrepancy?</span>
-          </button>
-        </div>
+          <h1 className="text-2xl md:text-4xl font-extrabold text-on-surface leading-tight">Bill Summary</h1>
+          <p className="text-sm text-on-surface-variant mt-1.5 max-w-md">
+            Review your order before proceeding to secure payment.
+          </p>
+        </header>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Left Column */}
           <div className="md:col-span-7 space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30">
-                <p className="text-xs text-on-surface-variant uppercase mb-1">Order Number</p>
-                <p className="text-lg font-bold text-on-surface">#{activeOrder.orderId}</p>
+            <section
+              aria-labelledby="items-ordered-heading"
+              className="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden"
+            >
+              <div className="px-5 py-4 border-b border-outline-variant/20 bg-surface-container-low flex items-center justify-between">
+                <h2 id="items-ordered-heading" className="text-sm font-bold text-on-surface uppercase tracking-wide">
+                  Items Ordered
+                </h2>
+                <span className="text-xs font-semibold text-on-surface-variant">
+                  {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                </span>
               </div>
-              <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30">
-                <p className="text-xs text-on-surface-variant uppercase mb-1">Table</p>
-                <p className="text-lg font-bold text-on-surface">{tableNumber}</p>
-              </div>
-            </div>
 
-            <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
-              <div className="p-4 border-b border-outline-variant/20 bg-surface-container-low">
-                <h3 className="text-xs font-bold text-on-surface uppercase">Items Ordered</h3>
-              </div>
-              {activeOrder.items?.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`p-4 flex items-center justify-between hover:bg-surface-container-high/30 transition-colors ${
-                    idx > 0 ? 'border-t border-outline-variant/10' : ''
-                  }`}
-                >
-                  <div className="flex gap-4 items-center min-w-0">
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-surface-dim flex-shrink-0">
-                      {item.image ? (
-                        <img className="w-full h-full object-cover" src={item.image} alt={item.name} />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-on-surface-variant/60">
-                          <Icon name="restaurant" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-base font-bold text-on-surface truncate">{item.name}</h4>
-                      <p className="text-xs text-on-surface-variant">{item.quantity}x</p>
-                    </div>
-                  </div>
-                  <p className="text-base font-bold text-on-surface flex-shrink-0">
-                    {formatInvoiceAmount((item.unitPrice || item.price) * item.quantity)}
-                  </p>
-                </div>
-              ))}
-            </div>
+              <ul>
+                {mergedItems.map((item, idx) => {
+                  const unitPrice = item.unitPrice || item.price;
+                  const lineTotal = unitPrice * item.quantity;
+                  return (
+                    <li
+                      key={item.cartItemId || item.id || idx}
+                      className={`px-5 py-4 flex items-start justify-between gap-4 ${
+                        idx > 0 ? 'border-t border-outline-variant/15' : ''
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <h3 className="text-[15px] font-bold text-on-surface leading-snug">{item.name}</h3>
+                        <p className="text-xs text-on-surface-variant mt-0.5 [font-variant-numeric:tabular-nums]">
+                          {item.quantity} × {formatInvoiceAmount(unitPrice)}
+                        </p>
+
+                        {item.modifierLabels && item.modifierLabels.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {item.modifierLabels.map((label, mIdx) => (
+                              <span
+                                key={mIdx}
+                                className="px-2 py-0.5 rounded-md bg-secondary-container/30 text-secondary text-[11px] font-medium"
+                              >
+                                {label}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {(item.itemNote || item.specialInstructions) && (
+                          <p className="text-[11px] text-on-surface-variant/80 italic mt-1.5">
+                            Note: {item.itemNote || item.specialInstructions}
+                          </p>
+                        )}
+                      </div>
+
+                      <p className="text-[15px] font-bold text-on-surface flex-shrink-0 [font-variant-numeric:tabular-nums]">
+                        {formatInvoiceAmount(lineTotal)}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
           </div>
 
           {/* Right Column */}
           <div className="md:col-span-5 space-y-4">
-            <div className="md:sticky md:top-24 space-y-4">
+            <div className="md:sticky md:top-24 space-y-5">
               <BillingSummary totals={totals} showTipSelector={false} />
 
-              <div className="space-y-3 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-sm">
-                <button
-                  onClick={() => navigate('/payment')}
-                  className="w-full h-14 bg-primary text-on-primary rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-md"
-                >
-                  <Icon name="payments" />
-                  Proceed to Payment
-                </button>
-                <button
-                  onClick={() => setIsCashModalOpen(true)}
-                  className="w-full h-14 bg-transparent border-2 border-primary text-primary rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-primary/5 active:scale-95 transition-all"
-                >
-                  <Icon name="storefront" />
-                  Pay at Counter
-                </button>
-              </div>
+              {/* Payment actions */}
+              <section
+                aria-label="Payment options"
+                className="bg-surface-container-lowest p-5 md:p-6 rounded-2xl border border-outline-variant/30 shadow-sm"
+              >
+                <div className="space-y-3">
+                  <button
+                    onClick={() => navigate('/payment')}
+                    className="w-full min-h-[52px] bg-primary text-on-primary rounded-xl font-semibold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-md"
+                  >
+                    <Icon name="payments" />
+                    Proceed to Payment
+                  </button>
+                  <button
+                    onClick={() => setIsCashModalOpen(true)}
+                    className="w-full min-h-[52px] bg-transparent border-2 border-primary text-primary rounded-xl font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/5 active:scale-[0.98] transition-all"
+                  >
+                    <Icon name="storefront" />
+                    Pay at Counter
+                  </button>
+                </div>
 
-              <div className="pt-2 flex items-center gap-3 text-on-surface-variant/60">
-                <Icon name="verified_user" />
-                <p className="text-xs">Secure encrypted payment processing</p>
-              </div>
+                <div className="mt-4 pt-4 border-t border-outline-variant/20 flex items-center gap-2.5 text-on-surface-variant/70">
+                  <Icon name="verified_user" className="text-base" />
+                  <p className="text-[11px] leading-snug">Secure, encrypted payment processing</p>
+                </div>
+              </section>
+
+              {/* Tertiary support link */}
+              <button
+                onClick={() => navigate('/report-issue')}
+                className="w-full min-h-[44px] flex items-center justify-center gap-1.5 text-rose-600 dark:text-rose-400 text-xs font-semibold hover:underline"
+              >
+                <AlertCircle className="w-3.5 h-3.5" />
+                Report Billing Issue
+              </button>
             </div>
           </div>
         </div>

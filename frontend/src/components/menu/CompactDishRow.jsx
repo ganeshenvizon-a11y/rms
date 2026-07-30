@@ -52,11 +52,10 @@ const CompactDishRow = ({ dish, onCustomize }) => {
     >
       {/* Left info */}
       <div className="flex-1 min-w-0 pr-1">
-        <div className="flex items-center gap-2 mb-0.5">
+        <div className="flex items-center gap-2">
           <FoodTypeBadge foodType={dish.foodType} />
           <h3 className="font-bold text-[#211917] text-[14.5px] truncate">{dish.name}</h3>
         </div>
-        <p className="text-[12px] text-[#6F5F58] line-clamp-1">{dish.shortDescription}</p>
       </div>
 
       {/* Right price & action */}

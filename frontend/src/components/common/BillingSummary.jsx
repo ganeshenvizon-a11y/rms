@@ -55,10 +55,10 @@ const BillingSummary = ({
 
   return (
     <div className={`bg-surface-container-lowest rounded-2xl p-5 md:p-6 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 ${className}`}>
-      <h3 className="text-lg font-bold text-on-surface mb-4">Billing Summary</h3>
+      <h2 className="text-base font-bold text-on-surface mb-4 uppercase tracking-wide">Payment Breakdown</h2>
 
       {/* Primary Line Items */}
-      <div className="space-y-3 text-sm text-on-surface-variant pb-4 border-b border-outline-variant/30">
+      <div className="space-y-3 text-sm text-on-surface-variant pb-4 border-b border-outline-variant/30 [font-variant-numeric:tabular-nums]">
         <div className="flex justify-between items-center font-medium">
           <span>Subtotal</span>
           <span className="text-on-surface font-semibold">{formatInvoiceAmount(subtotal)}</span>
@@ -84,7 +84,7 @@ const BillingSummary = ({
             <button
               type="button"
               onClick={() => setIsTaxExpanded(!isTaxExpanded)}
-              className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors text-left focus:outline-none"
+              className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors text-left focus:outline-none py-1 -my-1"
               aria-expanded={isTaxExpanded}
             >
               <span>{restaurantConfig.taxStructure.taxName || 'GST'} @ {restaurantConfig.taxStructure.totalRate || 5}%</span>
@@ -121,27 +121,30 @@ const BillingSummary = ({
           </AnimatePresence>
         </div>
 
+        {/* Staff tip — only shown as a line item once an amount is actually selected,
+            so this figure never appears twice with the interactive selector below. */}
+        {tipAmount > 0 && (
+          <div className="flex justify-between items-center font-medium text-secondary">
+            <span>Staff Tip</span>
+            <motion.span key={tipAmount} initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="font-semibold">
+              {formatInvoiceAmount(tipAmount)}
+            </motion.span>
+          </div>
+        )}
+
         {/* Total (Before Tip) */}
         <div className="flex justify-between items-center font-bold text-on-surface pt-2 border-t border-outline-variant/20">
           <span>Invoice Total</span>
           <span className="text-base">{formatInvoiceAmount(total)}</span>
         </div>
-
-        {/* Optional Staff Tip Display */}
-        <div className="flex justify-between items-center font-medium text-secondary">
-          <span>Optional Staff Tip</span>
-          <motion.span key={tipAmount} initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="font-semibold">
-            {formatInvoiceAmount(tipAmount)}
-          </motion.span>
-        </div>
       </div>
 
-      {/* Tip Selector */}
+      {/* Tip Selector — the one and only place "tip" is labeled on this card */}
       {showTipSelector && (
         <div className="py-4 border-b border-outline-variant/30 space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-bold text-on-surface">Optional Staff Tip</span>
-            <span className="text-xs font-semibold text-secondary">{tipAmount > 0 ? formatInvoiceAmount(tipAmount) : 'No Tip selected'}</span>
+            <span className="text-sm font-bold text-on-surface">Add a tip for the staff</span>
+            <span className="text-xs font-semibold text-secondary">{tipAmount > 0 ? formatInvoiceAmount(tipAmount) : 'No tip'}</span>
           </div>
 
           {/* Accessible Radio Option Buttons */}
@@ -160,7 +163,7 @@ const BillingSummary = ({
                   role="radio"
                   aria-checked={isSelected}
                   onClick={() => handleTipOptionChange(option.id)}
-                  className={`p-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center justify-center transition-all ${
+                  className={`min-h-[44px] px-2.5 py-2.5 rounded-xl border text-xs font-semibold flex flex-col items-center justify-center transition-all ${
                     isSelected
                       ? 'bg-primary text-on-primary border-primary shadow-sm ring-2 ring-primary/30'
                       : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high border-outline-variant/40'
@@ -194,7 +197,8 @@ const BillingSummary = ({
                   value={customTipAmount}
                   onChange={(e) => setCustomTipAmount(e.target.value)}
                   placeholder="Enter custom tip amount"
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-xl py-2 pl-7 pr-3 text-sm font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                  aria-label="Custom tip amount"
+                  className="w-full min-h-[44px] bg-surface-container-low border border-outline-variant rounded-xl py-2 pl-7 pr-3 text-sm font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
             </motion.div>
@@ -207,13 +211,13 @@ const BillingSummary = ({
         </div>
       )}
 
-      {/* Total Payable */}
-      <div className="pt-4 pb-2 flex justify-between items-center">
+      {/* Total Payable — the single strongest billing element on the card */}
+      <div className="mt-4 mb-2 flex justify-between items-center bg-primary/[0.08] border-2 border-primary/20 rounded-xl px-4 py-4 shadow-sm">
         <div>
-          <span className="text-xs uppercase tracking-wider text-on-surface-variant font-bold block">Total Payable</span>
-          <span className="text-xs text-on-surface-variant/70">Final amount to pay</span>
+          <span className="text-xs uppercase tracking-wider text-on-surface font-bold block">Total Payable</span>
+          <span className="text-[11px] text-on-surface-variant/70">Inclusive of all taxes</span>
         </div>
-        <motion.span key={totalPayable} initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="text-2xl md:text-3xl font-extrabold text-primary">
+        <motion.span key={totalPayable} initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="text-3xl md:text-4xl font-extrabold text-primary [font-variant-numeric:tabular-nums]">
           {formatInvoiceAmount(totalPayable)}
         </motion.span>
       </div>

@@ -12,18 +12,13 @@ const RecommendedDishRail = ({ recommendedDishes = [], onCustomize, onViewAll, f
   if (!recommendedDishes || recommendedDishes.length === 0) return null;
 
   return (
-    <section ref={favouritesRef} className="mt-6 mb-9 scroll-mt-20 relative group/recommended">
-      <div className="flex items-end justify-between px-4 mb-4">
-        <div>
-          <div className="flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-[#F47712]" aria-hidden="true" />
-            <h2 className="text-[19px] sm:text-[21px] font-bold text-[#211917] leading-tight">
-              Recommended for your table
-            </h2>
-          </div>
-          <p className="text-[13px] text-[#6F5F58] mt-1.5 leading-snug">
-            Popular choices that are easy to start with
-          </p>
+    <section ref={favouritesRef} className="mb-6 scroll-mt-24 relative group/recommended">
+      <div className="flex items-center justify-between px-4 mb-3">
+        <div className="flex items-center gap-1.5">
+          <Sparkles className="w-4 h-4 text-[#F47712]" aria-hidden="true" />
+          <h2 className="text-[16px] font-bold text-[#211917] leading-tight">
+            Popular picks
+          </h2>
         </div>
 
         {onViewAll && (

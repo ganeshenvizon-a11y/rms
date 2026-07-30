@@ -4,7 +4,7 @@ import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import ResponsiveImage from '../common/ResponsiveImage';
 import { FoodTypeBadge, SpiceLevelBadge, PriceTag } from './DishBadges';
-import { Clock, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronRight, Sparkles } from 'lucide-react';
 
 /**
  * Featured horizontal card for recommended dishes.
@@ -89,13 +89,7 @@ const RecommendedDishCard = ({ dish, onCustomize, isDragging = false }) => {
 
         {/* Price & Action */}
         <div className="pt-2 border-t border-[#F0E7E0] mt-1 flex items-center justify-between">
-          <div>
-            <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[15px] text-[#A30F3B]" />
-            <div className="flex items-center gap-1 text-[11px] text-[#95867E] mt-0.5">
-              <Clock className="w-3 h-3" />
-              <span>{dish.preparationTimeMinutes || 20} min</span>
-            </div>
-          </div>
+          <PriceTag price={dish.price} priceDisplay={dish.priceDisplay} className="text-[15px] text-[#A30F3B]" />
 
           <button
             type="button"
