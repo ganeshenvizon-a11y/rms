@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTable } from '../../context/TableContext';
 import { RESTAURANT_INFO } from '../../utils/mockData';
 import Icon from '../common/Icon';
-import { ShieldCheck, UtensilsCrossed } from 'lucide-react';
+import { ShieldCheck, UtensilsCrossed, Sparkles } from 'lucide-react';
 
 /**
  * Top app bar with Trust Profile and secondary actions.
@@ -104,6 +104,17 @@ const TopAppBar = ({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          {/* Replay Splash button — trigger animated opening sequence */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('replay-splash'))}
+            className="h-[36px] px-2.5 rounded-full bg-[#FFF7EE] hover:bg-[#FFF0E3] active:scale-95 border border-[#EADFD6] text-[#A30F3B] flex items-center gap-1 text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A30F3B] cursor-pointer"
+            title="Replay Brand Intro Splash"
+            aria-label="Replay animated intro splash screen"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#E97818]" aria-hidden="true" />
+            <span className="hidden sm:inline">Intro</span>
+          </button>
+
           {/* Shield / trust button — 44×44px circular warm-neutral surface */}
           {onOpenTrustProfile && (
             <button

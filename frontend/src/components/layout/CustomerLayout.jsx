@@ -1,24 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Toast from '../common/Toast';
+import AnimatedSplashScreen from '../splash/AnimatedSplashScreen';
 
 const CustomerLayout = ({ children }) => {
   const location = useLocation();
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Event listener to trigger splash screen on demand (e.g. from header logo / button)
+    const handleReplaySplash = () => {
+      setShowSplash(true);
+    };
+    window.addEventListener('replay-splash', handleReplaySplash);
+    return () => window.removeEventListener('replay-splash', handleReplaySplash);
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-on-surface overflow-x-hidden">
       <Toast />
-      {/*
-        NOTE: this transition intentionally animates opacity only. Animating a
-        transform (x/y/scale) here would make Framer Motion apply an inline
-        `transform` style that never fully clears, which turns this div into a
-        CSS containing block for every `position: fixed` descendant rendered by
-        the page (header, bottom nav, sticky cart bar, bottom sheets) — they'd
-        be positioned relative to this scrolling content box instead of the
-        viewport. Keep this opacity-only unless fixed-position chrome is moved
-        out of the animated subtree.
-      */}
+
+      {/* Render Animated Splash Screen on customer link open */}
+      {showSplash && (
+        <AnimatedSplashScreen
+          onComplete={handleSplashComplete}
+          autoDismiss={true}
+        />
+      )}
+
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
@@ -37,3 +51,4 @@ const CustomerLayout = ({ children }) => {
 };
 
 export default CustomerLayout;
+
